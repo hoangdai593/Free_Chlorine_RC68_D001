@@ -53,6 +53,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/User_middleware}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/User_utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/User_middleware/event_driven}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/User_bsp/LCD_NHD_C12864LZ}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.36181121" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -79,11 +80,11 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="User_app"/>
-						<entry excluding="LCD_NHD_C12864LZ/User_middleware" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="User_bsp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="User_utils"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="User_app"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry excluding="LCD_NHD_C12864LZ/User_middleware" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="User_bsp"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

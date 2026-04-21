@@ -1,6 +1,0 @@
-../Core/Src/Task.c:34:6:HAL_UART_RxCpltCallback	16	static
-../Core/Src/Task.c:63:6:EC200_PowerOn	8	static
-../Core/Src/Task.c:73:6:PrintToUSART2	16	static
-../Core/Src/Task.c:79:9:_Cb_EC200U_Check	48	static
-../Core/Src/Task.c:183:9:_Cb_UART_Receive	16	static
-../Core/Src/Task.c:195:9:Comm_Task	24	static

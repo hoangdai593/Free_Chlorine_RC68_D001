@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "LCD_NHD.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,6 +93,11 @@ int main(void)
   MX_USART3_UART_Init();
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  LCD_Init();
+//  LCD_Clear();
+  LCD_FillBlack();
+
+  LCD_Display(NHD_Logo);
 
   /* USER CODE END 2 */
 
@@ -100,6 +105,46 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+      /* TEST 1: all pixel ON */
+      comm_write(0xA5);
+      HAL_Delay(1000);
+
+      /* TEST 2: normal display */
+      comm_write(0xA4);
+      HAL_Delay(1000);
+
+      /* TEST 3: display OFF */
+      comm_write(0xAE);
+      HAL_Delay(1000);
+
+      /* TEST 4: display ON */
+      comm_write(0xAF);
+      HAL_Delay(1000);
+
+      /* TEST 5: fill black */
+      for(uint8_t page=0; page<8; page++)
+      {
+          comm_write(0xB0 + page);
+          comm_write(0x10);
+          comm_write(0x00);
+
+          for(uint8_t col=0; col<128; col++)
+              data_write(0xFF);
+      }
+      HAL_Delay(1000);
+
+      /* TEST 6: clear */
+      for(uint8_t page=0; page<8; page++)
+      {
+          comm_write(0xB0 + page);
+          comm_write(0x10);
+          comm_write(0x00);
+
+          for(uint8_t col=0; col<128; col++)
+              data_write(0x00);
+      }
+      HAL_Delay(1000);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
