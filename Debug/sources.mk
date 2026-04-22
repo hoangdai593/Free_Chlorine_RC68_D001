@@ -26,6 +26,8 @@ Core/Src \
 Core/Startup \
 Drivers/STM32L4xx_HAL_Driver/Src \
 User_app \
-User_bsp/LCD_NHD_C12864LZ \
+User_bsp/glcd-master/controllers \
+User_bsp/glcd-master/devices \
+User_bsp/glcd-master \
 User_utils \
 

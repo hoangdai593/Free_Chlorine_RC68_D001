@@ -1,0 +1,51 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+# Toolchain: GNU Tools for STM32 (14.3.rel1)
+################################################################################
+
+# Add inputs and outputs from these tool invocations to the build variables 
+C_SRCS += \
+../User_bsp/glcd-master/devices/AVR8.c \
+../User_bsp/glcd-master/devices/LPC111x.c \
+../User_bsp/glcd-master/devices/LPC11Uxx.c \
+../User_bsp/glcd-master/devices/PIC24H.c \
+../User_bsp/glcd-master/devices/PIC32.c \
+../User_bsp/glcd-master/devices/STM32F0xx.c \
+../User_bsp/glcd-master/devices/STM32F10x.c \
+../User_bsp/glcd-master/devices/STM32F4.c \
+../User_bsp/glcd-master/devices/STM32L4.c 
+
+OBJS += \
+./User_bsp/glcd-master/devices/AVR8.o \
+./User_bsp/glcd-master/devices/LPC111x.o \
+./User_bsp/glcd-master/devices/LPC11Uxx.o \
+./User_bsp/glcd-master/devices/PIC24H.o \
+./User_bsp/glcd-master/devices/PIC32.o \
+./User_bsp/glcd-master/devices/STM32F0xx.o \
+./User_bsp/glcd-master/devices/STM32F10x.o \
+./User_bsp/glcd-master/devices/STM32F4.o \
+./User_bsp/glcd-master/devices/STM32L4.o 
+
+C_DEPS += \
+./User_bsp/glcd-master/devices/AVR8.d \
+./User_bsp/glcd-master/devices/LPC111x.d \
+./User_bsp/glcd-master/devices/LPC11Uxx.d \
+./User_bsp/glcd-master/devices/PIC24H.d \
+./User_bsp/glcd-master/devices/PIC32.d \
+./User_bsp/glcd-master/devices/STM32F0xx.d \
+./User_bsp/glcd-master/devices/STM32F10x.d \
+./User_bsp/glcd-master/devices/STM32F4.d \
+./User_bsp/glcd-master/devices/STM32L4.d 
+
+
+# Each subdirectory must supply rules for building sources it contributes
+User_bsp/glcd-master/devices/%.o User_bsp/glcd-master/devices/%.su User_bsp/glcd-master/devices/%.cyclo: ../User_bsp/glcd-master/devices/%.c User_bsp/glcd-master/devices/subdir.mk
+	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L433xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app" -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp" -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware" -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_utils" -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven" -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers" -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices" -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts" -I"D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
+
+clean: clean-User_bsp-2f-glcd-2d-master-2f-devices
+
+clean-User_bsp-2f-glcd-2d-master-2f-devices:
+	-$(RM) ./User_bsp/glcd-master/devices/AVR8.cyclo ./User_bsp/glcd-master/devices/AVR8.d ./User_bsp/glcd-master/devices/AVR8.o ./User_bsp/glcd-master/devices/AVR8.su ./User_bsp/glcd-master/devices/LPC111x.cyclo ./User_bsp/glcd-master/devices/LPC111x.d ./User_bsp/glcd-master/devices/LPC111x.o ./User_bsp/glcd-master/devices/LPC111x.su ./User_bsp/glcd-master/devices/LPC11Uxx.cyclo ./User_bsp/glcd-master/devices/LPC11Uxx.d ./User_bsp/glcd-master/devices/LPC11Uxx.o ./User_bsp/glcd-master/devices/LPC11Uxx.su ./User_bsp/glcd-master/devices/PIC24H.cyclo ./User_bsp/glcd-master/devices/PIC24H.d ./User_bsp/glcd-master/devices/PIC24H.o ./User_bsp/glcd-master/devices/PIC24H.su ./User_bsp/glcd-master/devices/PIC32.cyclo ./User_bsp/glcd-master/devices/PIC32.d ./User_bsp/glcd-master/devices/PIC32.o ./User_bsp/glcd-master/devices/PIC32.su ./User_bsp/glcd-master/devices/STM32F0xx.cyclo ./User_bsp/glcd-master/devices/STM32F0xx.d ./User_bsp/glcd-master/devices/STM32F0xx.o ./User_bsp/glcd-master/devices/STM32F0xx.su ./User_bsp/glcd-master/devices/STM32F10x.cyclo ./User_bsp/glcd-master/devices/STM32F10x.d ./User_bsp/glcd-master/devices/STM32F10x.o ./User_bsp/glcd-master/devices/STM32F10x.su ./User_bsp/glcd-master/devices/STM32F4.cyclo ./User_bsp/glcd-master/devices/STM32F4.d ./User_bsp/glcd-master/devices/STM32F4.o ./User_bsp/glcd-master/devices/STM32F4.su ./User_bsp/glcd-master/devices/STM32L4.cyclo ./User_bsp/glcd-master/devices/STM32L4.d ./User_bsp/glcd-master/devices/STM32L4.o ./User_bsp/glcd-master/devices/STM32L4.su
+
+.PHONY: clean-User_bsp-2f-glcd-2d-master-2f-devices
+

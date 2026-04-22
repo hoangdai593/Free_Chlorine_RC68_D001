@@ -1,0 +1,9 @@
+../User_bsp/glcd-master/unit_tests.c:70:6:glcd_test_circles	16	static
+../User_bsp/glcd-master/unit_tests.c:104:6:glcd_test_counter_and_graph	32	static
+../User_bsp/glcd-master/unit_tests.c:135:6:glcd_test_glcdutils	32	static
+../User_bsp/glcd-master/unit_tests.c:155:6:glcd_test_text_up_down	24	static
+../User_bsp/glcd-master/unit_tests.c:192:6:glcd_test_tiny_text	48	static
+../User_bsp/glcd-master/unit_tests.c:226:6:glcd_test_hello_world	16	static
+../User_bsp/glcd-master/unit_tests.c:237:6:glcd_test_rectangles	24	static
+../User_bsp/glcd-master/unit_tests.c:289:6:glcd_test_scrolling_graph	24	static
+../User_bsp/glcd-master/unit_tests.c:311:6:glcd_test_bitmap_128x64	8	static

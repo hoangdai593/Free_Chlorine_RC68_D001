@@ -1,0 +1,12 @@
+../User_bsp/glcd-master/graphics.c:46:6:glcd_set_pixel	4
+../User_bsp/glcd-master/graphics.c:64:9:glcd_get_pixel	4
+../User_bsp/glcd-master/graphics.c:76:6:glcd_invert_pixel	3
+../User_bsp/glcd-master/graphics.c:85:6:glcd_draw_line	7
+../User_bsp/glcd-master/graphics.c:128:6:glcd_fill_rect	3
+../User_bsp/glcd-master/graphics.c:140:6:glcd_draw_rect	3
+../User_bsp/glcd-master/graphics.c:154:6:glcd_draw_rect_thick	7
+../User_bsp/glcd-master/graphics.c:183:6:glcd_draw_rect_shadow	1
+../User_bsp/glcd-master/graphics.c:190:6:glcd_draw_circle	3
+../User_bsp/glcd-master/graphics.c:229:6:glcd_fill_circle	6
+../User_bsp/glcd-master/graphics.c:267:6:glcd_invert_area	3
+../User_bsp/glcd-master/graphics.c:279:6:glcd_draw_bitmap	1

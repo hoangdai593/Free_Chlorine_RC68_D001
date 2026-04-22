@@ -1,0 +1,7 @@
+../User_bsp/glcd-master/graphs.c:41:6:glcd_bar_graph_horizontal	2
+../User_bsp/glcd-master/graphs.c:50:6:glcd_bar_graph_horizontal_no_border	2
+../User_bsp/glcd-master/graphs.c:58:6:glcd_bar_graph_vertical	1
+../User_bsp/glcd-master/graphs.c:64:6:glcd_bar_graph_vertical_no_border	1
+../User_bsp/glcd-master/graphs.c:69:6:glcd_scrolling_bar_graph	4
+../User_bsp/glcd-master/graphs.c:101:6:glcd_scrolling_bar_graph_timing	4
+../User_bsp/glcd-master/graphs.c:119:16:glcd_map	1

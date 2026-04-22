@@ -24,7 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "LCD_NHD.h"
+#include "glcd.h"
+#include "ST7565R.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,11 +94,15 @@ int main(void)
   MX_USART3_UART_Init();
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  LCD_Init();
-//  LCD_Clear();
-  LCD_FillBlack();
 
-  LCD_Display(NHD_Logo);
+  /* Init màn hình */
+  glcd_ST7565R_init();      // init LCD + SPI + buffer
+  glcd_clear();
+  glcd_pattern();   // sọc test màn
+  HAL_Delay(1000);
+
+  glcd_clear();
+  HAL_Delay(1000);
 
   /* USER CODE END 2 */
 
@@ -105,45 +110,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-      /* TEST 1: all pixel ON */
-      comm_write(0xA5);
-      HAL_Delay(1000);
-
-      /* TEST 2: normal display */
-      comm_write(0xA4);
-      HAL_Delay(1000);
-
-      /* TEST 3: display OFF */
-      comm_write(0xAE);
-      HAL_Delay(1000);
-
-      /* TEST 4: display ON */
-      comm_write(0xAF);
-      HAL_Delay(1000);
-
-      /* TEST 5: fill black */
-      for(uint8_t page=0; page<8; page++)
-      {
-          comm_write(0xB0 + page);
-          comm_write(0x10);
-          comm_write(0x00);
-
-          for(uint8_t col=0; col<128; col++)
-              data_write(0xFF);
-      }
-      HAL_Delay(1000);
-
-      /* TEST 6: clear */
-      for(uint8_t page=0; page<8; page++)
-      {
-          comm_write(0xB0 + page);
-          comm_write(0x10);
-          comm_write(0x00);
-
-          for(uint8_t col=0; col<128; col++)
-              data_write(0x00);
-      }
-      HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
@@ -168,13 +134,21 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
+  /** Configure LSE Drive Capability
+  */
+  HAL_PWR_EnableBkUpAccess();
+  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
+
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+  RCC_OscInitStruct.MSICalibrationValue = 0;
+  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_MSI;
   RCC_OscInitStruct.PLL.PLLM = 1;
   RCC_OscInitStruct.PLL.PLLN = 20;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
@@ -194,10 +168,14 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
+
+  /** Enable MSI Auto calibration
+  */
+  HAL_RCCEx_EnableMSIPLLMode();
 }
 
 /* USER CODE BEGIN 4 */
