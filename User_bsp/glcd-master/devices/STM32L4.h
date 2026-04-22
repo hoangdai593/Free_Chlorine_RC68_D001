@@ -16,6 +16,8 @@ extern "C" {
 #include "stm32l4xx_hal.h"
 #include <stdint.h>
 
+
+#define GLCD_CONTROLLER_ST7565R
 /* =========================================================
    SPI HANDLE
    Chỉnh đúng SPI đang dùng trong CubeMX

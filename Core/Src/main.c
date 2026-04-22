@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 #include "glcd.h"
 #include "ST7565R.h"
+#include "unit_tests.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,11 +97,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /* Init màn hình */
-  glcd_ST7565R_init();      // init LCD + SPI + buffer
-  glcd_clear();
+  glcd_init();      // init LCD + SPI + buffer
+  glcd_test_circles();
   glcd_pattern();   // sọc test màn
   HAL_Delay(1000);
 
+  for (int i=0;i<64; i++)
+  {
+	  glcd_set_contrast(i);
+  	  i++;
+  	  HAL_Delay(100);
+  }
   glcd_clear();
   HAL_Delay(1000);
 

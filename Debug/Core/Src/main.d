@@ -38,7 +38,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text_tiny.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 ../Core/Inc/stm32l4xx_hal_conf.h:
@@ -82,3 +83,4 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text_tiny.h
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h:

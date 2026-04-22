@@ -59,6 +59,7 @@ void glcd_init(void)
 #elif defined(GLCD_CONTROLLER_ST7565R)
 
     glcd_reset();
+    glcd_enable_backlight(ENABLE);
     glcd_ST7565R_init();
     glcd_clear();
 
