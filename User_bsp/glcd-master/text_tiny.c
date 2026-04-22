@@ -33,6 +33,7 @@
 */
 
 #include "glcd.h"
+#include "font5x7.h"
 
 #if defined(GLCD_DEVICE_AVR8)
 void glcd_tiny_set_font(PGM_P font_table, uint8_t width, uint8_t height, char start_char, char end_char)

@@ -1,6 +1,5 @@
-../User_bsp/glcd-master/devices/STM32L4.c:20:13:MX_GLCD_GPIO_Init	1
-../User_bsp/glcd-master/devices/STM32L4.c:46:6:glcd_init	1
-../User_bsp/glcd-master/devices/STM32L4.c:75:6:glcd_spi_write	1
-../User_bsp/glcd-master/devices/STM32L4.c:84:6:glcd_reset	1
-../User_bsp/glcd-master/devices/STM32L4.c:96:6:glcd_enable_backlight	1
-../User_bsp/glcd-master/devices/STM32L4.c:102:6:glcd_change_backlight	1
+../User_bsp/glcd-master/devices/STM32L4.c:10:6:glcd_init	1
+../User_bsp/glcd-master/devices/STM32L4.c:36:6:glcd_spi_write	1
+../User_bsp/glcd-master/devices/STM32L4.c:46:6:glcd_reset	1
+../User_bsp/glcd-master/devices/STM32L4.c:58:6:glcd_enable_backlight	1
+../User_bsp/glcd-master/devices/STM32L4.c:63:6:glcd_change_backlight	1

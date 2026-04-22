@@ -31,6 +31,7 @@ User_bsp/glcd-master/devices/STM32L4.o: \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_controllers.h \
@@ -71,6 +72,7 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_controllers.h:

@@ -227,11 +227,11 @@ void glcd_test_hello_world(void)
 {
 	glcd_tiny_set_font(Font5x7,5,7,32,127);
 	glcd_clear_buffer();
-	glcd_tiny_draw_string(0,0,"Hello World!");
+	glcd_tiny_draw_string(20,3,"Hello World!");
 	glcd_write();
-	while(1) {
-		DEMO_RETURN();
-	}
+//	while(1) {
+//		DEMO_RETURN();
+//	}
 }
 
 void glcd_test_rectangles(void)

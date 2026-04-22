@@ -1,5 +1,5 @@
-../User_bsp/glcd-master/text.c:46:6:glcd_set_font	1
-../User_bsp/glcd-master/text.c:61:6:glcd_font	1
-../User_bsp/glcd-master/text.c:73:9:glcd_draw_char_xy	29
-../User_bsp/glcd-master/text.c:273:6:glcd_draw_string_xy	3
-../User_bsp/glcd-master/text.c:289:6:glcd_draw_string_xy_P	3
+../User_bsp/glcd-master/text.c:47:6:glcd_set_font	1
+../User_bsp/glcd-master/text.c:62:6:glcd_font	1
+../User_bsp/glcd-master/text.c:74:9:glcd_draw_char_xy	29
+../User_bsp/glcd-master/text.c:274:6:glcd_draw_string_xy	3
+../User_bsp/glcd-master/text.c:290:6:glcd_draw_string_xy_P	3

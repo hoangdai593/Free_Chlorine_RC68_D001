@@ -34,6 +34,7 @@
 */
 
 #include "glcd.h"
+#include "font5x7.h"
 
 extern uint8_t *glcd_buffer_selected;
 extern glcd_BoundingBox_t *glcd_bbox_selected;

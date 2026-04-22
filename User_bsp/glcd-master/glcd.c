@@ -9,7 +9,15 @@
 #include <string.h>
 #include <stdio.h>
 #include "glcd.h"
-
+#include "glcd_devices.h"
+#include "glcd_controllers.h"
+#include "glcd_graphics.h"
+#include "glcd_graphs.h"
+#include "glcd_text_tiny.h"
+#include "glcd_text.h"
+#include "unit_tests.h"
+#include "ST7565R.h"
+#include "font5x7.h"
 /** \addtogroup GlobalVars Global Variables
  *  @{
  */

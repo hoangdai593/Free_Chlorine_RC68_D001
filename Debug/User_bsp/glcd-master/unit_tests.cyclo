@@ -3,7 +3,7 @@
 ../User_bsp/glcd-master/unit_tests.c:135:6:glcd_test_glcdutils	2
 ../User_bsp/glcd-master/unit_tests.c:155:6:glcd_test_text_up_down	5
 ../User_bsp/glcd-master/unit_tests.c:192:6:glcd_test_tiny_text	4
-../User_bsp/glcd-master/unit_tests.c:226:6:glcd_test_hello_world	2
+../User_bsp/glcd-master/unit_tests.c:226:6:glcd_test_hello_world	1
 ../User_bsp/glcd-master/unit_tests.c:237:6:glcd_test_rectangles	7
 ../User_bsp/glcd-master/unit_tests.c:289:6:glcd_test_scrolling_graph	5
 ../User_bsp/glcd-master/unit_tests.c:311:6:glcd_test_bitmap_128x64	2
