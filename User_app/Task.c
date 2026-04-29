@@ -11,187 +11,256 @@
 #include "usart.h"
 #include <stdio.h>
 #include <string.h>
-
-EC200_State_t ec_state = STATE_AT;
+#include "glcd.h"
+#include "ST7565R.h"
+#include "glcd_text.h"
+#include "glcd_graphics.h"
 
 
 sEvent_struct ALLTASK[] =
 {
-	{_EVENT_CHECK_EC200U, 1, 0, 2000, _Cb_EC200U_Check},   // chạy mỗi 1s
-	{_EVENT_UART_RECEIVE, 0, 0, 0, _Cb_UART_Receive},   // chỉ trigger bằng interrupt
+	{_EVENT_LCD_DISPLAY, 1, 	0,		 300, _Cb_LCD_Display},   // chạy mỗi 1s
+	{_EVENT_BUTTON, 	1, 		0, 			20, _Cb_Button},
 };
 
-#define RX_BUFFER_SIZE  1024     // Buffer nhận từ EC200U (USART3)
-#define PWRKEY_GPIO_Port GPIOA   //  PWRKEY
-#define PWRKEY_Pin       GPIO_PIN_4
+uint8_t blink = 0;
+uint32_t blink_tick = 0;
 
-uint8_t rx_buffer[RX_BUFFER_SIZE];
-uint8_t rx_byte;
-volatile uint16_t rx_index = 0;
-uint32_t state_tick = 0;
-uint8_t hello=0;
+LCD_INTERFACE interface = MAIN;
+SETTING_CUR setting_cursor = MODBUS_CUR;
+uint8_t bt_enter=0;
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+uint8_t password[4] = {0, 0, 0, 0};
+uint8_t password_true[4] = {1, 1, 1, 1};
+int8_t pass_cur = 0;
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+//{
+//    if (huart->Instance == USART2)
+//    {
+//        if (rx_index < RX_BUFFER_SIZE - 1)
+//        {
+//            // Lưu byte vào buffer
+//            rx_buffer[rx_index++] = rx_byte;
+//            rx_buffer[rx_index] = '\0';  // luôn giữ string hợp lệ
+//
+//            //Khi có ít nhất 1 byte, trigger event
+//            if (rx_byte=='\n')
+//            {
+//                fevent_active(ALLTASK, _EVENT_UART_RECEIVE);
+//
+//            }
+//        }
+//        else
+//        {
+//            // Buffer full → reset để tránh tràn
+//            rx_index = 0;
+//        }
+//
+//        // Nhận tiếp byte
+//        HAL_UART_Receive_IT(&huart3, &rx_byte, 1);
+//    }
+//}
+
+void blink_display(void)
 {
-    if (huart->Instance == USART3)
-    {
-        if (rx_index < RX_BUFFER_SIZE - 1)
-        {
-            // Lưu byte vào buffer
-            rx_buffer[rx_index++] = rx_byte;
-            rx_buffer[rx_index] = '\0';  // luôn giữ string hợp lệ
-
-            //Khi có ít nhất 1 byte, trigger event
-            if (rx_byte=='\n')
-            {
-                fevent_active(ALLTASK, _EVENT_UART_RECEIVE);
-
-            }
-        }
-        else
-        {
-            // Buffer full → reset để tránh tràn
-            rx_index = 0;
-        }
-
-        // Nhận tiếp byte
-        HAL_UART_Receive_IT(&huart3, &rx_byte, 1);
-    }
+	if(HAL_GetTick() - blink_tick >= 300)
+	{
+	    blink_tick = HAL_GetTick();
+	    blink = !blink;
+	}
 }
 
-
-void EC200_PowerOn(void)
+void main_display(void)
 {
-    PrintToUSART2("Power ON. Waiting for startup...\r\n");
-    HAL_GPIO_WritePin(PWRKEY_GPIO_Port, PWRKEY_Pin, GPIO_PIN_SET);
-    HAL_Delay(2500);                          // >= 2.5s, mình tăng lên 3s an toàn
-    HAL_GPIO_WritePin(PWRKEY_GPIO_Port, PWRKEY_Pin, GPIO_PIN_RESET);
-    HAL_Delay(6000);                         // chờ 10 giây (an toàn hơn)
+	glcd_clear_buffer();
+	glcd_draw_line(0, 10, 128, 10, BLACK);
+	draw_string_small(5, 1, "Clo du");
+	draw_string_small(85, 35, "mg/L");
+	draw_string_big(30, 22, "0.36");
+	draw_string_small(5, 55, "Temp  :  26");
+	draw_string_small(92, 55, "C");
+	glcd_draw_circle(88, 55, 1, BLACK);
+}
+uint8_t _Cb_LCD_Display(uint8_t x)
+{
+	blink_display();
+
+	switch(interface)
+	{
+		case MAIN:
+			main_display();
+
+			break;
+		case LOGIN:
+			glcd_clear_buffer();
+			draw_string_small(5, 1, "Loggin");
+			glcd_draw_line(0, 10, 128, 10, BLACK);
+			draw_string_small(30, 15, "Enter Password");
+
+			char str[5];
+			for( int i=0; i<4; i++) {
+				str[i] = password[i] + '0';
+				if ( str[i] > '9') {
+					str[i]= '0';
+					password[i] = 0;
+				} else if (str[i] < '0'){
+					str[i] = '9';
+					password[i] = 9;
+				}
+			}
+			str[4] = '\0';
+//			draw_string_small(50, 30, str);
+			for(int i=0;i<4;i++)
+			{
+			    if(i == pass_cur && blink == 0)
+			        str[i] = ' ';     // ẩn số đang chọn
+			}
+			draw_string_small(50,30,str);
+
+			break;
+		case SETTING:
+		    glcd_clear_buffer();
+		    glcd_draw_line(0, 8, 128, 8, BLACK);
+		    draw_string_small(5, 0, "SETTING");
+
+		    if(setting_cursor != MODBUS_CUR || blink)
+		        draw_string_small(5, 10, "1. Modbus RTU");
+
+		    if(setting_cursor != CALIB_CUR || blink)
+		        draw_string_small(5, 18, "2. Calib");
+
+		    if(setting_cursor != OFFSET_CUR || blink)
+		        draw_string_small(5, 26, "3. Offset");
+
+		    if(setting_cursor != WARNING_CUR || blink)
+		        draw_string_small(5, 34, "4. Warning");
+
+		    if(setting_cursor != RANGE_CUR || blink)
+		        draw_string_small(5, 42, "5. Range");
+
+		    if(setting_cursor != INFO_CUR || blink)
+		        draw_string_small(5, 50, "6. Information");
+
+		    break;
+		case MODBUS:
+			glcd_clear_buffer();
+			glcd_draw_line(0, 10, 128, 10, BLACK);
+			draw_string_small(5, 0, "Modbus RTU");
+			draw_string_small(5, 20, "Set ID: 1");
+			draw_string_small(5, 30, "Set Baudrate: 9600");
+			break;
+		case CALIB:
+			glcd_clear_buffer();
+			glcd_draw_line(0, 10, 128, 10, BLACK);
+			draw_string_small(5, 0, "Calib");
+			draw_string_small(5, 20, "Zero point");
+			draw_string_small(5, 35, "Slope point");
+			draw_string_small(5, 53, "Note: set PH to 7.5");
+			break;
+		case OFFSET:
+			glcd_clear_buffer();
+			glcd_draw_line(0, 10, 128, 10, BLACK);
+			draw_string_small(5, 0, "Offset");
+			draw_string_small(5, 30, "offset mV: 0 mV");
+			break;
+		case WARNING:
+			glcd_clear_buffer();
+			glcd_draw_line(0, 10, 128, 10, BLACK);
+			draw_string_small(5, 0, "Warning");
+			draw_string_small(5, 20, "Mode: ON");
+			draw_string_small(5, 30, "Upper: 1 mg/L");
+			draw_string_small(5, 40, "Lower: 0.2 mg/L");
+			break;
+		case RANGE:
+			glcd_clear_buffer();
+			glcd_draw_line(0, 10, 128, 10, BLACK);
+			draw_string_small(5, 0, "Range");
+			draw_string_small(5, 30, "Set range: 0 - 2 mg/L");
+
+			break;
+		case INFO:
+			glcd_clear_buffer();
+			glcd_draw_line(0, 10, 128, 10, BLACK);
+			draw_string_small(5, 0, "Information");
+			draw_string_small(50, 30, "Sao Viet");
+			break;
+		default:
+			break;
+	}
+	  return 0;
 }
 
-
-void PrintToUSART2(const char* str)
+uint8_t _Cb_Button(uint8_t x)
 {
-    HAL_UART_Transmit(&huart3, (uint8_t*)str, strlen(str), 200);
+	if (HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0) {
+		while (HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0) {}
+		if (interface == MAIN) {
+			interface = LOGIN;
+
+		} else if (interface == LOGIN) {
+			if(pass_cur == 3) {
+				pass_cur = 0;
+				if(password[0]==1 &&
+				   password[1]==1 &&
+				   password[2]==1 &&
+				   password[3]==1) interface = SETTING;
+				else interface = MAIN;
+				for ( int i=0; i<4 ; i++) password[i]=0;
+				pass_cur = 0;
+			}
+			else pass_cur = pass_cur +1;
+
+		} else if ( interface == SETTING) {
+			switch(setting_cursor)
+			{
+			case MODBUS_CUR:
+				interface = MODBUS;
+				break;
+			case CALIB_CUR:
+				interface = CALIB;
+				break;
+			case OFFSET_CUR:
+				interface = OFFSET;
+				break;
+			case WARNING_CUR:
+				interface = WARNING;
+				break;
+			case RANGE_CUR:
+				interface = RANGE;
+				break;
+			case INFO_CUR:
+				interface = INFO;
+				break;
+			default:
+				break;
+			}
+		}
+	} else if (HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0) {
+		while (HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0) {}
+		if (interface == LOGIN) {
+					password[pass_cur] = password[pass_cur] - 1;
+				} else if (interface == SETTING) {
+					setting_cursor = setting_cursor + 1;
+					if (setting_cursor>5) setting_cursor = 0;
+				}
+	} else if (HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0) {
+		while (HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0) {}
+		if (interface == LOGIN) {
+			password[pass_cur] = password[pass_cur] + 1;
+		} else if (interface == SETTING) {
+			setting_cursor = setting_cursor - 1;
+			if (setting_cursor<0) setting_cursor = 5;
+		}
+	} else if (HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0) {
+		while (HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0) {}
+		if( interface != MAIN && interface < MODBUS) {
+		interface= interface -1;
+		for ( int i=0; i<4 ; i++) password[i]=0;
+		pass_cur = 0;
+		} else if ( interface >= MODBUS) interface= SETTING;
+	}
+	return 0;
 }
-
-
-uint8_t _Cb_EC200U_Check(uint8_t event_id)
-{
-	fevent_disable(ALLTASK, _EVENT_CHECK_EC200U);
-    switch (ec_state)
-    {
-        case STATE_AT:
-            EC200_SendCommand("AT");
-            HAL_Delay(300);
-            ec_state = STATE_ATE0;
-            break;
-
-        case STATE_ATE0:
-            EC200_SendCommand("ATE0");
-            HAL_Delay(300);
-            ec_state = STATE_CPIN;
-            break;
-
-        case STATE_CPIN:
-            EC200_SendCommand("AT+CPIN?");
-            HAL_Delay(300);
-            ec_state = STATE_CSQ;
-            break;
-
-        case STATE_CSQ:
-            EC200_SendCommand("AT+CSQ");
-            HAL_Delay(300);
-            ec_state = STATE_CEREG;
-            break;
-
-        case STATE_CEREG:
-            EC200_SendCommand("AT+CEREG?");
-            HAL_Delay(500);
-            EC200_SendCommand("AT+COPS?");
-			HAL_Delay(500);
-            ec_state = STATE_ATTACH;
-            break;
-
-        case STATE_ATTACH:
-            EC200_SendCommand("AT+CGATT=1");
-            HAL_Delay(1000);
-            ec_state = STATE_PDP;
-            break;
-
-        case STATE_PDP:
-            EC200_SendCommand("AT+CGDCONT=1,\"IP\",\"internet\"");
-            HAL_Delay(300);
-            ec_state = STATE_ACTIVE;
-            break;
-
-        case STATE_ACTIVE:
-            EC200_SendCommand("AT+CGACT=1,1");
-            HAL_Delay(2000);   // chờ cấp IP
-            ec_state = STATE_GETIP;
-            break;
-
-        case STATE_GETIP:
-            EC200_SendCommand("AT+CGPADDR=1");
-            HAL_Delay(1000);
-            ec_state = STATE_MQTT_OPEN;
-            break;
-
-        case STATE_MQTT_OPEN:
-            EC200_SendCommand("AT+QMTOPEN=0,\"broker.hivemq.com\",1883");
-            // mở TCP tới HiveMQ broker
-            HAL_Delay(3000);   // chờ +QMTOPEN: 0,0
-            ec_state = STATE_MQTT_CONN;
-            break;
-
-        case STATE_MQTT_CONN:
-            EC200_SendCommand("AT+QMTCONN=0,\"stm32_client\"");
-            // connect MQTT
-            HAL_Delay(2000);   // chờ +QMTCONN: 0,0,0
-            ec_state = STATE_MQTT_PUB;
-            break;
-
-        case STATE_MQTT_PUB:
-            EC200_SendCommand("AT+QMTPUB=0,0,0,0,\"test/topic5555\"");
-            HAL_Delay(300); // đợi dấu >
-
-            char buf[20];
-            int len = sprintf(buf, "Hello %d times", hello);  // trả về số ký tự, không tính '\0'
-            sprintf(buf, "Hello %d times", hello);
-            // gửi payload KHÔNG kèm \r\n
-            HAL_UART_Transmit(&huart3, (uint8_t *)buf, len, 1000);
-            hello++;
-
-            uint8_t ctrlz = 0x1A;
-            HAL_UART_Transmit(&huart3, &ctrlz, 1, 1000);
-
-            HAL_Delay(1000);
-
-            ec_state = STATE_MQTT_PUB;
-            break;
-
-        case STATE_DONE:
-            break;
-
-        default:
-            break;
-    }
-
-    return 0;
-}
-
-uint8_t _Cb_UART_Receive(uint8_t event_id)
-{
-    PrintToUSART2("<<< EC200U: ");
-    PrintToUSART2((char*)rx_buffer);
-    PrintToUSART2("\r\n");
-
-    rx_index = 0;
-    fevent_disable(ALLTASK, _EVENT_UART_RECEIVE);
-    fevent_enable(ALLTASK, _EVENT_CHECK_EC200U);
-    return 0;
-}
-
 uint8_t Comm_Task(void)
 {
 	uint8_t i = 0;
@@ -202,7 +271,7 @@ uint8_t Comm_Task(void)
 		{
 			if ((ALLTASK[i].e_systick == 0) || ((HAL_GetTick() - ALLTASK[i].e_systick)  >=  ALLTASK[i].e_period))
 			{
-				ALLTASK[i].e_status = 0;  //Disable event
+//				ALLTASK[i].e_status = 0;  //Disable event
 				ALLTASK[i].e_systick = HAL_GetTick();
 				ALLTASK[i].e_function_handler(i);
 			}

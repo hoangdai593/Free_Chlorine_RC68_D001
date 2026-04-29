@@ -1,6 +1,5 @@
-../User_app/Task.c:34:6:HAL_UART_RxCpltCallback	4
-../User_app/Task.c:63:6:EC200_PowerOn	1
-../User_app/Task.c:73:6:PrintToUSART2	1
-../User_app/Task.c:79:9:_Cb_EC200U_Check	13
-../User_app/Task.c:183:9:_Cb_UART_Receive	1
-../User_app/Task.c:195:9:Comm_Task	5
+../User_app/Task.c:64:6:blink_display	2
+../User_app/Task.c:73:6:main_display	1
+../User_app/Task.c:84:9:_Cb_LCD_Display	28
+../User_app/Task.c:193:9:_Cb_Button	33
+../User_app/Task.c:264:9:Comm_Task	5

@@ -1,12 +1,6 @@
-User_bsp/glcd-master/unit_tests.o: ../User_bsp/glcd-master/unit_tests.c \
- ../User_bsp/glcd-master/glcd.h ../User_bsp/glcd-master/glcd_devices.h \
- ../User_bsp/glcd-master/glcd_controllers.h \
- ../User_bsp/glcd-master/glcd_graphics.h \
- ../User_bsp/glcd-master/glcd_graphs.h \
- ../User_bsp/glcd-master/glcd_text_tiny.h \
- ../User_bsp/glcd-master/glcd_text.h ../User_bsp/glcd-master/unit_tests.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_utils/delay.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
+User_middleware/Event_driven/event_driven.o: \
+ ../User_middleware/Event_driven/event_driven.c ../Core/Inc/gpio.h \
+ ../Core/Inc/main.h ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_def.h \
@@ -35,22 +29,9 @@ User_bsp/glcd-master/unit_tests.o: ../User_bsp/glcd-master/unit_tests.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
- ../User_bsp/glcd-master/fonts/font5x7.h \
- ../User_bsp/glcd-master/fonts/Liberation_Sans11x14_Numbers.h \
- ../User_bsp/glcd-master/fonts/Liberation_Sans15x21_Numbers.h \
- ../User_bsp/glcd-master/fonts/Liberation_Sans17x17_Alpha.h \
- ../User_bsp/glcd-master/fonts/Liberation_Sans27x36_Numbers.h \
- ../User_bsp/glcd-master/fonts/Bebas_Neue20x36_Bold_Numbers.h \
- ../User_bsp/glcd-master/fonts/Earthbound_12x19_48to57.h
-../User_bsp/glcd-master/glcd.h:
-../User_bsp/glcd-master/glcd_devices.h:
-../User_bsp/glcd-master/glcd_controllers.h:
-../User_bsp/glcd-master/glcd_graphics.h:
-../User_bsp/glcd-master/glcd_graphs.h:
-../User_bsp/glcd-master/glcd_text_tiny.h:
-../User_bsp/glcd-master/glcd_text.h:
-../User_bsp/glcd-master/unit_tests.h:
-D:/STM32_workspace/Free_Chlorine_RC68_D001/User_utils/delay.h:
+ ../User_middleware/Event_driven/event_driven.h
+../Core/Inc/gpio.h:
+../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 ../Core/Inc/stm32l4xx_hal_conf.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h:
@@ -80,10 +61,4 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_utils/delay.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
-../User_bsp/glcd-master/fonts/font5x7.h:
-../User_bsp/glcd-master/fonts/Liberation_Sans11x14_Numbers.h:
-../User_bsp/glcd-master/fonts/Liberation_Sans15x21_Numbers.h:
-../User_bsp/glcd-master/fonts/Liberation_Sans17x17_Alpha.h:
-../User_bsp/glcd-master/fonts/Liberation_Sans27x36_Numbers.h:
-../User_bsp/glcd-master/fonts/Bebas_Neue20x36_Bold_Numbers.h:
-../User_bsp/glcd-master/fonts/Earthbound_12x19_48to57.h:
+../User_middleware/Event_driven/event_driven.h:

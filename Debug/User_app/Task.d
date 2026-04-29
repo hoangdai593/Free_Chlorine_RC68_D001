@@ -29,7 +29,18 @@ User_app/Task.o: ../User_app/Task.c ../Core/Inc/GPIO.h ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven/event_driven.h \
- ../User_app/Task.h ../Core/Inc/main.h ../Core/Inc/usart.h
+ ../User_app/Task.h ../Core/Inc/main.h ../Core/Inc/usart.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_controllers.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphs.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text_tiny.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h
 ../Core/Inc/GPIO.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
@@ -65,3 +76,14 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven/event_dr
 ../User_app/Task.h:
 ../Core/Inc/main.h:
 ../Core/Inc/usart.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_controllers.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphs.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text_tiny.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h:

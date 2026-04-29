@@ -35,6 +35,10 @@
 
 #include "glcd.h"
 #include "font5x7.h"
+#include "Liberation_Sans17x17_Alpha.h"
+#include "Liberation_Sans11x14_Numbers.h"
+#include "Liberation_Sans15x21_Numbers.h"
+#include "glcd_text_tiny.h"
 
 extern uint8_t *glcd_buffer_selected;
 extern glcd_BoundingBox_t *glcd_bbox_selected;
@@ -311,3 +315,18 @@ void glcd_draw_string_xy_P(uint8_t x, uint8_t y, const char *str)
 	}		
 }
 
+void draw_string_small(uint8_t x, uint8_t y, char *text)
+{
+	glcd_tiny_set_font(Font5x7,5,7,32,127);
+//	glcd_clear_buffer();
+	glcd_draw_string_xy(x,y,text);
+	glcd_write();
+}
+
+void draw_string_big(uint8_t x, uint8_t y,  char *text)
+{
+	glcd_set_font(Liberation_Sans15x21_Numbers,15,21,46,57);
+//	glcd_clear_buffer();
+	glcd_draw_string_xy(x,y,text);
+	glcd_write();
+}

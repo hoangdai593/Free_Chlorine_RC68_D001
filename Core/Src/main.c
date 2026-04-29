@@ -24,9 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "glcd.h"
-#include "ST7565R.h"
-#include "font5x7.h"
+#include "Task.h"
+#include "STM32L4.h"
 //#include "unit_tests.h"
 //#include "glcd_graphics.h"
 
@@ -98,27 +97,17 @@ int main(void)
   MX_USART3_UART_Init();
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_Delay(50);
   /* Init màn hình */
   glcd_init();
 
-//  glcd_test_circles();
-  glcd_pattern();   // sọc test màn
-  HAL_Delay(1000);
-//  glcd_clear();
-  glcd_test_hello_world();
-  HAL_Delay(1000);
-//  glcd_set_font(Font5x7, 5, 7, 32, 127);
-//  glcd_clear_buffer();
-  glcd_draw_string_xy(20, 1, "hihihih");
-  glcd_write();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+	  Comm_Task();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

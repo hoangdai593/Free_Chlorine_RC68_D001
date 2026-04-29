@@ -1,0 +1,3 @@
+../User_middleware/Event_driven/event_driven.c:18:9:fevent_active	16	static
+../User_middleware/Event_driven/event_driven.c:34:9:fevent_enable	24	static
+../User_middleware/Event_driven/event_driven.c:48:9:fevent_disable	16	static

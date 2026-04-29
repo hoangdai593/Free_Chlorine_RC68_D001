@@ -29,5 +29,6 @@ User_app \
 User_bsp/glcd-master/controllers \
 User_bsp/glcd-master/devices \
 User_bsp/glcd-master \
+User_middleware/event_driven \
 User_utils \
 

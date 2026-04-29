@@ -9,39 +9,46 @@
 #define INC_TASK_H_
 
 typedef enum {
-	_EVENT_CHECK_EC200U,
-	_EVENT_UART_RECEIVE
+	_EVENT_LCD_DISPLAY,
+	_EVENT_BUTTON
 } EVENT_List;
 
 typedef enum {
-    STATE_IDLE,
+	MAIN,
+	LOGIN,
+	SETTING,
+	MODBUS,
+	CALIB,
+	OFFSET,
+	WARNING,
+	RANGE,
+	INFO,
+} LCD_INTERFACE;
 
-    STATE_AT,          // kiểm tra module
-    STATE_ATE0,        // tắt echo
-    STATE_CPIN,        // kiểm tra SIM
-    STATE_CSQ,         // kiểm tra sóng
-    STATE_CEREG,       // kiểm tra mạng
+typedef enum {
+	MODBUS_CUR,
+	CALIB_CUR,
+	OFFSET_CUR,
+	WARNING_CUR,
+	RANGE_CUR,
+	INFO_CUR,
+} SETTING_CUR;
 
-    STATE_ATTACH,      // attach mạng
-    STATE_PDP,         // cấu hình APN
-    STATE_ACTIVE,      // kích hoạt PDP (có IP)
-    STATE_GETIP,       // lấy IP
+#define BT_ENTER_PORT   GPIOC
+#define BT_ENTER_PIN    GPIO_PIN_5
 
-    STATE_MQTT_OPEN,   // mở TCP tới broker
-    STATE_MQTT_CONN,   // connect MQTT
-    STATE_MQTT_PUB,    // publish dữ liệu
+#define BT_EXIT_PORT    GPIOB
+#define BT_EXIT_PIN     GPIO_PIN_0
 
-    STATE_DONE
-} EC200_State_t;
+#define BT_DOWN_PORT    GPIOB
+#define BT_DOWN_PIN     GPIO_PIN_1
 
-extern EC200_State_t ec_state;
-extern uint8_t rx_byte;
-void EC200_PowerOn(void);
-void EC200_SendCommand(const char* cmd);
-void PrintToUSART2(const char* str);
+#define BT_UP_PORT      GPIOB
+#define BT_UP_PIN     GPIO_PIN_2
+
+uint8_t _Cb_LCD_Display(uint8_t x);
+uint8_t _Cb_Button(uint8_t x);
 uint8_t Comm_Task(void);
-uint8_t _Cb_EC200U_Check (uint8_t event_id);
-uint8_t _Cb_UART_Receive(uint8_t event_id);
 
 
 #endif /* INC_TASK_H_ */

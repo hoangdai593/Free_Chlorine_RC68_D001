@@ -5,7 +5,10 @@ User_bsp/glcd-master/text.o: ../User_bsp/glcd-master/text.c \
  ../User_bsp/glcd-master/glcd_graphs.h \
  ../User_bsp/glcd-master/glcd_text_tiny.h \
  ../User_bsp/glcd-master/glcd_text.h ../User_bsp/glcd-master/unit_tests.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/font5x7.h
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/font5x7.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/Liberation_Sans17x17_Alpha.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/Liberation_Sans11x14_Numbers.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/Liberation_Sans15x21_Numbers.h
 ../User_bsp/glcd-master/glcd.h:
 ../User_bsp/glcd-master/glcd_devices.h:
 ../User_bsp/glcd-master/glcd_controllers.h:
@@ -15,3 +18,6 @@ User_bsp/glcd-master/text.o: ../User_bsp/glcd-master/text.c \
 ../User_bsp/glcd-master/glcd_text.h:
 ../User_bsp/glcd-master/unit_tests.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/font5x7.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/Liberation_Sans17x17_Alpha.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/Liberation_Sans11x14_Numbers.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/fonts/Liberation_Sans15x21_Numbers.h:

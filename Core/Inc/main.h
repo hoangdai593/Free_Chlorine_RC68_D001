@@ -63,14 +63,6 @@ void Error_Handler(void);
 #define SIM_RX_GPIO_Port GPIOA
 #define I_O_2_Pin GPIO_PIN_4
 #define I_O_2_GPIO_Port GPIOA
-#define BT_ENTER_Pin GPIO_PIN_5
-#define BT_ENTER_GPIO_Port GPIOC
-#define BT_EXIT_Pin GPIO_PIN_0
-#define BT_EXIT_GPIO_Port GPIOB
-#define BT_DOWN_Pin GPIO_PIN_1
-#define BT_DOWN_GPIO_Port GPIOB
-#define BT_UP_Pin GPIO_PIN_2
-#define BT_UP_GPIO_Port GPIOB
 #define RX_DEBUG_Pin GPIO_PIN_10
 #define RX_DEBUG_GPIO_Port GPIOB
 #define TX_DEBUG_Pin GPIO_PIN_11

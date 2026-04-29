@@ -102,6 +102,9 @@ void glcd_draw_string_xy(uint8_t x, uint8_t y, char *c);
  */
 void glcd_draw_string_xy_P(uint8_t x, uint8_t y, const char *str);
 
+void draw_string_small(uint8_t x, uint8_t y, char *text);
+void draw_string_big(uint8_t x, uint8_t y,  char *text);
+
 /** @}*/
 
 /** @}*/
