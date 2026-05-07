@@ -10,7 +10,11 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include User_utils/subdir.mk
+-include User_middleware/modbus/subdir.mk
 -include User_middleware/event_driven/subdir.mk
+-include User_bsp/uart/subdir.mk
+-include User_bsp/timer/subdir.mk
+-include User_bsp/rs485/subdir.mk
 -include User_bsp/glcd-master/devices/subdir.mk
 -include User_bsp/glcd-master/controllers/subdir.mk
 -include User_bsp/glcd-master/subdir.mk

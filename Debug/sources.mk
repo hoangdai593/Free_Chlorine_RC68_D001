@@ -29,6 +29,10 @@ User_app \
 User_bsp/glcd-master/controllers \
 User_bsp/glcd-master/devices \
 User_bsp/glcd-master \
+User_bsp/rs485 \
+User_bsp/timer \
+User_bsp/uart \
 User_middleware/event_driven \
+User_middleware/modbus \
 User_utils \
 

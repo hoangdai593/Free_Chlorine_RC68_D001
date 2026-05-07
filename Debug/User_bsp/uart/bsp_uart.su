@@ -1,0 +1,9 @@
+../User_bsp/uart/bsp_uart.c:22:6:BSP_UART_Init	4	static
+../User_bsp/uart/bsp_uart.c:30:21:BSP_UART_GetHandle	16	static
+../User_bsp/uart/bsp_uart.c:41:19:BSP_UART_Send	32	static
+../User_bsp/uart/bsp_uart.c:57:19:BSP_UART_Send_IT	24	static
+../User_bsp/uart/bsp_uart.c:72:19:BSP_UART_Send_DMA	24	static
+../User_bsp/uart/bsp_uart.c:87:19:BSP_UART_Receive_IT	24	static
+../User_bsp/uart/bsp_uart.c:101:19:BSP_UART_Receive_DMA	24	static
+../User_bsp/uart/bsp_uart.c:116:19:BSP_UART_SetBaudrate	24	static
+../User_bsp/uart/bsp_uart.c:134:6:BSP_UART_WaitTC	24	static

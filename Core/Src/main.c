@@ -26,6 +26,10 @@
 /* USER CODE BEGIN Includes */
 #include "Task.h"
 #include "STM32L4.h"
+#include "modbus_rtu.h"
+#include "modbus_master.h"
+#include "clo_rc68.h"
+#include "interface_lcd.h"
 //#include "unit_tests.h"
 //#include "glcd_graphics.h"
 
@@ -101,6 +105,9 @@ int main(void)
   /* Init màn hình */
   glcd_init();
 
+  BSP_RS485_Init();
+
+  MB_RTU_Init(&mb1, RS485_PORT3, 1);   // port + slave_id (ko quá quan trọng với master)
   /* USER CODE END 2 */
 
   /* Infinite loop */

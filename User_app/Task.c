@@ -11,261 +11,274 @@
 #include "usart.h"
 #include <stdio.h>
 #include <string.h>
-#include "glcd.h"
-#include "ST7565R.h"
-#include "glcd_text.h"
-#include "glcd_graphics.h"
-
+#include "modbus_rtu.h"
+#include "modbus_master.h"
+#include "modbus_crc.h"
+#include "clo_rc68.h"
+#include "interface_lcd.h"
+#include "button_hanlde.h"
 
 sEvent_struct ALLTASK[] =
 {
-	{_EVENT_LCD_DISPLAY, 1, 	0,		 300, _Cb_LCD_Display},   // chạy mỗi 1s
+	{_EVENT_LCD_DISPLAY, 1, 	0,		 200, _Cb_LCD_Display},   // chạy mỗi 1s
 	{_EVENT_BUTTON, 	1, 		0, 			20, _Cb_Button},
+	{_EVENT_SENSOR, 	1, 		0, 			1000, _Cb_Sensor},
 };
 
-uint8_t blink = 0;
-uint32_t blink_tick = 0;
+CMD_STATE_t cmd_state = CMD_IDLE;
+CMD_RESULT_t cmd_result = CMD_RES_NONE;
 
-LCD_INTERFACE interface = MAIN;
-SETTING_CUR setting_cursor = MODBUS_CUR;
-uint8_t bt_enter=0;
+uint8_t cmd_retry = 0;
+uint32_t cmd_tick = 0;
+uint8_t cmd_busy = 0;
 
-uint8_t password[4] = {0, 0, 0, 0};
-uint8_t password_true[4] = {1, 1, 1, 1};
-int8_t pass_cur = 0;
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-//{
-//    if (huart->Instance == USART2)
-//    {
-//        if (rx_index < RX_BUFFER_SIZE - 1)
-//        {
-//            // Lưu byte vào buffer
-//            rx_buffer[rx_index++] = rx_byte;
-//            rx_buffer[rx_index] = '\0';  // luôn giữ string hợp lệ
-//
-//            //Khi có ít nhất 1 byte, trigger event
-//            if (rx_byte=='\n')
-//            {
-//                fevent_active(ALLTASK, _EVENT_UART_RECEIVE);
-//
-//            }
-//        }
-//        else
-//        {
-//            // Buffer full → reset để tránh tràn
-//            rx_index = 0;
-//        }
-//
-//        // Nhận tiếp byte
-//        HAL_UART_Receive_IT(&huart3, &rx_byte, 1);
-//    }
-//}
-
-void blink_display(void)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	if(HAL_GetTick() - blink_tick >= 300)
-	{
-	    blink_tick = HAL_GetTick();
-	    blink = !blink;
-	}
+    if(huart->Instance == USART3)
+    {
+        MB_RTU_RxByteHandler(&mb1);
+    }
 }
 
-void main_display(void)
+void handle_cmd_process(void)
 {
-	glcd_clear_buffer();
-	glcd_draw_line(0, 10, 128, 10, BLACK);
-	draw_string_small(5, 1, "Clo du");
-	draw_string_small(85, 35, "mg/L");
-	draw_string_big(30, 22, "0.36");
-	draw_string_small(5, 55, "Temp  :  26");
-	draw_string_small(92, 55, "C");
-	glcd_draw_circle(88, 55, 1, BLACK);
+    if(!cmd_busy)
+        return;
+
+    switch(cmd_state)
+    {
+        case CMD_SEND:
+            cmd_result = CMD_RES_SENDING;
+
+            switch(cmd_type)
+            {
+				case CMD_SET_ID_BAUD:
+				{
+					if(modbus_cursor == 0)
+					{
+						// chỉnh ID
+						RC68_WriteID(&mb1, modbus_id);
+					}
+					else
+					{
+						// chỉnh BAUD
+						RC68_WriteBaud(&mb1, baud_index+1);
+					}
+					break;
+				}
+
+                case CMD_SET_SLOPE:
+                {
+                    float slope = slope_digit[0]
+                                + slope_digit[1]*0.1f
+                                + slope_digit[2]*0.01f;
+
+                    /* FIX: dùng CalibHigh */
+                    RC68_CalibHigh(&mb1, slope);
+                    break;
+                }
+
+                case CMD_SET_CALIB_ZERO:
+                    /* FIX: bỏ tham số */
+                    RC68_CalibZero(&mb1);
+                    break;
+
+                case CMD_SET_OFFSET:
+                {
+                    float offset = offset_digit[0]*10.0f
+                                 + offset_digit[1];
+
+                    RC68_WriteOffset(&mb1, offset);
+                    break;
+                }
+
+                case CMD_SET_RANGE:
+                    RC68_WriteGain(&mb1, range_index);
+                    break;
+
+                case CMD_SET_WARNING:
+                    cmd_busy = 0;
+                    cmd_state = CMD_IDLE;
+                    cmd_result = CMD_RES_DONE;
+                    return;
+
+                default:
+                    cmd_busy = 0;
+                    cmd_state = CMD_IDLE;
+                    return;
+            }
+
+            cmd_state = CMD_WAIT;
+            cmd_tick = HAL_GetTick();
+            break;
+
+        case CMD_WAIT:
+        {
+            /* ===== NHẬN RESPONSE ===== */
+            if(mb1.frame_ready)
+            {
+                mb1.frame_ready = 0;
+                mb1.rx_index = 0;
+
+                cmd_busy = 0;
+                cmd_state = CMD_IDLE;
+                cmd_result = CMD_RES_DONE;
+                return;
+            }
+
+            /* ===== TIMEOUT ===== */
+            if(HAL_GetTick() - cmd_tick > 2000)
+            {
+                cmd_busy = 0;
+                cmd_state = CMD_IDLE;
+                cmd_result = CMD_RES_FAIL;
+                cmd_retry = 0;
+            }
+            break;
+        }
+
+        default:
+            cmd_busy = 0;
+            cmd_state = CMD_IDLE;
+            break;
+    }
 }
+
+uint8_t _Cb_Sensor(uint8_t x)
+{
+    MB_RTU_Poll(&mb1);
+
+    handle_cmd_process();
+
+    if(mb1.frame_ready)
+    {
+        if(!cmd_busy)
+        {
+            if(mb1.rx_buf[1] == 0x03)
+            {
+                /* đọc block 6 regs: ppm + mV + temp */
+                clo_value = RC68_GetFloat(&mb1, 0);  // ppm
+                mV_value  = RC68_GetFloat(&mb1, 2);  // mV
+                rc68_temp = RC68_GetFloat(&mb1, 4);  // temp
+            }
+        }
+
+        mb1.frame_ready = 0;
+        mb1.rx_index = 0;
+    }
+
+    if(!cmd_busy)
+    {
+
+        RC68_ReadAll(&mb1);   // đọc 1 lần
+    }
+
+    return 0;
+}
+
 uint8_t _Cb_LCD_Display(uint8_t x)
 {
-	blink_display();
+    blink_display();
 
-	switch(interface)
-	{
-		case MAIN:
-			main_display();
+    static uint32_t display_tick = 0;
 
-			break;
-		case LOGIN:
-			glcd_clear_buffer();
-			draw_string_small(5, 1, "Loggin");
-			glcd_draw_line(0, 10, 128, 10, BLACK);
-			draw_string_small(30, 15, "Enter Password");
+    /* ================= COMMAND UI ================= */
+    if(cmd_busy || cmd_result != CMD_RES_NONE)
+    {
+        /* KHÔNG gọi main_display nữa */
+        glcd_clear_buffer();
 
-			char str[5];
-			for( int i=0; i<4; i++) {
-				str[i] = password[i] + '0';
-				if ( str[i] > '9') {
-					str[i]= '0';
-					password[i] = 0;
-				} else if (str[i] < '0'){
-					str[i] = '9';
-					password[i] = 9;
-				}
-			}
-			str[4] = '\0';
-//			draw_string_small(50, 30, str);
-			for(int i=0;i<4;i++)
-			{
-			    if(i == pass_cur && blink == 0)
-			        str[i] = ' ';     // ẩn số đang chọn
-			}
-			draw_string_small(50,30,str);
+        if(display_tick == 0)
+            display_tick = HAL_GetTick();
 
-			break;
-		case SETTING:
-		    glcd_clear_buffer();
-		    glcd_draw_line(0, 8, 128, 8, BLACK);
-		    draw_string_small(5, 0, "SETTING");
+        if(cmd_busy)
+        {
+            if(cmd_result == CMD_RES_RETRY)
+                draw_string_small(10,20,"RETRY...");
+            else
+                draw_string_small(10,20,"SENDING...");
+        }
+        else
+        {
+            switch(cmd_result)
+            {
+                case CMD_RES_DONE:
+                    draw_string_small(10,20,"DONE");
+                    break;
 
-		    if(setting_cursor != MODBUS_CUR || blink)
-		        draw_string_small(5, 10, "1. Modbus RTU");
+                case CMD_RES_FAIL:
+                    draw_string_small(10,20,"FAIL");
+                    break;
 
-		    if(setting_cursor != CALIB_CUR || blink)
-		        draw_string_small(5, 18, "2. Calib");
+                default:
+                    break;
+            }
+        }
 
-		    if(setting_cursor != OFFSET_CUR || blink)
-		        draw_string_small(5, 26, "3. Offset");
+        /* giữ 1s */
+        if(!cmd_busy && (HAL_GetTick() - display_tick > 1000))
+        {
+            cmd_result = CMD_RES_NONE;
+            cmd_retry  = 0;
+            display_tick = 0;
+            interface = SETTING;
+        }
 
-		    if(setting_cursor != WARNING_CUR || blink)
-		        draw_string_small(5, 34, "4. Warning");
+        return 0;
+    }
 
-		    if(setting_cursor != RANGE_CUR || blink)
-		        draw_string_small(5, 42, "5. Range");
+    display_tick = 0;
 
-		    if(setting_cursor != INFO_CUR || blink)
-		        draw_string_small(5, 50, "6. Information");
+    /* ================= NORMAL UI ================= */
+    switch(interface)
+    {
+        case MAIN:    main_display(); break;
+        case LOGIN:   login_display(); break;
+        case SETTING: setting_display(); break;
+        case MODBUS:  modbus_display(); break;
+        case CALIB:   calib_display(); break;
+        case OFFSET:  offset_display(); break;
+        case WARNING: warning_display(); break;
+        case RANGE:   range_display(); break;
+        case INFO:    info_display(); break;
+        default: break;
+    }
 
-		    break;
-		case MODBUS:
-			glcd_clear_buffer();
-			glcd_draw_line(0, 10, 128, 10, BLACK);
-			draw_string_small(5, 0, "Modbus RTU");
-			draw_string_small(5, 20, "Set ID: 1");
-			draw_string_small(5, 30, "Set Baudrate: 9600");
-			break;
-		case CALIB:
-			glcd_clear_buffer();
-			glcd_draw_line(0, 10, 128, 10, BLACK);
-			draw_string_small(5, 0, "Calib");
-			draw_string_small(5, 20, "Zero point");
-			draw_string_small(5, 35, "Slope point");
-			draw_string_small(5, 53, "Note: set PH to 7.5");
-			break;
-		case OFFSET:
-			glcd_clear_buffer();
-			glcd_draw_line(0, 10, 128, 10, BLACK);
-			draw_string_small(5, 0, "Offset");
-			draw_string_small(5, 30, "offset mV: 0 mV");
-			break;
-		case WARNING:
-			glcd_clear_buffer();
-			glcd_draw_line(0, 10, 128, 10, BLACK);
-			draw_string_small(5, 0, "Warning");
-			draw_string_small(5, 20, "Mode: ON");
-			draw_string_small(5, 30, "Upper: 1 mg/L");
-			draw_string_small(5, 40, "Lower: 0.2 mg/L");
-			break;
-		case RANGE:
-			glcd_clear_buffer();
-			glcd_draw_line(0, 10, 128, 10, BLACK);
-			draw_string_small(5, 0, "Range");
-			draw_string_small(5, 30, "Set range: 0 - 2 mg/L");
-
-			break;
-		case INFO:
-			glcd_clear_buffer();
-			glcd_draw_line(0, 10, 128, 10, BLACK);
-			draw_string_small(5, 0, "Information");
-			draw_string_small(50, 30, "Sao Viet");
-			break;
-		default:
-			break;
-	}
-	  return 0;
+    return 0;
 }
 
 uint8_t _Cb_Button(uint8_t x)
 {
-	if (HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0) {
-		while (HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0) {}
-		if (interface == MAIN) {
-			interface = LOGIN;
-
-		} else if (interface == LOGIN) {
-			if(pass_cur == 3) {
-				pass_cur = 0;
-				if(password[0]==1 &&
-				   password[1]==1 &&
-				   password[2]==1 &&
-				   password[3]==1) interface = SETTING;
-				else interface = MAIN;
-				for ( int i=0; i<4 ; i++) password[i]=0;
-				pass_cur = 0;
-			}
-			else pass_cur = pass_cur +1;
-
-		} else if ( interface == SETTING) {
-			switch(setting_cursor)
-			{
-			case MODBUS_CUR:
-				interface = MODBUS;
-				break;
-			case CALIB_CUR:
-				interface = CALIB;
-				break;
-			case OFFSET_CUR:
-				interface = OFFSET;
-				break;
-			case WARNING_CUR:
-				interface = WARNING;
-				break;
-			case RANGE_CUR:
-				interface = RANGE;
-				break;
-			case INFO_CUR:
-				interface = INFO;
-				break;
-			default:
-				break;
-			}
-		}
-	} else if (HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0) {
-		while (HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0) {}
-		if (interface == LOGIN) {
-					password[pass_cur] = password[pass_cur] - 1;
-				} else if (interface == SETTING) {
-					setting_cursor = setting_cursor + 1;
-					if (setting_cursor>5) setting_cursor = 0;
-				}
-	} else if (HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0) {
-		while (HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0) {}
-		if (interface == LOGIN) {
-			password[pass_cur] = password[pass_cur] + 1;
-		} else if (interface == SETTING) {
-			setting_cursor = setting_cursor - 1;
-			if (setting_cursor<0) setting_cursor = 5;
-		}
-	} else if (HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0) {
-		while (HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0) {}
-		if( interface != MAIN && interface < MODBUS) {
-		interface= interface -1;
-		for ( int i=0; i<4 ; i++) password[i]=0;
-		pass_cur = 0;
-		} else if ( interface >= MODBUS) interface= SETTING;
+	if(HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0)
+	{
+		while(HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0){}
+		enter_button_handle();
 	}
+	else if(HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0)
+	{
+		while(HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0){}
+		down_button_handle();
+	}
+	else if(HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0)
+	{
+		while(HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0){}
+		up_button_handle();
+	}
+	else if(HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0)
+	{
+		while(HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0){}
+		exit_button_handle();
+	}
+
 	return 0;
 }
+
+
 uint8_t Comm_Task(void)
 {
 	uint8_t i = 0;
 
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 3; i++)
 	{
 		if (ALLTASK[i].e_status == 1)
 		{

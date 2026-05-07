@@ -1,0 +1,3 @@
+../User_middleware/modbus/modbus_crc.c:11:10:MB_CRC16	4
+../User_middleware/modbus/modbus_crc.c:40:6:MB_CRC_Append	1
+../User_middleware/modbus/modbus_crc.c:52:9:MB_CRC_Check	3

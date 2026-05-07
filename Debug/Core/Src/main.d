@@ -31,7 +31,31 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/usart.h ../Core/Inc/main.h ../Core/Inc/spi.h \
  ../Core/Inc/gpio.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/Task.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/clo_rc68.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/clo_rc68.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/interface_lcd.h \
+ ../Core/Inc/GPIO.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven/event_driven.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/Task.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_controllers.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphs.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text_tiny.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_crc.h
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 ../Core/Inc/stm32l4xx_hal_conf.h:
@@ -67,4 +91,28 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/spi.h:
 ../Core/Inc/gpio.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/Task.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/clo_rc68.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/clo_rc68.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/interface_lcd.h:
+../Core/Inc/GPIO.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven/event_driven.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/Task.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_controllers.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphs.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text_tiny.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_crc.h:

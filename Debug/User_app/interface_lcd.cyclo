@@ -1,0 +1,11 @@
+../User_app/interface_lcd.c:127:6:cmd_wait_display	2
+../User_app/interface_lcd.c:137:6:blink_display	2
+../User_app/interface_lcd.c:146:6:main_display	9
+../User_app/interface_lcd.c:230:6:login_display	5
+../User_app/interface_lcd.c:258:6:setting_display	13
+../User_app/interface_lcd.c:283:6:modbus_display	13
+../User_app/interface_lcd.c:333:6:calib_display	13
+../User_app/interface_lcd.c:390:6:offset_display	7
+../User_app/interface_lcd.c:420:6:warning_display	21
+../User_app/interface_lcd.c:484:6:range_display	8
+../User_app/interface_lcd.c:531:6:info_display	1

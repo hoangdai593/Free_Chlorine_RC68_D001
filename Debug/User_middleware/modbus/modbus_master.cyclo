@@ -1,0 +1,11 @@
+../User_middleware/modbus/modbus_master.c:10:6:MB_Master_Init	1
+../User_middleware/modbus/modbus_master.c:17:13:MB_Debug_Tx	2
+../User_middleware/modbus/modbus_master.c:36:13:MB_Debug_Rx	2
+../User_middleware/modbus/modbus_master.c:56:25:MB_Master_SendReq	2
+../User_middleware/modbus/modbus_master.c:71:18:MB_Master_ReadHoldingReg	1
+../User_middleware/modbus/modbus_master.c:91:18:MB_Master_WriteU16	1
+../User_middleware/modbus/modbus_master.c:116:18:MB_Master_WriteFloat	1
+../User_middleware/modbus/modbus_master.c:147:18:MB_Master_WriteMulti	1
+../User_middleware/modbus/modbus_master.c:172:18:MB_Master_Poll	3
+../User_middleware/modbus/modbus_master.c:194:10:MB_Master_GetReg16	2
+../User_middleware/modbus/modbus_master.c:206:7:MB_Master_GetFloat	2

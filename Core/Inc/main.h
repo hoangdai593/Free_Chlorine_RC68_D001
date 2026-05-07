@@ -47,6 +47,7 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 extern SPI_HandleTypeDef hspi2;
+
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -93,6 +94,10 @@ void Error_Handler(void);
 #define TX_485_2_GPIO_Port GPIOC
 #define RX_485_2_Pin GPIO_PIN_11
 #define RX_485_2_GPIO_Port GPIOC
+#define control_485_2_Pin GPIO_PIN_12
+#define control_485_2_GPIO_Port GPIOC
+#define control_485_1_Pin GPIO_PIN_5
+#define control_485_1_GPIO_Port GPIOB
 #define TX_485_1_Pin GPIO_PIN_6
 #define TX_485_1_GPIO_Port GPIOB
 #define RX_485_1_Pin GPIO_PIN_7
