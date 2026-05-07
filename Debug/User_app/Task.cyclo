@@ -1,6 +1,9 @@
-../User_app/Task.c:48:6:HAL_UART_RxCpltCallback	2
-../User_app/Task.c:56:6:handle_cmd_process	13
-../User_app/Task.c:158:9:_Cb_Sensor	7
-../User_app/Task.c:216:9:_Cb_LCD_Display	19
-../User_app/Task.c:287:9:_Cb_Button	9
-../User_app/Task.c:314:9:Comm_Task	5
+../User_app/Task.c:60:6:HAL_UART_RxCpltCallback	2
+../User_app/Task.c:72:6:CMD_Enqueue	3
+../User_app/Task.c:86:16:CMD_Dequeue	3
+../User_app/Task.c:106:13:send_command	9
+../User_app/Task.c:169:6:process_cmd_queue	11
+../User_app/Task.c:258:9:_Cb_Sensor	3
+../User_app/Task.c:290:9:_Cb_LCD_Display	17
+../User_app/Task.c:382:9:_Cb_Button	9
+../User_app/Task.c:416:9:Comm_Task	5

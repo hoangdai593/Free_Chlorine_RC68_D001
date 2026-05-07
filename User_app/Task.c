@@ -4,47 +4,59 @@
  *  Created on: Apr 7, 2026
  *      Author: PCBOX
  */
+
 #include "GPIO.h"
 #include "event_driven.h"
 #include "Task.h"
 #include "main.h"
 #include "usart.h"
+
 #include <stdio.h>
 #include <string.h>
+
 #include "modbus_rtu.h"
 #include "modbus_master.h"
 #include "modbus_crc.h"
 #include "clo_rc68.h"
+
 #include "interface_lcd.h"
 #include "button_hanlde.h"
 
+/* TASK */
 sEvent_struct ALLTASK[] =
 {
-	{_EVENT_LCD_DISPLAY, 1, 	0,		200, _Cb_LCD_Display},   // chạy mỗi 1s
-	{_EVENT_BUTTON, 	1, 		0, 		20, _Cb_Button},
-	{_EVENT_SENSOR, 	1, 		0, 		1000, _Cb_Sensor},
+    {_EVENT_LCD_DISPLAY, 1, 0, 200,  _Cb_LCD_Display},
+    {_EVENT_BUTTON,      1, 0, 20,   _Cb_Button},
+    {_EVENT_SENSOR,      1, 0, 50,   _Cb_Sensor},
 };
 
-// CMD
-CMD_STATE_t  cmd_state  = CMD_IDLE;
+/* CMD */
 CMD_RESULT_t cmd_result = CMD_RES_NONE;
 
-CMD_TYPE_t cmd_type = CMD_NONE;
+uint8_t  cmd_running = 0;
+uint32_t cmd_tick    = 0;
+uint32_t cmd_ui_tick = 0;
 
-uint8_t  cmd_retry = 0;
-uint8_t  cmd_busy  = 0;
-uint32_t cmd_tick  = 0;
+CMD_QUEUE_t cmd_queue[CMD_QUEUE_SIZE];
 
-// MODBUS
+uint8_t cmd_head  = 0;
+uint8_t cmd_tail  = 0;
+uint8_t cmd_count = 0;
+
+CMD_TYPE_t current_cmd = CMD_NONE;
+
+/* MODBUS */
 MB_RTU_t mb1;
 
-// SENSOR
-float clo_value        = 0;
-float mV_value         = 0;
-float rc68_temp        = 0;
-float slope_value      = 0;
-float intercept_value  = 0;
+/* SENSOR */
+float clo_value       = 0;
+float mV_value        = 0;
+float rc68_temp       = 0;
 
+float slope_value     = 0;
+float intercept_value = 0;
+
+/* UART RX */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     if(huart->Instance == USART3)
@@ -53,212 +65,264 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     }
 }
 
-void handle_cmd_process(void)
+/* =========================================================
+ * QUEUE
+ * ========================================================= */
+
+void CMD_Enqueue(CMD_TYPE_t type)
 {
-    if(!cmd_busy)
+    if(cmd_count >= CMD_QUEUE_SIZE)
         return;
 
-    switch(cmd_state)
+    cmd_queue[cmd_tail].type = type;
+
+    cmd_tail++;
+    if(cmd_tail >= CMD_QUEUE_SIZE)
+        cmd_tail = 0;
+
+    cmd_count++;
+}
+
+static uint8_t CMD_Dequeue(CMD_QUEUE_t *cmd)
+{
+    if(cmd_count == 0)
+        return 0;
+
+    *cmd = cmd_queue[cmd_head];
+
+    cmd_head++;
+    if(cmd_head >= CMD_QUEUE_SIZE)
+        cmd_head = 0;
+
+    cmd_count--;
+
+    return 1;
+}
+
+/* =========================================================
+ * SEND CMD
+ * ========================================================= */
+
+static void send_command(CMD_TYPE_t type)
+{
+    switch(type)
     {
-        case CMD_SEND:
-            cmd_result = CMD_RES_SENDING;
-
-            switch(cmd_type)
-            {
-				case CMD_SET_ID_BAUD:
-				{
-					if(modbus_cursor == 0)
-					{
-						// chỉnh ID
-						RC68_WriteID(&mb1, modbus_id);
-					}
-					else
-					{
-						// chỉnh BAUD
-						RC68_WriteBaud(&mb1, baud_index+1);
-					}
-					break;
-				}
-
-                case CMD_SET_SLOPE:
-                {
-                    float slope = slope_digit[0]
-                                + slope_digit[1]*0.1f
-                                + slope_digit[2]*0.01f;
-
-                    RC68_CalibHigh(&mb1, slope);
-                    break;
-                }
-
-                case CMD_SET_CALIB_ZERO:
-                    RC68_CalibZero(&mb1);
-                    break;
-
-                case CMD_SET_OFFSET:
-                {
-                    float offset = offset_digit[0]*10.0f
-                                 + offset_digit[1];
-
-                    RC68_WriteOffset(&mb1, offset);
-                    break;
-                }
-
-                case CMD_SET_RANGE:
-                    RC68_WriteGain(&mb1, range_index);
-                    break;
-
-                case CMD_SET_WARNING:
-                    cmd_busy = 0;
-                    cmd_state = CMD_IDLE;
-                    cmd_result = CMD_RES_DONE;
-                    return;
-
-                default:
-                    cmd_busy = 0;
-                    cmd_state = CMD_IDLE;
-                    return;
-            }
-
-            cmd_state = CMD_WAIT;
-            cmd_tick = HAL_GetTick();
+        case CMD_READ_ALL:
+            RC68_ReadAll(&mb1);
             break;
 
-        case CMD_WAIT:
+        case CMD_READ_SLOPE_INTERCEPT:
+            RC68_ReadSlopeIntercept(&mb1);
+            break;
+
+        case CMD_SET_ID_BAUD:
         {
-            /* ===== NHẬN RESPONSE ===== */
-            if(mb1.frame_ready)
-            {
-                mb1.frame_ready = 0;
-                mb1.rx_index = 0;
+            if(modbus_cursor == 0)
+                RC68_WriteID(&mb1, modbus_id);
+            else
+                RC68_WriteBaud(&mb1, baud_index + 1);
 
-                cmd_busy = 0;
-                cmd_state = CMD_IDLE;
-                cmd_result = CMD_RES_DONE;
-                return;
-            }
-
-            /* ===== TIMEOUT ===== */
-            if(HAL_GetTick() - cmd_tick > 2000)
-            {
-                cmd_busy = 0;
-                cmd_state = CMD_IDLE;
-                cmd_result = CMD_RES_FAIL;
-                cmd_retry = 0;
-            }
             break;
         }
 
+        case CMD_SET_SLOPE:
+        {
+            float slope =
+                    slope_digit[0]
+                    + slope_digit[1] * 0.1f
+                    + slope_digit[2] * 0.01f;
+
+            RC68_CalibHigh(&mb1, slope);
+            break;
+        }
+
+        case CMD_SET_CALIB_ZERO:
+            RC68_CalibZero(&mb1);
+            break;
+
+        case CMD_SET_OFFSET:
+        {
+            float offset =
+                    offset_digit[0] * 10.0f
+                    + offset_digit[1];
+
+            RC68_WriteOffset(&mb1, offset);
+            break;
+        }
+
+        case CMD_SET_RANGE:
+            RC68_WriteGain(&mb1, range_index);
+            break;
+
+        case CMD_SET_WARNING:
+            break;
+
         default:
-            cmd_busy = 0;
-            cmd_state = CMD_IDLE;
             break;
     }
 }
 
-uint8_t _Cb_Sensor(uint8_t x)
+/* =========================================================
+ * PROCESS QUEUE
+ * ========================================================= */
+
+void process_cmd_queue(void)
 {
-    static uint32_t slope_tick = 0;
-    static uint8_t read_slope_once = 0;
+    CMD_QUEUE_t cmd;
 
-    MB_RTU_Poll(&mb1);
-
-    handle_cmd_process();
-
-    if(mb1.frame_ready)
+    /* =====================================================
+     * ĐANG CHỜ RESPONSE
+     * ===================================================== */
+    if(cmd_running)
     {
-        if(!cmd_busy)
+        /* ===== có response ===== */
+        if(mb1.frame_ready)
         {
+            mb1.frame_ready = 0;
+
+            /* ===== parse data ===== */
             if(mb1.rx_buf[1] == 0x03)
             {
-                /* ===== response slope/intercept ===== */
-                if(read_slope_once)
+                if(current_cmd == CMD_READ_ALL)
                 {
-                    slope_value     = RC68_GetFloat(&mb1, 0);
-                    intercept_value = RC68_GetFloat(&mb1, 2);
-
-                    read_slope_once = 0;
-                }
-                else
-                {
-                    /* ===== response normal ===== */
                     clo_value = RC68_GetFloat(&mb1, 0);
                     mV_value  = RC68_GetFloat(&mb1, 2);
                     rc68_temp = RC68_GetFloat(&mb1, 4);
                 }
+                else if(current_cmd == CMD_READ_SLOPE_INTERCEPT)
+                {
+                    slope_value     = RC68_GetFloat(&mb1, 0);
+                    intercept_value = RC68_GetFloat(&mb1, 2);
+                }
+            }
+
+            mb1.rx_index = 0;
+
+            cmd_running = 0;
+
+            /* ===== chỉ hiện UI cho lệnh SET ===== */
+            if(current_cmd >= CMD_SET_ID_BAUD)
+            {
+                cmd_result  = CMD_RES_DONE;
+                cmd_ui_tick = HAL_GetTick();
+            }
+
+            return;
+        }
+
+        /* ===== timeout ===== */
+        if(HAL_GetTick() - cmd_tick >= CMD_TIMEOUT_MS)
+        {
+            cmd_running = 0;
+
+            mb1.rx_index   = 0;
+            mb1.frame_ready = 0;
+
+            /* ===== chỉ hiện UI cho lệnh SET ===== */
+            if(current_cmd >= CMD_SET_ID_BAUD)
+            {
+                cmd_result  = CMD_RES_FAIL;
+                cmd_ui_tick = HAL_GetTick();
             }
         }
 
-        mb1.frame_ready = 0;
-        mb1.rx_index = 0;
+        return;
     }
 
-    if(!cmd_busy)
+    /* =====================================================
+     * KHÔNG CÓ CMD
+     * ===================================================== */
+    if(!CMD_Dequeue(&cmd))
+        return;
+
+    current_cmd = cmd.type;
+
+    /* ===== gửi lệnh ===== */
+    send_command(current_cmd);
+
+    cmd_running = 1;
+
+    cmd_tick = HAL_GetTick();
+
+    /* ===== chỉ hiện UI cho lệnh SET ===== */
+    if(current_cmd >= CMD_SET_ID_BAUD)
     {
-        /* ===== mỗi 10s đọc slope/intercept 1 lần ===== */
-        if(HAL_GetTick() - slope_tick >= 10000)
-        {
-            slope_tick = HAL_GetTick();
+        cmd_result = CMD_RES_SENDING;
+    }
+}
 
-            RC68_ReadSlopeIntercept(&mb1);
+/* =========================================================
+ * SENSOR
+ * ========================================================= */
 
-            read_slope_once = 1;
-        }
-        else
-        {
-            /* ===== bình thường ===== */
-            RC68_ReadAll(&mb1);
-        }
+uint8_t _Cb_Sensor(uint8_t x)
+{
+    static uint32_t read_tick = 0;
+    static uint32_t slope_tick = 0;
+
+    MB_RTU_Poll(&mb1);
+
+    process_cmd_queue();
+
+    /* đọc realtime */
+    if(HAL_GetTick() - read_tick >= 1000)
+    {
+        read_tick = HAL_GetTick();
+
+        CMD_Enqueue(CMD_READ_ALL);
+    }
+
+    /* đọc slope */
+    if(HAL_GetTick() - slope_tick >= 10000)
+    {
+        slope_tick = HAL_GetTick();
+
+        CMD_Enqueue(CMD_READ_SLOPE_INTERCEPT);
     }
 
     return 0;
 }
 
+/* =========================================================
+ * LCD
+ * ========================================================= */
+
 uint8_t _Cb_LCD_Display(uint8_t x)
 {
-    blink_display();
-
     static uint32_t display_tick = 0;
 
-    /* ================= COMMAND UI ================= */
-    if(cmd_busy || cmd_result != CMD_RES_NONE)
+    blink_display();
+
+    /* CMD UI */
+    if(cmd_result != CMD_RES_NONE)
     {
-        /* KHÔNG gọi main_display nữa */
         glcd_clear_buffer();
 
-        if(display_tick == 0)
-            display_tick = HAL_GetTick();
-
-        if(cmd_busy)
+        if(cmd_result == CMD_RES_SENDING)
         {
-            if(cmd_result == CMD_RES_RETRY)
-                draw_string_small(10,20,"RETRY...");
-            else
-                draw_string_small(10,20,"SENDING...");
+            draw_string_small(10,20,"SENDING...");
         }
-        else
+        else if(cmd_result == CMD_RES_DONE)
         {
-            switch(cmd_result)
+            draw_string_small(10,20,"DONE");
+        }
+        else if(cmd_result == CMD_RES_FAIL)
+        {
+            draw_string_small(10,20,"FAIL");
+        }
+
+        if(cmd_result != CMD_RES_SENDING)
+        {
+            if(display_tick == 0)
+                display_tick = HAL_GetTick();
+
+            if(HAL_GetTick() - display_tick >= 1000)
             {
-                case CMD_RES_DONE:
-                    draw_string_small(10,20,"DONE");
-                    break;
+                cmd_result = CMD_RES_NONE;
+                display_tick = 0;
 
-                case CMD_RES_FAIL:
-                    draw_string_small(10,20,"FAIL");
-                    break;
-
-                default:
-                    break;
+                interface = SETTING;
             }
-        }
-
-        /* giữ 1s */
-        if(!cmd_busy && (HAL_GetTick() - display_tick > 1000))
-        {
-            cmd_result = CMD_RES_NONE;
-            cmd_retry  = 0;
-            display_tick = 0;
-            interface = SETTING;
         }
 
         return 0;
@@ -266,67 +330,107 @@ uint8_t _Cb_LCD_Display(uint8_t x)
 
     display_tick = 0;
 
-    /* ================= NORMAL UI ================= */
     switch(interface)
     {
-        case MAIN:    main_display(); break;
-        case LOGIN:   login_display(); break;
-        case SETTING: setting_display(); break;
-        case MODBUS:  modbus_display(); break;
-        case CALIB:   calib_display(); break;
-        case OFFSET:  offset_display(); break;
-        case WARNING: warning_display(); break;
-        case RANGE:   range_display(); break;
-        case INFO:    info_display(); break;
-        default: break;
+        case MAIN:
+            main_display();
+            break;
+
+        case LOGIN:
+            login_display();
+            break;
+
+        case SETTING:
+            setting_display();
+            break;
+
+        case MODBUS:
+            modbus_display();
+            break;
+
+        case CALIB:
+            calib_display();
+            break;
+
+        case OFFSET:
+            offset_display();
+            break;
+
+        case WARNING:
+            warning_display();
+            break;
+
+        case RANGE:
+            range_display();
+            break;
+
+        case INFO:
+            info_display();
+            break;
+
+        default:
+            break;
     }
 
     return 0;
 }
 
+/* =========================================================
+ * BUTTON
+ * ========================================================= */
+
 uint8_t _Cb_Button(uint8_t x)
 {
-	if(HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0)
-	{
-		while(HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0){}
-		enter_button_handle();
-	}
-	else if(HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0)
-	{
-		while(HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0){}
-		down_button_handle();
-	}
-	else if(HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0)
-	{
-		while(HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0){}
-		up_button_handle();
-	}
-	else if(HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0)
-	{
-		while(HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0){}
-		exit_button_handle();
-	}
+    if(HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0)
+    {
+        while(HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0){}
 
-	return 0;
+        enter_button_handle();
+    }
+    else if(HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0)
+    {
+        while(HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0){}
+
+        down_button_handle();
+    }
+    else if(HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0)
+    {
+        while(HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0){}
+
+        up_button_handle();
+    }
+    else if(HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0)
+    {
+        while(HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0){}
+
+        exit_button_handle();
+    }
+
+    return 0;
 }
 
+/* =========================================================
+ * COMM TASK
+ * ========================================================= */
 
 uint8_t Comm_Task(void)
 {
-	uint8_t i = 0;
+    uint8_t i;
 
-	for (i = 0; i < 3; i++)
-	{
-		if (ALLTASK[i].e_status == 1)
-		{
-			if ((ALLTASK[i].e_systick == 0) || ((HAL_GetTick() - ALLTASK[i].e_systick)  >=  ALLTASK[i].e_period))
-			{
-//				ALLTASK[i].e_status = 0;  //Disable event
-				ALLTASK[i].e_systick = HAL_GetTick();
-				ALLTASK[i].e_function_handler(i);
-			}
-		}
-	}
+    for(i = 0; i < 3; i++)
+    {
+        if(ALLTASK[i].e_status == 1)
+        {
+            if((ALLTASK[i].e_systick == 0)
+            || ((HAL_GetTick() - ALLTASK[i].e_systick)
+            >= ALLTASK[i].e_period))
+            {
+                ALLTASK[i].e_systick = HAL_GetTick();
 
-	return 0;
+                ALLTASK[i].e_function_handler(i);
+            }
+        }
+    }
+
+    return 0;
 }

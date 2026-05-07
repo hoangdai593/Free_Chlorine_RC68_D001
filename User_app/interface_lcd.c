@@ -104,15 +104,6 @@ const uint16_t range_list[] =
 uint8_t range_index = 0;
 uint8_t range_edit  = 0;
 
-void cmd_wait_display(void)
-{
-    glcd_clear_buffer();
-
-    if(cmd_retry == 0)
-        draw_string_small(10,20,"CMD is setting...");
-    else
-        draw_string_small(10,20,"Retry...");
-}
 
 void blink_display(void)
 {

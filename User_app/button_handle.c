@@ -7,12 +7,7 @@
 
 void send_cmd(CMD_TYPE_t type)
 {
-    cmd_busy   = 1;
-    cmd_type   = type;
-    cmd_state  = CMD_SEND;
-    cmd_retry  = 0;
-    cmd_tick   = HAL_GetTick();
-    cmd_result = CMD_RES_SENDING;
+    CMD_Enqueue(type);
 }
 
 void enter_button_handle(void)
