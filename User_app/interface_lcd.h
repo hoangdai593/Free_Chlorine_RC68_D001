@@ -47,59 +47,40 @@ typedef enum {
 	INFO_CUR,
 } SETTING_CUR;
 
-/* LCD + UI */
+// UI
 extern LCD_INTERFACE interface;
-extern SETTING_CUR setting_cursor;
-extern uint8_t blink;
+extern SETTING_CUR   setting_cursor;
+extern uint8_t  blink;
 extern uint32_t blink_tick;
-
-
-/* Password */
+// PASSWORD
 extern uint8_t password[4];
 extern uint8_t password_true[4];
 extern int8_t pass_cur;
-
-/* Modbus */
-extern MB_RTU_t mb1;
-extern float clo_value;
-extern float rc68_temp;
-extern float mV_value;
-extern float slope_value;
-extern float intercept_value;
-
-/* ===== CALIB STATE ===== */
+// MODBUS SETTING
+extern uint8_t  modbus_cursor;
+extern uint8_t  modbus_edit;
+extern uint16_t modbus_id;
+#define BAUD_LIST_SIZE   9
+extern const uint32_t baud_list[BAUD_LIST_SIZE];
+extern uint8_t baud_index;
+// CALIB
 extern uint8_t calib_cursor;
 extern uint8_t calib_edit;
-
 extern uint8_t slope_digit[4];
 extern int8_t slope_pos;
-
-/* MODBUS */
-extern uint8_t modbus_cursor;
-extern uint8_t modbus_edit;
-extern uint16_t modbus_id;
-extern uint8_t baud_index;
-extern const uint32_t baud_list[9];
-
-/* ===== OFFSET ===== */
+// OFFSET
 extern uint8_t offset_cursor;
 extern uint8_t offset_edit;
-
 extern uint8_t offset_digit[2];
 extern uint8_t offset_pos;
-
-/* ===== WARNING ===== */
+// WARNING
 extern uint8_t warning_cursor;
 extern uint8_t warning_edit;
-
 extern uint8_t warning_mode;
-
 extern uint8_t upper_digit[3];
 extern uint8_t lower_digit[3];
-
 extern uint8_t warning_pos;
-
-/* ===== RANGE ===== */
+// RANGE
 extern const uint16_t range_list[];
 extern uint8_t range_index;
 extern uint8_t range_edit;

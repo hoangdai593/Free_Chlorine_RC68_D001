@@ -25,12 +25,25 @@ sEvent_struct ALLTASK[] =
 	{_EVENT_SENSOR, 	1, 		0, 		1000, _Cb_Sensor},
 };
 
-CMD_STATE_t cmd_state = CMD_IDLE;
+// CMD
+CMD_STATE_t  cmd_state  = CMD_IDLE;
 CMD_RESULT_t cmd_result = CMD_RES_NONE;
 
-uint8_t cmd_retry = 0;
-uint32_t cmd_tick = 0;
-uint8_t cmd_busy = 0;
+CMD_TYPE_t cmd_type = CMD_NONE;
+
+uint8_t  cmd_retry = 0;
+uint8_t  cmd_busy  = 0;
+uint32_t cmd_tick  = 0;
+
+// MODBUS
+MB_RTU_t mb1;
+
+// SENSOR
+float clo_value        = 0;
+float mV_value         = 0;
+float rc68_temp        = 0;
+float slope_value      = 0;
+float intercept_value  = 0;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {

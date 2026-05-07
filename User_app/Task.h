@@ -46,13 +46,28 @@ typedef enum
     CMD_RES_FAIL
 } CMD_RESULT_t;
 
-/* ===== extern ===== */
-extern CMD_STATE_t cmd_state;
+// CMD
+extern CMD_STATE_t  cmd_state;
 extern CMD_RESULT_t cmd_result;
-extern uint8_t cmd_busy;
-extern uint8_t cmd_retry;
-extern uint32_t cmd_tick;
+
 extern CMD_TYPE_t cmd_type;
+
+extern uint8_t  cmd_retry;
+extern uint8_t  cmd_busy;
+extern uint32_t cmd_tick;
+
+
+// MODBUS
+extern MB_RTU_t mb1;
+
+
+// SENSOR
+extern float clo_value;
+extern float mV_value;
+extern float rc68_temp;
+
+extern float slope_value;
+extern float intercept_value;
 
 
 void handle_cmd_process(void);

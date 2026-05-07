@@ -156,7 +156,7 @@ void up_button_handle(void)
             else
             {
                 baud_index++;
-                if(baud_index >= (sizeof(baud_list)/sizeof(baud_list[0])))
+                if(baud_index >= BAUD_LIST_SIZE)
                     baud_index = 0;
             }
         }
@@ -243,7 +243,7 @@ void down_button_handle(void)
             }
             else
             {
-                if(baud_index == 0) baud_index = 8;
+                if(baud_index == 0) baud_index = BAUD_LIST_SIZE - 1;
                 else baud_index--;
             }
         }

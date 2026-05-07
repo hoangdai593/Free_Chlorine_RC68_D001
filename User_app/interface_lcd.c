@@ -21,45 +21,28 @@
 #include "interface_lcd.h"
 #include "button_hanlde.h"
 
-
-/* =========================================================
- * LCD / UI CONTROL
- * ========================================================= */
+// UI
 LCD_INTERFACE interface = MAIN;
-SETTING_CUR setting_cursor = MODBUS_CUR;
+SETTING_CUR   setting_cursor = MODBUS_CUR;
 
 uint8_t  blink = 0;
 uint32_t blink_tick = 0;
 
 
-/* =========================================================
- * PASSWORD
- * ========================================================= */
-uint8_t password[4]      = {0, 0, 0, 0};
-uint8_t password_true[4] = {0, 0, 0, 0};
+// PASSWORD
+uint8_t password[4]      = {0,0,0,0};
+uint8_t password_true[4] = {0,0,0,0};
+
 int8_t pass_cur = 0;
 
-/* =========================================================
- * MODBUS / SENSOR
- * ========================================================= */
-MB_RTU_t mb1;
 
-float clo_value  = 0;
-float mV_value   = 0;
-float rc68_temp  = 0;
-float slope_value = 0;
-float intercept_value = 0;
-
-/* =========================================================
- * MODBUS SETTING
- * ========================================================= */
-uint8_t  modbus_cursor = 0;   // 0: ID, 1: Baud
+// MODBUS SETTING
+uint8_t  modbus_cursor = 0;
 uint8_t  modbus_edit   = 0;
 
 uint16_t modbus_id = 1;
 
-/* baud list */
-const uint32_t baud_list[] =
+const uint32_t baud_list[BAUD_LIST_SIZE] =
 {
     2400,
     4800,
@@ -72,56 +55,54 @@ const uint32_t baud_list[] =
     256000
 };
 
-uint8_t baud_index = 3;   // default 19200
+uint8_t baud_index = 3;
 
 
-/* =========================================================
- * CALIBRATION
- * ========================================================= */
-uint8_t calib_cursor = 0;   // 0: zero, 1: slope
+// CALIB
+uint8_t calib_cursor = 0;
 uint8_t calib_edit   = 0;
 
-uint8_t slope_digit[4] = {0,5,5,0};   // 0.55
-int8_t  slope_pos = 0;
+uint8_t slope_digit[4] = {0,5,5,0};
+
+int8_t slope_pos = 0;
 
 
-/* =========================================================
- * OFFSET
- * ========================================================= */
+// OFFSET
 uint8_t offset_cursor = 0;
 uint8_t offset_edit   = 0;
 
-uint8_t offset_digit[2] = {1,2};   // 12 mV
+uint8_t offset_digit[2] = {1,2};
+
 uint8_t offset_pos = 0;
 
 
-/* =========================================================
- * WARNING
- * ========================================================= */
-uint8_t warning_cursor = 0;   // 0:mode 1:upper 2:lower
+// WARNING
+uint8_t warning_cursor = 0;
 uint8_t warning_edit   = 0;
 
-uint8_t warning_mode = 1;     // 1=ON, 0=OFF
+uint8_t warning_mode = 1;
 
-uint8_t upper_digit[3] = {1,0,0};   // 1.00
-uint8_t lower_digit[3] = {0,2,0};   // 0.20
+uint8_t upper_digit[3] = {1,0,0};
+uint8_t lower_digit[3] = {0,2,0};
 
 uint8_t warning_pos = 0;
 
 
-/* =========================================================
- * RANGE
- * ========================================================= */
-const uint16_t range_list[] = {160,80,40,20,10,5,2,1};
+// RANGE
+const uint16_t range_list[] =
+{
+    160,
+    80,
+    40,
+    20,
+    10,
+    5,
+    2,
+    1
+};
 
 uint8_t range_index = 0;
 uint8_t range_edit  = 0;
-
-
-/* =========================================================
- * CMD CONTROL
- * ========================================================= */
-CMD_TYPE_t cmd_type = 0;
 
 void cmd_wait_display(void)
 {
