@@ -20,9 +20,9 @@
 
 sEvent_struct ALLTASK[] =
 {
-	{_EVENT_LCD_DISPLAY, 1, 	0,		 200, _Cb_LCD_Display},   // chạy mỗi 1s
-	{_EVENT_BUTTON, 	1, 		0, 			20, _Cb_Button},
-	{_EVENT_SENSOR, 	1, 		0, 			1000, _Cb_Sensor},
+	{_EVENT_LCD_DISPLAY, 1, 	0,		200, _Cb_LCD_Display},   // chạy mỗi 1s
+	{_EVENT_BUTTON, 	1, 		0, 		20, _Cb_Button},
+	{_EVENT_SENSOR, 	1, 		0, 		1000, _Cb_Sensor},
 };
 
 CMD_STATE_t cmd_state = CMD_IDLE;
@@ -73,13 +73,11 @@ void handle_cmd_process(void)
                                 + slope_digit[1]*0.1f
                                 + slope_digit[2]*0.01f;
 
-                    /* FIX: dùng CalibHigh */
                     RC68_CalibHigh(&mb1, slope);
                     break;
                 }
 
                 case CMD_SET_CALIB_ZERO:
-                    /* FIX: bỏ tham số */
                     RC68_CalibZero(&mb1);
                     break;
 
@@ -146,6 +144,9 @@ void handle_cmd_process(void)
 
 uint8_t _Cb_Sensor(uint8_t x)
 {
+    static uint32_t slope_tick = 0;
+    static uint8_t read_slope_once = 0;
+
     MB_RTU_Poll(&mb1);
 
     handle_cmd_process();
@@ -156,10 +157,21 @@ uint8_t _Cb_Sensor(uint8_t x)
         {
             if(mb1.rx_buf[1] == 0x03)
             {
-                /* đọc block 6 regs: ppm + mV + temp */
-                clo_value = RC68_GetFloat(&mb1, 0);  // ppm
-                mV_value  = RC68_GetFloat(&mb1, 2);  // mV
-                rc68_temp = RC68_GetFloat(&mb1, 4);  // temp
+                /* ===== response slope/intercept ===== */
+                if(read_slope_once)
+                {
+                    slope_value     = RC68_GetFloat(&mb1, 0);
+                    intercept_value = RC68_GetFloat(&mb1, 2);
+
+                    read_slope_once = 0;
+                }
+                else
+                {
+                    /* ===== response normal ===== */
+                    clo_value = RC68_GetFloat(&mb1, 0);
+                    mV_value  = RC68_GetFloat(&mb1, 2);
+                    rc68_temp = RC68_GetFloat(&mb1, 4);
+                }
             }
         }
 
@@ -169,8 +181,20 @@ uint8_t _Cb_Sensor(uint8_t x)
 
     if(!cmd_busy)
     {
+        /* ===== mỗi 10s đọc slope/intercept 1 lần ===== */
+        if(HAL_GetTick() - slope_tick >= 10000)
+        {
+            slope_tick = HAL_GetTick();
 
-        RC68_ReadAll(&mb1);   // đọc 1 lần
+            RC68_ReadSlopeIntercept(&mb1);
+
+            read_slope_once = 1;
+        }
+        else
+        {
+            /* ===== bình thường ===== */
+            RC68_ReadAll(&mb1);
+        }
     }
 
     return 0;

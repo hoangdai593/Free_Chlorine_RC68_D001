@@ -53,7 +53,6 @@ extern SETTING_CUR setting_cursor;
 extern uint8_t blink;
 extern uint32_t blink_tick;
 
-extern uint8_t bt_enter;
 
 /* Password */
 extern uint8_t password[4];
@@ -63,20 +62,10 @@ extern int8_t pass_cur;
 /* Modbus */
 extern MB_RTU_t mb1;
 extern float clo_value;
-
-/* ===== SENSOR DATA ===== */
-extern uint16_t rc68_id;
-extern uint16_t rc68_baud;
 extern float rc68_temp;
-extern float rc68_offset;
-extern uint16_t rc68_gain;
-
-/* ===== REQUEST FLAG ===== */
-extern uint8_t req_read_id;
-extern uint8_t req_read_baud;
-extern uint8_t req_read_temp;
-extern uint8_t req_read_offset;
-extern uint8_t req_read_gain;
+extern float mV_value;
+extern float slope_value;
+extern float intercept_value;
 
 /* ===== CALIB STATE ===== */
 extern uint8_t calib_cursor;
@@ -114,7 +103,7 @@ extern uint8_t warning_pos;
 extern const uint16_t range_list[];
 extern uint8_t range_index;
 extern uint8_t range_edit;
-extern float mV_value;
+
 
 void cmd_wait_display(void);
 void blink_display(void);

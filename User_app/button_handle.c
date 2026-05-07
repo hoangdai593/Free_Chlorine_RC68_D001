@@ -43,7 +43,6 @@ void enter_button_handle(void)
             interface = (LCD_INTERFACE)(MODBUS + setting_cursor);
             break;
 
-        /* ================= MODBUS ================= */
         case MODBUS:
             if(!modbus_edit)
             {
@@ -56,7 +55,6 @@ void enter_button_handle(void)
             }
             break;
 
-        /* ================= CALIB ================= */
         case CALIB:
             if(calib_cursor == 0)   // Zero
             {
@@ -129,94 +127,6 @@ void enter_button_handle(void)
             break;
     }
 }
-
-/* ================= DOWN ================= */
-void down_button_handle(void)
-{
-    if(interface == LOGIN)
-    {
-        password[pass_cur]--;
-    }
-
-    else if(interface == SETTING)
-    {
-        setting_cursor++;
-        if(setting_cursor > INFO_CUR)
-            setting_cursor = MODBUS_CUR;
-    }
-
-    else if(interface == MODBUS)
-    {
-        if(modbus_edit)
-        {
-            if(modbus_cursor == 0)
-            {
-                if(modbus_id == 1) modbus_id = 247;
-                else modbus_id--;
-            }
-            else
-            {
-                if(baud_index == 0) baud_index = 8;
-                else baud_index--;
-            }
-        }
-        else modbus_cursor ^= 1;
-    }
-
-    else if(interface == CALIB)
-    {
-        if(calib_edit)
-        {
-            if(slope_digit[slope_pos] == 0) slope_digit[slope_pos] = 9;
-            else slope_digit[slope_pos]--;
-        }
-        else calib_cursor ^= 1;
-    }
-
-    else if(interface == OFFSET)
-    {
-        if(offset_edit)
-        {
-            if(offset_digit[offset_pos] == 0) offset_digit[offset_pos] = 9;
-            else offset_digit[offset_pos]--;
-        }
-    }
-
-    else if(interface == WARNING)
-    {
-        if(warning_edit)
-        {
-            if(warning_cursor == 0)
-                warning_mode ^= 1;
-
-            else if(warning_cursor == 1)
-            {
-                if(upper_digit[warning_pos] == 0) upper_digit[warning_pos] = 9;
-                else upper_digit[warning_pos]--;
-            }
-            else
-            {
-                if(lower_digit[warning_pos] == 0) lower_digit[warning_pos] = 9;
-                else lower_digit[warning_pos]--;
-            }
-        }
-        else
-        {
-            warning_cursor++;
-            if(warning_cursor > 2) warning_cursor = 0;
-        }
-    }
-
-    else if(interface == RANGE)
-    {
-        if(range_edit)
-        {
-            if(range_index == 0) range_index = 7;
-            else range_index--;
-        }
-    }
-}
-
 
 /* ================= UP ================= */
 void up_button_handle(void)
@@ -303,6 +213,93 @@ void up_button_handle(void)
         {
             range_index++;
             if(range_index > 7) range_index = 0;
+        }
+    }
+}
+
+/* ================= DOWN ================= */
+void down_button_handle(void)
+{
+    if(interface == LOGIN)
+    {
+        password[pass_cur]--;
+    }
+
+    else if(interface == SETTING)
+    {
+        setting_cursor++;
+        if(setting_cursor > INFO_CUR)
+            setting_cursor = MODBUS_CUR;
+    }
+
+    else if(interface == MODBUS)
+    {
+        if(modbus_edit)
+        {
+            if(modbus_cursor == 0)
+            {
+                if(modbus_id == 1) modbus_id = 247;
+                else modbus_id--;
+            }
+            else
+            {
+                if(baud_index == 0) baud_index = 8;
+                else baud_index--;
+            }
+        }
+        else modbus_cursor ^= 1;
+    }
+
+    else if(interface == CALIB)
+    {
+        if(calib_edit)
+        {
+            if(slope_digit[slope_pos] == 0) slope_digit[slope_pos] = 9;
+            else slope_digit[slope_pos]--;
+        }
+        else calib_cursor ^= 1;
+    }
+
+    else if(interface == OFFSET)
+    {
+        if(offset_edit)
+        {
+            if(offset_digit[offset_pos] == 0) offset_digit[offset_pos] = 9;
+            else offset_digit[offset_pos]--;
+        }
+    }
+
+    else if(interface == WARNING)
+    {
+        if(warning_edit)
+        {
+            if(warning_cursor == 0)
+                warning_mode ^= 1;
+
+            else if(warning_cursor == 1)
+            {
+                if(upper_digit[warning_pos] == 0) upper_digit[warning_pos] = 9;
+                else upper_digit[warning_pos]--;
+            }
+            else
+            {
+                if(lower_digit[warning_pos] == 0) lower_digit[warning_pos] = 9;
+                else lower_digit[warning_pos]--;
+            }
+        }
+        else
+        {
+            warning_cursor++;
+            if(warning_cursor > 2) warning_cursor = 0;
+        }
+    }
+
+    else if(interface == RANGE)
+    {
+        if(range_edit)
+        {
+            if(range_index == 0) range_index = 7;
+            else range_index--;
         }
     }
 }

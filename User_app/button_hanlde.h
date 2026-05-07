@@ -20,11 +20,6 @@
 #define BT_UP_PORT      GPIOB
 #define BT_UP_PIN     GPIO_PIN_2
 
-typedef enum {
-    MB_IDLE,
-    MB_SETTING_WAIT,   // đang chờ phản hồi
-    MB_SETTING_RETRY
-} MB_STATE;
 
 void enter_button_handle(void);
 void down_button_handle(void);

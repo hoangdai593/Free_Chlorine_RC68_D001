@@ -36,10 +36,8 @@ uint32_t blink_tick = 0;
  * PASSWORD
  * ========================================================= */
 uint8_t password[4]      = {0, 0, 0, 0};
-uint8_t password_true[4] = {1, 1, 1, 1};
-
+uint8_t password_true[4] = {0, 0, 0, 0};
 int8_t pass_cur = 0;
-
 
 /* =========================================================
  * MODBUS / SENSOR
@@ -49,7 +47,8 @@ MB_RTU_t mb1;
 float clo_value  = 0;
 float mV_value   = 0;
 float rc68_temp  = 0;
-
+float slope_value = 0;
+float intercept_value = 0;
 
 /* =========================================================
  * MODBUS SETTING
@@ -371,19 +370,13 @@ void calib_display(void)
         if(calib_cursor != 1 || blink)
             draw_string_small(5,35,str);
     }
+
     /* ===== mV VALUE (không blink, không cursor) ===== */
     char mv_str[20];
-
-    /* convert float -> int mV */
     int mv_int = (int)(mV_value + 0.5f);
-
-    /* tránh lỗi âm / overflow nếu cần */
     if(mv_int < -9999) mv_int = -9999;
     if(mv_int >  9999) mv_int =  9999;
-
     snprintf(mv_str, sizeof(mv_str), "Value: %d mV", mv_int);
-
-    /* hiển thị dòng dưới cùng */
     draw_string_small(5,55,mv_str);
 }
 
