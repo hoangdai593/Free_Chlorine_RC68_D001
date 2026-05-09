@@ -4,7 +4,11 @@
  *=========================================================*/
 #include "bsp_rs485.h"
 #include "usart.h"
-
+#include "delay.h"
+#include "gpio.h"
+#include <stdio.h>
+#include <string.h>
+volatile uint32_t dbg_uart = 0;
 /*=========================================================
     PRIVATE
 =========================================================*/
@@ -80,12 +84,12 @@ HAL_StatusTypeDef BSP_RS485_Send(RS485_PORT port,
         return HAL_ERROR;
 
     BSP_RS485_TX_Mode(port);
-
+    delay_us(5);
     HAL_StatusTypeDef ret =
         HAL_UART_Transmit(huart, buf, len, timeout);
 
     while(__HAL_UART_GET_FLAG(huart, UART_FLAG_TC) == RESET);
-
+    delay_us(5);
     BSP_RS485_RX_Mode(port);
 
     return ret;

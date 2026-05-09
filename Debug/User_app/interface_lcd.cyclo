@@ -3,8 +3,8 @@
 ../User_app/interface_lcd.c:201:6:login_display	5
 ../User_app/interface_lcd.c:229:6:setting_display	13
 ../User_app/interface_lcd.c:254:6:modbus_display	13
-../User_app/interface_lcd.c:304:6:calib_display	13
-../User_app/interface_lcd.c:355:6:offset_display	7
-../User_app/interface_lcd.c:385:6:warning_display	21
-../User_app/interface_lcd.c:449:6:range_display	8
-../User_app/interface_lcd.c:496:6:info_display	1
+../User_app/interface_lcd.c:304:6:calib_display	14
+../User_app/interface_lcd.c:367:6:offset_display	13
+../User_app/interface_lcd.c:481:6:warning_display	21
+../User_app/interface_lcd.c:545:6:range_display	8
+../User_app/interface_lcd.c:592:6:info_display	1

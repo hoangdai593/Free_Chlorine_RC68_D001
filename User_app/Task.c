@@ -142,9 +142,15 @@ static void send_command(CMD_TYPE_t type)
 
         case CMD_SET_OFFSET:
         {
-            float offset =
-                    offset_digit[0] * 10.0f
-                    + offset_digit[1];
+        	float offset =
+        	        offset_digit[1] * 100.0f
+        	        + offset_digit[2] * 10.0f
+        	        + offset_digit[3];
+
+        	if(offset_digit[0] && offset != 0)
+        	{
+        	    offset = -offset;
+        	}
 
             RC68_WriteOffset(&mb1, offset);
             break;
@@ -163,6 +169,70 @@ static void send_command(CMD_TYPE_t type)
 }
 
 /* =========================================================
+ * CHECK RESPONSE
+ * ========================================================= */
+
+static uint8_t check_response(CMD_TYPE_t cmd)
+{
+    /* tối thiểu modbus frame */
+    if(mb1.rx_index < 5)
+        return 0;
+
+    /* CRC */
+    if(MB_CRC_Check(mb1.rx_buf, mb1.rx_index) == 0)
+        return 0;
+
+    /* slave id */
+    if(mb1.rx_buf[0] != RC68_SLAVE_ID_DEFAULT)
+        return 0;
+
+    switch(cmd)
+    {
+        /* ================= READ ================= */
+
+        case CMD_READ_ALL:
+
+            /* func */
+            if(mb1.rx_buf[1] != 0x03)
+                return 0;
+
+            /* 6 reg = 12 byte */
+            if(mb1.rx_buf[2] != 12)
+                return 0;
+
+            return 1;
+
+        case CMD_READ_SLOPE_INTERCEPT:
+
+            if(mb1.rx_buf[1] != 0x03)
+                return 0;
+
+            /* 4 reg = 8 byte */
+            if(mb1.rx_buf[2] != 8)
+                return 0;
+
+            return 1;
+
+        /* ================= WRITE ================= */
+
+        case CMD_SET_ID_BAUD:
+        case CMD_SET_SLOPE:
+        case CMD_SET_CALIB_ZERO:
+        case CMD_SET_OFFSET:
+        case CMD_SET_RANGE:
+
+            /* write multi response */
+            if(mb1.rx_buf[1] != 0x10)
+                return 0;
+
+            return 1;
+
+        default:
+            return 0;
+    }
+}
+
+/* =========================================================
  * PROCESS QUEUE
  * ========================================================= */
 
@@ -176,10 +246,25 @@ void process_cmd_queue(void)
     if(cmd_running)
     {
         /* ===== có response ===== */
-        if(mb1.frame_ready)
-        {
-            mb1.frame_ready = 0;
+    	if(mb1.frame_ready)
+    	{
+    	    mb1.frame_ready = 0;
 
+    	    /* ===== CHECK RESPONSE ===== */
+    	    if(check_response(current_cmd) == 0)
+    	    {
+    	        mb1.rx_index = 0;
+
+    	        cmd_running = 0;
+
+    	        if(current_cmd >= CMD_SET_ID_BAUD)
+    	        {
+    	            cmd_result  = CMD_RES_FAIL;
+    	            cmd_ui_tick = HAL_GetTick();
+    	        }
+
+    	        return;
+    	    }
             /* ===== parse data ===== */
             if(mb1.rx_buf[1] == 0x03)
             {

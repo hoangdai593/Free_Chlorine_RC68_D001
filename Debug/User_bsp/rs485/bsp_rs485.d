@@ -29,7 +29,9 @@ User_bsp/rs485/bsp_rs485.o: ../User_bsp/rs485/bsp_rs485.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
- ../Core/Inc/usart.h ../Core/Inc/main.h
+ ../Core/Inc/usart.h ../Core/Inc/main.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_utils/delay.h \
+ ../Core/Inc/gpio.h
 ../User_bsp/rs485/bsp_rs485.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
@@ -63,3 +65,5 @@ User_bsp/rs485/bsp_rs485.o: ../User_bsp/rs485/bsp_rs485.c \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/main.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_utils/delay.h:
+../Core/Inc/gpio.h:

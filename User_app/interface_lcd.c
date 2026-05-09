@@ -55,14 +55,14 @@ const uint32_t baud_list[BAUD_LIST_SIZE] =
     256000
 };
 
-uint8_t baud_index = 3;
+uint8_t baud_index = 2;
 
 
 // CALIB
 uint8_t calib_cursor = 0;
 uint8_t calib_edit   = 0;
 
-uint8_t slope_digit[4] = {0,5,5,0};
+uint8_t slope_digit[4] = {0,7,5,0};
 
 int8_t slope_pos = 0;
 
@@ -71,7 +71,7 @@ int8_t slope_pos = 0;
 uint8_t offset_cursor = 0;
 uint8_t offset_edit   = 0;
 
-uint8_t offset_digit[2] = {1,2};
+uint8_t offset_digit[4] = {0,0,0,0};
 
 uint8_t offset_pos = 0;
 
@@ -345,41 +345,137 @@ void calib_display(void)
 
     /* ===== mV VALUE (không blink, không cursor) ===== */
     char mv_str[20];
-    int mv_int = (int)(mV_value + 0.5f);
+
+    int mv_int;
+
+    if(mV_value >= 0)
+        mv_int = (int)(mV_value + 0.5f);
+    else
+        mv_int = (int)(mV_value - 0.5f);
+
     if(mv_int < -9999) mv_int = -9999;
     if(mv_int >  9999) mv_int =  9999;
-    snprintf(mv_str, sizeof(mv_str), "Value: %d mV", mv_int);
+
+    snprintf(mv_str,
+             sizeof(mv_str),
+             "Value: %+d mV",
+             mv_int);
+
     draw_string_small(5,55,mv_str);
 }
 
 void offset_display(void)
 {
     glcd_clear_buffer();
+
     glcd_draw_line(0,10,128,10,BLACK);
+
     draw_string_small(5,0,"Offset");
 
-    char str[10];
+    /* =====================================================
+     * OFFSET STRING
+     * format:
+     * Offset: +123 mV
+     * ===================================================== */
+    char offset_str[25];
 
-    str[0] = offset_digit[0] + '0';
-    str[1] = offset_digit[1] + '0';
-    str[2] = 'm';
-    str[3] = 'V';
-    str[4] = '\0';
+    offset_str[0]  = 'O';
+    offset_str[1]  = 'f';
+    offset_str[2]  = 'f';
+    offset_str[3]  = 's';
+    offset_str[4]  = 'e';
+    offset_str[5]  = 't';
+    offset_str[6]  = ':';
+    offset_str[7]  = ' ';
 
+    /* sign */
+    offset_str[8]  = (offset_digit[0]) ? '-' : '+';
+
+    /* number */
+    offset_str[9]  = offset_digit[1] + '0';
+    offset_str[10] = offset_digit[2] + '0';
+    offset_str[11] = offset_digit[3] + '0';
+
+    offset_str[12] = ' ';
+    offset_str[13] = 'm';
+    offset_str[14] = 'V';
+    offset_str[15] = '\0';
+
+    /* =====================================================
+     * BLINK EDIT
+     * ===================================================== */
     if(offset_edit)
     {
         if(blink == 0)
         {
-            if(offset_pos == 0) str[0] = ' ';
-            if(offset_pos == 1) str[1] = ' ';
+            switch(offset_pos)
+            {
+                case 0:
+                    offset_str[8] = ' ';
+                    break;
+
+                case 1:
+                    offset_str[9] = ' ';
+                    break;
+
+                case 2:
+                    offset_str[10] = ' ';
+                    break;
+
+                case 3:
+                    offset_str[11] = ' ';
+                    break;
+
+                default:
+                    break;
+            }
         }
-        draw_string_small(5,30,str);
+
+        draw_string_small(5,20,offset_str);
     }
     else
     {
         if(blink || offset_cursor != 0)
-            draw_string_small(5,30,str);
+        {
+            draw_string_small(5,20,offset_str);
+        }
     }
+
+    /* =====================================================
+     * INTERCEPT
+     * ===================================================== */
+    char intercept_str[30];
+
+    int intercept_mv;
+
+    if(intercept_value >= 0)
+        intercept_mv = (int)(intercept_value + 0.5f);
+    else
+        intercept_mv = (int)(intercept_value - 0.5f);
+
+    if(intercept_mv < -9999) intercept_mv = -9999;
+    if(intercept_mv >  9999) intercept_mv =  9999;
+
+    snprintf(intercept_str,
+             sizeof(intercept_str),
+             "Intercept: %+d mV",
+             intercept_mv);
+
+    draw_string_small(5,38,intercept_str);
+
+    /* =====================================================
+     * SLOPE
+     * ===================================================== */
+    char slope_str[30];
+
+    int slope_mv = (int)(slope_value + 0.5f);
+
+    snprintf(slope_str,
+             sizeof(slope_str),
+             "Slope: %d mV/ppm",
+             slope_mv);
+
+    draw_string_small(5,50,slope_str);
 }
 
 void warning_display(void)

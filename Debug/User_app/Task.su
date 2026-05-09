@@ -2,8 +2,9 @@
 ../User_app/Task.c:72:6:CMD_Enqueue	16	static
 ../User_app/Task.c:86:16:CMD_Dequeue	16	static
 ../User_app/Task.c:106:13:send_command	24	static
-../User_app/Task.c:169:6:process_cmd_queue	16	static
-../User_app/Task.c:258:9:_Cb_Sensor	16	static
-../User_app/Task.c:290:9:_Cb_LCD_Display	16	static
-../User_app/Task.c:382:9:_Cb_Button	16	static
-../User_app/Task.c:416:9:Comm_Task	24	static
+../User_app/Task.c:175:16:check_response	16	static
+../User_app/Task.c:239:6:process_cmd_queue	16	static
+../User_app/Task.c:343:9:_Cb_Sensor	16	static
+../User_app/Task.c:375:9:_Cb_LCD_Display	16	static
+../User_app/Task.c:467:9:_Cb_Button	16	static
+../User_app/Task.c:501:9:Comm_Task	24	static

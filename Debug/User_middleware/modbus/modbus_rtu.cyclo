@@ -1,5 +1,6 @@
-../User_middleware/modbus/modbus_rtu.c:5:6:MB_RTU_Init	1
-../User_middleware/modbus/modbus_rtu.c:20:6:MB_RTU_StartReceive	1
-../User_middleware/modbus/modbus_rtu.c:26:6:MB_RTU_RxByteHandler	2
-../User_middleware/modbus/modbus_rtu.c:37:19:MB_RTU_Send	1
-../User_middleware/modbus/modbus_rtu.c:43:6:MB_RTU_Poll	3
+../User_middleware/modbus/modbus_rtu.c:9:6:MB_RTU_Init	1
+../User_middleware/modbus/modbus_rtu.c:29:6:MB_RTU_Clear	1
+../User_middleware/modbus/modbus_rtu.c:41:6:MB_RTU_StartReceive	1
+../User_middleware/modbus/modbus_rtu.c:47:6:MB_RTU_RxByteHandler	2
+../User_middleware/modbus/modbus_rtu.c:64:19:MB_RTU_Send	7
+../User_middleware/modbus/modbus_rtu.c:100:6:MB_RTU_Poll	5

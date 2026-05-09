@@ -71,7 +71,7 @@ extern int8_t slope_pos;
 // OFFSET
 extern uint8_t offset_cursor;
 extern uint8_t offset_edit;
-extern uint8_t offset_digit[2];
+extern uint8_t offset_digit[4];
 extern uint8_t offset_pos;
 // WARNING
 extern uint8_t warning_cursor;

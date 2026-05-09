@@ -53,7 +53,7 @@ typedef struct
 } CMD_QUEUE_t;
 
 /* QUEUE */
-#define CMD_QUEUE_SIZE     10
+#define CMD_QUEUE_SIZE     20
 #define CMD_TIMEOUT_MS     500
 
 /* CMD */

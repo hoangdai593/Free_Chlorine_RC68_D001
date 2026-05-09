@@ -5,23 +5,36 @@
 #include "bsp_rs485.h"
 
 /* ================= CONFIG ================= */
-#define MB_RX_BUF_SIZE        256
-#define MB_FRAME_TIMEOUT_MS   5   // ~3.5 char time (tuỳ baud)
+#define MB_RX_BUF_SIZE          256
+#define MB_FRAME_TIMEOUT_MS     5
+
+/* ================= STATUS ================= */
+typedef enum
+{
+    MB_RTU_OK = 0,
+    MB_RTU_BUSY,
+    MB_RTU_TIMEOUT,
+    MB_RTU_CRC_ERROR,
+    MB_RTU_OVERFLOW
+} MB_RTU_STATUS;
 
 /* ================= STRUCT ================= */
 typedef struct
 {
     RS485_PORT port;
+
     uint8_t slave_id;
 
-    uint8_t  rx_buf[MB_RX_BUF_SIZE];
+    uint8_t rx_buf[MB_RX_BUF_SIZE];
     uint16_t rx_index;
 
-    uint8_t  rx_byte;        // buffer nhận từng byte (interrupt)
+    uint8_t rx_byte;
 
-    uint32_t last_rx_tick;   // thời điểm nhận byte cuối
+    uint32_t last_rx_tick;
 
-    uint8_t  frame_ready;    // flag báo đã nhận xong frame
+    uint8_t frame_ready;
+
+    MB_RTU_STATUS status;
 
 } MB_RTU_t;
 
@@ -35,6 +48,8 @@ void MB_RTU_StartReceive(MB_RTU_t *mb);
 void MB_RTU_RxByteHandler(MB_RTU_t *mb);
 
 void MB_RTU_Poll(MB_RTU_t *mb);
+
+void MB_RTU_Clear(MB_RTU_t *mb);
 
 HAL_StatusTypeDef MB_RTU_Send(MB_RTU_t *mb,
                               uint8_t *buf,

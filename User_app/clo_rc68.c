@@ -2,152 +2,142 @@
 #include <string.h>
 
 /* =========================================================
-   READ (CHUẨN THEO DATASHEET)
-   ========================================================= */
+ * READ
+ * ========================================================= */
 
-/* Đọc toàn bộ: ppm + mV + nhiệt độ (3 float = 6 regs) */
 MB_MASTER_STATUS RC68_ReadAll(MB_RTU_t *mb)
 {
     return MB_Master_ReadHoldingReg(mb,
                                     RC68_SLAVE_ID_DEFAULT,
-                                    0x0100,
+                                    RC68_REG_CL_PPM,
                                     6);
 }
 
-/* Đọc chlorine ppm */
 MB_MASTER_STATUS RC68_ReadChlorine(MB_RTU_t *mb)
 {
     return MB_Master_ReadHoldingReg(mb,
                                     RC68_SLAVE_ID_DEFAULT,
-                                    0x0100,
+                                    RC68_REG_CL_PPM,
                                     2);
 }
 
-/* Đọc nhiệt độ */
 MB_MASTER_STATUS RC68_ReadTemperature(MB_RTU_t *mb)
 {
     return MB_Master_ReadHoldingReg(mb,
                                     RC68_SLAVE_ID_DEFAULT,
-                                    0x0104,
+                                    RC68_REG_TEMP,
                                     2);
 }
 
-/* Đọc Slave ID */
 MB_MASTER_STATUS RC68_ReadID(MB_RTU_t *mb)
 {
     return MB_Master_ReadHoldingReg(mb,
                                     RC68_SLAVE_ID_DEFAULT,
-                                    0x0010,
+                                    RC68_REG_ID,
                                     1);
 }
 
-/* =========================================================
-   WRITE (CHUẨN 0x10)
-   ========================================================= */
+MB_MASTER_STATUS RC68_ReadSlopeIntercept(MB_RTU_t *mb)
+{
+    return MB_Master_ReadHoldingReg(mb,
+                                    RC68_SLAVE_ID_DEFAULT,
+                                    RC68_REG_CL_SLOPE,
+                                    4);
+}
 
-/* Set Slave ID */
-MB_MASTER_STATUS RC68_WriteID(MB_RTU_t *mb, uint16_t id)
+/* =========================================================
+ * WRITE SINGLE
+ * ========================================================= */
+
+MB_MASTER_STATUS RC68_WriteSingleU16(MB_RTU_t *mb,
+                                     uint16_t reg,
+                                     uint16_t value)
+{
+    return MB_Master_WriteSingleReg(mb,
+                                    RC68_SLAVE_ID_DEFAULT,
+                                    reg,
+                                    value);
+}
+
+/* =========================================================
+ * WRITE MULTI
+ * ========================================================= */
+
+MB_MASTER_STATUS RC68_WriteID(MB_RTU_t *mb,
+                              uint16_t id)
 {
     if(id == 0 || id > 247)
         return MB_MASTER_ERROR;
 
     return MB_Master_WriteU16(mb,
                               RC68_SLAVE_ID_DEFAULT,
-                              0x0010,
+                              RC68_REG_ID,
                               id);
 }
 
-/* Set Baudrate */
-MB_MASTER_STATUS RC68_WriteBaud(MB_RTU_t *mb, uint16_t baud_code)
+MB_MASTER_STATUS RC68_WriteBaud(MB_RTU_t *mb,
+                                uint16_t baud_code)
 {
     return MB_Master_WriteU16(mb,
                               RC68_SLAVE_ID_DEFAULT,
-                              0x000F,
+                              RC68_REG_BAUD,
                               baud_code);
 }
 
-/* Set Gain */
-MB_MASTER_STATUS RC68_WriteGain(MB_RTU_t *mb, uint16_t gain_code)
+MB_MASTER_STATUS RC68_WriteGain(MB_RTU_t *mb,
+                                uint16_t gain_code)
 {
     if(gain_code > 7)
         return MB_MASTER_ERROR;
 
     return MB_Master_WriteU16(mb,
                               RC68_SLAVE_ID_DEFAULT,
-                              0x0092,
+                              RC68_REG_GAIN,
                               gain_code);
 }
 
-/* Set Offset (mV) */
-MB_MASTER_STATUS RC68_WriteOffset(MB_RTU_t *mb, float offset_mv)
+MB_MASTER_STATUS RC68_WriteOffset(MB_RTU_t *mb,
+                                  float offset_mv)
 {
     return MB_Master_WriteFloat(mb,
                                 RC68_SLAVE_ID_DEFAULT,
-                                0x0096,
+                                RC68_REG_OFFSET,
                                 offset_mv);
 }
 
 /* =========================================================
-   CALIBRATION
-   ========================================================= */
+ * CALIB
+ * ========================================================= */
 
-/* Zero calibration */
 MB_MASTER_STATUS RC68_CalibZero(MB_RTU_t *mb)
 {
     return MB_Master_WriteFloat(mb,
                                 RC68_SLAVE_ID_DEFAULT,
-                                0x0220,
+                                RC68_REG_CALIB_ZERO,
                                 0.0f);
 }
 
-/* High point calibration */
-MB_MASTER_STATUS RC68_CalibHigh(MB_RTU_t *mb, float ppm)
+MB_MASTER_STATUS RC68_CalibHigh(MB_RTU_t *mb,
+                                float ppm)
 {
     return MB_Master_WriteFloat(mb,
                                 RC68_SLAVE_ID_DEFAULT,
-                                0x0222,
+                                RC68_REG_CALIB_HIGH,
                                 ppm);
 }
 
 /* =========================================================
-   READ SLOPE / INTERCEPT
-   ========================================================= */
+ * GET VALUE
+ * ========================================================= */
 
-MB_MASTER_STATUS RC68_ReadSlopeIntercept(MB_RTU_t *mb)
+float RC68_GetFloat(MB_RTU_t *mb,
+                    uint16_t index)
 {
-    return MB_Master_ReadHoldingReg(mb,
-                                    RC68_SLAVE_ID_DEFAULT,
-                                    0x0210,
-                                    4);
+    return MB_Master_GetFloat(mb, index);
 }
 
-/* =========================================================
-   GET VALUE (PARSE DATA)
-   ========================================================= */
-
-/* Lấy float từ buffer (BIG-ENDIAN chuẩn sensor) */
-float RC68_GetFloat(MB_RTU_t *mb, uint16_t index)
-{
-    uint16_t pos = 3 + index * 2;
-
-    if(pos + 3 >= mb->rx_index)
-        return 0;
-
-    uint32_t raw = 0;
-
-    raw |= (uint32_t)mb->rx_buf[pos] << 24;
-    raw |= (uint32_t)mb->rx_buf[pos + 1] << 16;
-    raw |= (uint32_t)mb->rx_buf[pos + 2] << 8;
-    raw |= (uint32_t)mb->rx_buf[pos + 3];
-
-    float val;
-    memcpy(&val, &raw, 4);
-
-    return val;
-}
-
-/* Lấy uint16 */
-uint16_t RC68_GetU16(MB_RTU_t *mb, uint16_t index)
+uint16_t RC68_GetU16(MB_RTU_t *mb,
+                     uint16_t index)
 {
     return MB_Master_GetReg16(mb, index);
 }

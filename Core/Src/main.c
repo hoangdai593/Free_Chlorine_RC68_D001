@@ -108,12 +108,23 @@ int main(void)
   BSP_RS485_Init();
 
   MB_RTU_Init(&mb1, RS485_PORT3, 1);   // port + slave_id (ko quá quan trọng với master)
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
+//  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
+
+  // TEST UART3 DIRECT TRANSMIT
+  uint8_t test_data[] = {0x01, 0x03, 0x01, 0x00, 0x00, 0x06, 0xC4, 0x34};
+  BSP_RS485_Send(RS485_PORT3, test_data, 8, 1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+//	  uint8_t tx_data = 0x55;
+//	  HAL_UART_Transmit(&huart3, &tx_data, 1, 100);
+//	    HAL_Delay(1000);
 	  Comm_Task();
     /* USER CODE END WHILE */
 

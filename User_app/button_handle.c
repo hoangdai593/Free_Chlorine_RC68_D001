@@ -84,7 +84,8 @@ void enter_button_handle(void)
             else
             {
                 offset_pos++;
-                if(offset_pos >= 2)
+
+                if(offset_pos >= 4)
                 {
                     offset_edit = 0;
                     send_cmd(CMD_SET_OFFSET);
@@ -172,8 +173,18 @@ void up_button_handle(void)
     {
         if(offset_edit)
         {
-            offset_digit[offset_pos]++;
-            if(offset_digit[offset_pos] > 9) offset_digit[offset_pos] = 0;
+            /* SIGN */
+            if(offset_pos == 0)
+            {
+                offset_digit[0] ^= 1;
+            }
+            else
+            {
+                offset_digit[offset_pos]++;
+
+                if(offset_digit[offset_pos] > 9)
+                    offset_digit[offset_pos] = 0;
+            }
         }
     }
 
@@ -259,8 +270,18 @@ void down_button_handle(void)
     {
         if(offset_edit)
         {
-            if(offset_digit[offset_pos] == 0) offset_digit[offset_pos] = 9;
-            else offset_digit[offset_pos]--;
+            /* SIGN */
+            if(offset_pos == 0)
+            {
+                offset_digit[0] ^= 1;
+            }
+            else
+            {
+                if(offset_digit[offset_pos] == 0)
+                    offset_digit[offset_pos] = 9;
+                else
+                    offset_digit[offset_pos]--;
+            }
         }
     }
 
