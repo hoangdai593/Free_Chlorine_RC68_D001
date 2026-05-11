@@ -416,8 +416,15 @@ uint8_t _Cb_Sensor(uint8_t x)
         offset_value = -offset_value;
     }
 
-    float upper_threshold = upper_digit[0] + upper_digit[1] * 0.1f + upper_digit[2] * 0.01f;
-    float lower_threshold = lower_digit[0] + lower_digit[1] * 0.1f + lower_digit[2] * 0.01f;
+    float upper_threshold =
+            upper_digit_saved[0]
+            + upper_digit_saved[1] * 0.1f
+            + upper_digit_saved[2] * 0.01f;
+
+    float lower_threshold =
+            lower_digit_saved[0]
+            + lower_digit_saved[1] * 0.1f
+            + lower_digit_saved[2] * 0.01f;
 
     /* =====================================================
      * WARNING BUZZER
@@ -431,7 +438,7 @@ uint8_t _Cb_Sensor(uint8_t x)
 
     uint8_t warning_active = 0;
 
-    if(warning_mode)
+    if(warning_mode_saved)
     {
         if(current_cl > upper_threshold ||
            current_cl < lower_threshold)

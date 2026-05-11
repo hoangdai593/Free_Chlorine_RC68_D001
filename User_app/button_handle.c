@@ -114,7 +114,7 @@ void enter_button_handle(void)
                 if(warning_cursor == 0)
                 {
                     warning_edit = 0;
-
+                    warning_mode_saved = warning_mode;
                     cmd_result = CMD_RES_DONE;
                     cmd_ui_tick = HAL_GetTick();
                 }
@@ -127,7 +127,8 @@ void enter_button_handle(void)
                     if(warning_pos >= 3)
                     {
                         warning_edit = 0;
-
+                        memcpy(upper_digit_saved, upper_digit, 3);
+                        memcpy(lower_digit_saved, lower_digit, 3);
                         cmd_result = CMD_RES_DONE;
                         cmd_ui_tick = HAL_GetTick();
                     }

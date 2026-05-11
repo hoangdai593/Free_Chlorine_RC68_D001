@@ -77,6 +77,10 @@ extern uint8_t warning_edit;
 extern uint8_t warning_mode;
 extern uint8_t upper_digit[3];
 extern uint8_t lower_digit[3];
+extern uint8_t warning_mode_saved;
+extern uint8_t upper_digit_saved[3];
+extern uint8_t lower_digit_saved[3];
+
 extern uint8_t warning_pos;
 // RANGE
 extern const uint16_t range_list[];
