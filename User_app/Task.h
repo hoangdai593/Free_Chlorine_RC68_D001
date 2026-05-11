@@ -10,6 +10,7 @@
 
 #include "modbus_rtu.h"
 #include "modbus_master.h"
+#include "modbus_slave.h"
 #include "clo_rc68.h"
 
 /* EVENT */
@@ -73,7 +74,7 @@ extern CMD_TYPE_t current_cmd;
 
 /* MODBUS */
 extern MB_RTU_t mb1;
-
+extern MB_SLAVE_t mb_slave;
 /* SENSOR */
 extern float clo_value;
 extern float mV_value;

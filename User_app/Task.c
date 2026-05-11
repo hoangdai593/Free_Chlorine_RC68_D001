@@ -18,7 +18,7 @@
 #include "modbus_master.h"
 #include "modbus_crc.h"
 #include "clo_rc68.h"
-
+#include "modbus_slave.h"
 #include "interface_lcd.h"
 #include "button_hanlde.h"
 
@@ -47,6 +47,7 @@ CMD_TYPE_t current_cmd = CMD_NONE;
 
 /* MODBUS */
 MB_RTU_t mb1;
+MB_SLAVE_t mb_slave;    // Slave   - USART1 (Datalogger)
 
 /* SENSOR */
 float clo_value       = 0;
@@ -59,9 +60,13 @@ float intercept_value = 0;
 /* UART RX */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if(huart->Instance == USART3)
+    if(huart->Instance == USART3)           // Master - Sensor
     {
         MB_RTU_RxByteHandler(&mb1);
+    }
+    else if(huart->Instance == USART1)      // Slave - Datalogger
+    {
+        MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_buf[0]);  // byte đã nhận
     }
 }
 
@@ -345,25 +350,49 @@ uint8_t _Cb_Sensor(uint8_t x)
     static uint32_t read_tick = 0;
     static uint32_t slope_tick = 0;
 
+    /* Poll Master (Sensor) */
     MB_RTU_Poll(&mb1);
 
+    /* Poll Slave (Datalogger) */
+    MB_SLAVE_Poll(&mb_slave);
+
+    /* Xử lý command queue cho Master */
     process_cmd_queue();
 
-    /* đọc realtime */
+    /* Đọc dữ liệu realtime từ Sensor */
     if(HAL_GetTick() - read_tick >= 1000)
     {
         read_tick = HAL_GetTick();
-
         CMD_Enqueue(CMD_READ_ALL);
     }
 
-    /* đọc slope */
+    /* Đọc Slope/Intercept định kỳ */
     if(HAL_GetTick() - slope_tick >= 10000)
     {
         slope_tick = HAL_GetTick();
-
         CMD_Enqueue(CMD_READ_SLOPE_INTERCEPT);
     }
+
+    /* Cập nhật dữ liệu lên Slave Registers (cho Datalogger đọc) */
+    MB_SLAVE_SetFloat(&mb_slave, 0x0002, clo_value);      // Giá trị Clo dư
+    MB_SLAVE_SetFloat(&mb_slave, 0x0004, rc68_temp);      // Nhiệt độ
+
+    float offset_value =
+            offset_digit[1] * 100.0f
+            + offset_digit[2] * 10.0f
+            + offset_digit[3];
+    if(offset_digit[0] && offset_value != 0.0f)
+    {
+        offset_value = -offset_value;
+    }
+
+    float upper_threshold = upper_digit[0] + upper_digit[1] * 0.1f + upper_digit[2] * 0.01f;
+    float lower_threshold = lower_digit[0] + lower_digit[1] * 0.1f + lower_digit[2] * 0.01f;
+
+    MB_SLAVE_SetFloat(&mb_slave, 0x0006, offset_value);   // Bù pH cho Clo
+    MB_SLAVE_SetU16(&mb_slave, 0x000D, warning_mode ? 1 : 0); // Cảnh báo bật/tắt
+    MB_SLAVE_SetFloat(&mb_slave, 0x000E, upper_threshold); // Ngưỡng trên
+    MB_SLAVE_SetFloat(&mb_slave, 0x0010, lower_threshold); // Ngưỡng dưới
 
     return 0;
 }

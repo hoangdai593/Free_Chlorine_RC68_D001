@@ -1,0 +1,7 @@
+../User_middleware/modbus/modbus_slave.c:12:6:MB_SLAVE_Init	16	static
+../User_middleware/modbus/modbus_slave.c:32:6:MB_SLAVE_RxByteHandler	16	static
+../User_middleware/modbus/modbus_slave.c:45:6:MB_SLAVE_Poll	32	static
+../User_middleware/modbus/modbus_slave.c:100:13:MB_SLAVE_SendResponse	24	static
+../User_middleware/modbus/modbus_slave.c:120:13:MB_SLAVE_SendException	16	static
+../User_middleware/modbus/modbus_slave.c:128:6:MB_SLAVE_SetFloat	32	static
+../User_middleware/modbus/modbus_slave.c:137:6:MB_SLAVE_SetU16	16	static

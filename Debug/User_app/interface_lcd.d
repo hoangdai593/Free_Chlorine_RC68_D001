@@ -34,6 +34,7 @@ User_app/interface_lcd.o: ../User_app/interface_lcd.c ../Core/Inc/GPIO.h \
  ../Core/Inc/main.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h \
  ../User_app/clo_rc68.h ../Core/Inc/usart.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h \
@@ -87,6 +88,7 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h:
 ../Core/Inc/main.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h:
 ../User_app/clo_rc68.h:
 ../Core/Inc/usart.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h:

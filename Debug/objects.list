@@ -55,5 +55,6 @@
 "./User_middleware/modbus/modbus_crc.o"
 "./User_middleware/modbus/modbus_master.o"
 "./User_middleware/modbus/modbus_rtu.o"
+"./User_middleware/modbus/modbus_slave.o"
 "./User_utils/crc.o"
 "./User_utils/delay.o"

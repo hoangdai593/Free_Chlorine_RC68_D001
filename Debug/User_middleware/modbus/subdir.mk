@@ -7,17 +7,20 @@
 C_SRCS += \
 ../User_middleware/modbus/modbus_crc.c \
 ../User_middleware/modbus/modbus_master.c \
-../User_middleware/modbus/modbus_rtu.c 
+../User_middleware/modbus/modbus_rtu.c \
+../User_middleware/modbus/modbus_slave.c 
 
 OBJS += \
 ./User_middleware/modbus/modbus_crc.o \
 ./User_middleware/modbus/modbus_master.o \
-./User_middleware/modbus/modbus_rtu.o 
+./User_middleware/modbus/modbus_rtu.o \
+./User_middleware/modbus/modbus_slave.o 
 
 C_DEPS += \
 ./User_middleware/modbus/modbus_crc.d \
 ./User_middleware/modbus/modbus_master.d \
-./User_middleware/modbus/modbus_rtu.d 
+./User_middleware/modbus/modbus_rtu.d \
+./User_middleware/modbus/modbus_slave.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -27,7 +30,7 @@ User_middleware/modbus/%.o User_middleware/modbus/%.su User_middleware/modbus/%.
 clean: clean-User_middleware-2f-modbus
 
 clean-User_middleware-2f-modbus:
-	-$(RM) ./User_middleware/modbus/modbus_crc.cyclo ./User_middleware/modbus/modbus_crc.d ./User_middleware/modbus/modbus_crc.o ./User_middleware/modbus/modbus_crc.su ./User_middleware/modbus/modbus_master.cyclo ./User_middleware/modbus/modbus_master.d ./User_middleware/modbus/modbus_master.o ./User_middleware/modbus/modbus_master.su ./User_middleware/modbus/modbus_rtu.cyclo ./User_middleware/modbus/modbus_rtu.d ./User_middleware/modbus/modbus_rtu.o ./User_middleware/modbus/modbus_rtu.su
+	-$(RM) ./User_middleware/modbus/modbus_crc.cyclo ./User_middleware/modbus/modbus_crc.d ./User_middleware/modbus/modbus_crc.o ./User_middleware/modbus/modbus_crc.su ./User_middleware/modbus/modbus_master.cyclo ./User_middleware/modbus/modbus_master.d ./User_middleware/modbus/modbus_master.o ./User_middleware/modbus/modbus_master.su ./User_middleware/modbus/modbus_rtu.cyclo ./User_middleware/modbus/modbus_rtu.d ./User_middleware/modbus/modbus_rtu.o ./User_middleware/modbus/modbus_rtu.su ./User_middleware/modbus/modbus_slave.cyclo ./User_middleware/modbus/modbus_slave.d ./User_middleware/modbus/modbus_slave.o ./User_middleware/modbus/modbus_slave.su
 
 .PHONY: clean-User_middleware-2f-modbus
 

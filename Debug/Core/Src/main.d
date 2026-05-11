@@ -35,6 +35,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/clo_rc68.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/clo_rc68.h \
@@ -95,6 +96,7 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/clo_rc68.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/devices/STM32L4.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_app/clo_rc68.h:

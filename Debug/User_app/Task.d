@@ -35,6 +35,7 @@ User_app/Task.o: ../User_app/Task.c ../Core/Inc/GPIO.h ../Core/Inc/main.h \
  ../Core/Inc/main.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h \
  ../User_app/clo_rc68.h ../Core/Inc/usart.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_crc.h \
  ../User_app/interface_lcd.h \
@@ -88,6 +89,7 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h:
 ../Core/Inc/main.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h:
 ../User_app/clo_rc68.h:
 ../Core/Inc/usart.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_crc.h:

@@ -1,5 +1,6 @@
-User_middleware/modbus/modbus_rtu.o: \
- ../User_middleware/modbus/modbus_rtu.c \
+User_middleware/modbus/modbus_slave.o: \
+ ../User_middleware/modbus/modbus_slave.c \
+ ../User_middleware/modbus/modbus_slave.h \
  ../User_middleware/modbus/modbus_rtu.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h \
  ../Core/Inc/main.h ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
@@ -33,6 +34,7 @@ User_middleware/modbus/modbus_rtu.o: \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
  ../User_middleware/modbus/modbus_crc.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_utils/delay.h
+../User_middleware/modbus/modbus_slave.h:
 ../User_middleware/modbus/modbus_rtu.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h:
 ../Core/Inc/main.h:
