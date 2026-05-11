@@ -539,8 +539,8 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         {
             draw_string_small(10,20,"DONE");
 
-            /* chỉ kêu cho lệnh SET */
-            if(current_cmd >= CMD_SET_ID_BAUD && buzzer_done_state == 0)
+            /* chỉ kêu 1 lần */
+            if(buzzer_done_state == 0)
             {
                 buzzer_done_state = 1;
                 buzzer_done_tick = HAL_GetTick();
