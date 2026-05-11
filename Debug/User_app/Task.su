@@ -5,6 +5,6 @@
 ../User_app/Task.c:185:16:check_response	16	static
 ../User_app/Task.c:260:6:process_cmd_queue	16	static
 ../User_app/Task.c:370:9:_Cb_Sensor	40	static
-../User_app/Task.c:509:9:_Cb_LCD_Display	16	static
-../User_app/Task.c:621:9:_Cb_Button	16	static
-../User_app/Task.c:655:9:Comm_Task	24	static
+../User_app/Task.c:513:9:_Cb_LCD_Display	16	static
+../User_app/Task.c:650:9:_Cb_Button	16	static
+../User_app/Task.c:684:9:Comm_Task	24	static

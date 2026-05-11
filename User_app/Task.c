@@ -376,8 +376,12 @@ uint8_t _Cb_Sensor(uint8_t x)
      /* Đọc gain 1 lần sau khi hệ thống chạy ổn định */
      if(!gain_read_done)
      {
-         gain_read_done = 1;
-         CMD_Enqueue(CMD_READ_GAIN);
+         if(HAL_GetTick() >= 4000)
+         {
+             CMD_Enqueue(CMD_READ_GAIN);
+
+             gain_read_done = 1;
+         }
      }
 
     /* Poll Master (Sensor) */
@@ -513,32 +517,51 @@ uint8_t _Cb_LCD_Display(uint8_t x)
     blink_display();
 
     /* CMD UI */
+    /* CMD UI */
     if(cmd_result != CMD_RES_NONE)
     {
         glcd_clear_buffer();
 
+        /* ================= SENDING ================= */
         if(cmd_result == CMD_RES_SENDING)
         {
             draw_string_small(10,20,"SENDING...");
+
+            /* KHÔNG KÊU */
+            HAL_GPIO_WritePin(GPIOC,
+                              GPIO_PIN_13,
+                              GPIO_PIN_RESET);
+
             buzzer_done_state = 0;
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
+
+        /* ================= DONE ================= */
         else if(cmd_result == CMD_RES_DONE)
         {
             draw_string_small(10,20,"DONE");
+
+            /* chỉ kêu 1 lần */
             if(buzzer_done_state == 0)
             {
                 buzzer_done_state = 1;
                 buzzer_done_tick = HAL_GetTick();
             }
         }
+
+        /* ================= FAIL ================= */
         else if(cmd_result == CMD_RES_FAIL)
         {
             draw_string_small(10,20,"FAIL");
+
+            /* KHÔNG KÊU */
+            HAL_GPIO_WritePin(GPIOC,
+                              GPIO_PIN_13,
+                              GPIO_PIN_RESET);
+
             buzzer_done_state = 0;
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
 
+        /* ================= AUTO EXIT ================= */
         if(cmd_result != CMD_RES_SENDING)
         {
             if(display_tick == 0)
@@ -547,8 +570,14 @@ uint8_t _Cb_LCD_Display(uint8_t x)
             if(HAL_GetTick() - display_tick >= 1000)
             {
                 cmd_result = CMD_RES_NONE;
+
                 display_tick = 0;
+
                 buzzer_done_state = 0;
+
+                HAL_GPIO_WritePin(GPIOC,
+                                  GPIO_PIN_13,
+                                  GPIO_PIN_RESET);
 
                 interface = SETTING;
             }
