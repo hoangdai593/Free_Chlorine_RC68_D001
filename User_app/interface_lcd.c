@@ -343,18 +343,31 @@ void calib_display(void)
     }
     else
     {
-        /* chưa edit → blink cả dòng */
         if(calib_cursor != 1 || blink)
             draw_string_small(5,35,str);
     }
 
-    /* ===== mV VALUE (không blink, không cursor) ===== */
-    char mv_str[20];
+    /* ===== mV VALUE ===== */
+    char mv_str[25];
+
+    int mv_int;
+
+    if(mV_value >= 0)
+        mv_int = (int)(mV_value * 100 + 0.5f);
+    else
+        mv_int = (int)(mV_value * 100 - 0.5f);
+
+    int mv_abs = (mv_int < 0) ? -mv_int : mv_int;
+
+    int mv_i = mv_abs / 100;
+    int mv_d = mv_abs % 100;
 
     snprintf(mv_str,
              sizeof(mv_str),
-             "mV: %+0.2f",
-             mV_value);
+             "mV:%c%d.%02d",
+             (mv_int < 0) ? '-' : '+',
+             mv_i,
+             mv_d);
 
     draw_string_small(5,55,mv_str);
 }
@@ -369,8 +382,6 @@ void offset_display(void)
 
     /* =====================================================
      * OFFSET STRING
-     * format:
-     * Offset: +123 mV
      * ===================================================== */
     char offset_str[25];
 
@@ -383,10 +394,8 @@ void offset_display(void)
     offset_str[6]  = ':';
     offset_str[7]  = ' ';
 
-    /* sign */
     offset_str[8]  = (offset_digit[0]) ? '-' : '+';
 
-    /* number */
     offset_str[9]  = offset_digit[1] + '0';
     offset_str[10] = offset_digit[2] + '0';
     offset_str[11] = offset_digit[3] + '0';
@@ -396,9 +405,6 @@ void offset_display(void)
     offset_str[14] = 'V';
     offset_str[15] = '\0';
 
-    /* =====================================================
-     * BLINK EDIT
-     * ===================================================== */
     if(offset_edit)
     {
         if(blink == 0)
@@ -448,13 +454,10 @@ void offset_display(void)
     else
         intercept_mv = (int)(intercept_value - 0.5f);
 
-    if(intercept_mv < -9999) intercept_mv = -9999;
-    if(intercept_mv >  9999) intercept_mv =  9999;
-
     snprintf(intercept_str,
              sizeof(intercept_str),
-             "Intercept: %+0.2f mV",
-             intercept_value);
+             "Intercept: %d mV",
+             intercept_mv);
 
     draw_string_small(5,38,intercept_str);
 
@@ -479,81 +482,110 @@ void warning_display(void)
     glcd_draw_line(0,10,128,10,BLACK);
     draw_string_small(5,0,"Warning");
 
-    char upper[10];
-    char lower[10];
+    char upper[20];
+    char lower[20];
+    char mode_str[20];
 
-    /* upper */
-    upper[0] = upper_digit[0] + '0';
-    upper[1] = '.';
-    upper[2] = upper_digit[1] + '0';
-    upper[3] = upper_digit[2] + '0';
-    upper[4] = '\0';
+    snprintf(mode_str,
+             sizeof(mode_str),
+             "Mode: %s",
+             warning_mode ? "ON" : "OFF");
 
-    /* lower */
-    lower[0] = lower_digit[0] + '0';
-    lower[1] = '.';
-    lower[2] = lower_digit[1] + '0';
-    lower[3] = lower_digit[2] + '0';
-    lower[4] = '\0';
+    snprintf(upper,
+             sizeof(upper),
+             "Upper: %d.%d%d",
+             upper_digit[0],
+             upper_digit[1],
+             upper_digit[2]);
 
-    /* MODE */
+    snprintf(lower,
+             sizeof(lower),
+             "Lower: %d.%d%d",
+             lower_digit[0],
+             lower_digit[1],
+             lower_digit[2]);
+
+    /* =====================================================
+     * MODE
+     * ===================================================== */
     if(warning_cursor == 0)
     {
-        if(blink == 0)
-            draw_string_small(5,20,"Mode:      ");
+        if(!warning_edit)
+        {
+            if(blink)
+                draw_string_small(5,20,mode_str);
+        }
         else
-            draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
+        {
+            if(blink == 0)
+            {
+                strcpy(mode_str,
+                       warning_mode ?
+                       "Mode:   " :
+                       "Mode:    ");
+            }
+
+            draw_string_small(5,20,mode_str);
+        }
     }
     else
     {
-        draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
+        draw_string_small(5,20,mode_str);
     }
 
-    /* UPPER */
-    if(warning_cursor == 1 && warning_edit == 0)
+    /* =====================================================
+     * UPPER
+     * ===================================================== */
+    if(warning_cursor == 1)
     {
-        if(blink == 0)
+        if(!warning_edit)
         {
-            upper[0] = ' ';
-            upper[1] = ' ';
-            upper[2] = ' ';
-            upper[3] = ' ';
+            if(blink)
+                draw_string_small(5,30,upper);
         }
-    }
-    else if(warning_cursor == 1 && warning_edit == 1)
-    {
-        if(blink == 0)
+        else
         {
-            if(warning_pos == 0) upper[0] = ' ';
-            if(warning_pos == 1) upper[2] = ' ';
-            if(warning_pos == 2) upper[3] = ' ';
-        }
-    }
-    draw_string_small(5,30,"Upper:");
-    draw_string_small(65,30,upper);
+            if(blink == 0)
+            {
+                if(warning_pos == 0) upper[7] = ' ';
+                if(warning_pos == 1) upper[9] = ' ';
+                if(warning_pos == 2) upper[10] = ' ';
+            }
 
-    /* LOWER */
-    if(warning_cursor == 2 && warning_edit == 0)
-    {
-        if(blink == 0)
-        {
-            lower[0] = ' ';
-            lower[1] = ' ';
-            lower[2] = ' ';
-            lower[3] = ' ';
+            draw_string_small(5,30,upper);
         }
     }
-    else if(warning_cursor == 2 && warning_edit == 1)
+    else
     {
-        if(blink == 0)
+        draw_string_small(5,30,upper);
+    }
+
+    /* =====================================================
+     * LOWER
+     * ===================================================== */
+    if(warning_cursor == 2)
+    {
+        if(!warning_edit)
         {
-            if(warning_pos == 0) lower[0] = ' ';
-            if(warning_pos == 1) lower[2] = ' ';
-            if(warning_pos == 2) lower[3] = ' ';
+            if(blink)
+                draw_string_small(5,40,lower);
+        }
+        else
+        {
+            if(blink == 0)
+            {
+                if(warning_pos == 0) lower[7] = ' ';
+                if(warning_pos == 1) lower[9] = ' ';
+                if(warning_pos == 2) lower[10] = ' ';
+            }
+
+            draw_string_small(5,40,lower);
         }
     }
-    draw_string_small(5,40,"Lower:");
-    draw_string_small(65,40,lower);
+    else
+    {
+        draw_string_small(5,40,lower);
+    }
 }
 
 void range_display(void)
