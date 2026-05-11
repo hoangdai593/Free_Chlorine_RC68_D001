@@ -124,6 +124,7 @@ void enter_button_handle(void)
             if(!warning_edit)
             {
                 warning_edit = 1;
+                cmd_result = CMD_RES_SENDING;
 
                 if(warning_cursor == 0)
                 {
@@ -397,7 +398,11 @@ void exit_button_handle(void)
     }
     else if(interface == WARNING)
     {
-        if(warning_edit) warning_edit = 0;
+        if(warning_edit) 
+        {
+            warning_edit = 0;
+            cmd_result = CMD_RES_NONE;
+        }
         else interface = SETTING;
     }
     else if(interface == RANGE)
