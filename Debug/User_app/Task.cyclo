@@ -6,5 +6,5 @@
 ../User_app/Task.c:260:6:process_cmd_queue	14
 ../User_app/Task.c:370:9:_Cb_Sensor	7
 ../User_app/Task.c:445:9:_Cb_LCD_Display	20
-../User_app/Task.c:556:9:_Cb_Button	9
-../User_app/Task.c:590:9:Comm_Task	5
+../User_app/Task.c:557:9:_Cb_Button	9
+../User_app/Task.c:591:9:Comm_Task	5

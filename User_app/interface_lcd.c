@@ -351,20 +351,10 @@ void calib_display(void)
     /* ===== mV VALUE (không blink, không cursor) ===== */
     char mv_str[20];
 
-    int mv_int;
-
-    if(mV_value >= 0)
-        mv_int = (int)(mV_value + 0.5f);
-    else
-        mv_int = (int)(mV_value - 0.5f);
-
-    if(mv_int < -9999) mv_int = -9999;
-    if(mv_int >  9999) mv_int =  9999;
-
     snprintf(mv_str,
              sizeof(mv_str),
-             "Value: %+d mV",
-             mv_int);
+             "Value: %+0.2f mV",
+             mV_value);
 
     draw_string_small(5,55,mv_str);
 }
@@ -507,9 +497,22 @@ void warning_display(void)
     lower[4] = '\0';
 
     /* MODE */
-    if(warning_cursor == 0 && blink == 0)
+    if(warning_cursor == 0)
     {
-        draw_string_small(5,20,"Mode:      ");
+        if(warning_edit)
+        {
+            if(blink == 0)
+                draw_string_small(5,20,"Mode:      ");
+            else
+                draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
+        }
+        else
+        {
+            if(blink == 0)
+                draw_string_small(5,20,"Mode:      ");
+            else
+                draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
+        }
     }
     else
     {
@@ -517,15 +520,18 @@ void warning_display(void)
     }
 
     /* UPPER */
-    if(warning_cursor == 1 && blink == 0)
+    if(warning_cursor == 1)
     {
         if(warning_edit)
         {
-            if(warning_pos == 0) upper[0] = ' ';
-            if(warning_pos == 1) upper[2] = ' ';
-            if(warning_pos == 2) upper[3] = ' ';
+            if(blink == 0)
+            {
+                if(warning_pos == 0) upper[0] = ' ';
+                if(warning_pos == 1) upper[2] = ' ';
+                if(warning_pos == 2) upper[3] = ' ';
+            }
         }
-        else
+        else if(blink == 0)
         {
             upper[0] = ' ';
             upper[2] = ' ';
@@ -536,15 +542,18 @@ void warning_display(void)
     draw_string_small(65,30,upper);
 
     /* LOWER */
-    if(warning_cursor == 2 && blink == 0)
+    if(warning_cursor == 2)
     {
         if(warning_edit)
         {
-            if(warning_pos == 0) lower[0] = ' ';
-            if(warning_pos == 1) lower[2] = ' ';
-            if(warning_pos == 2) lower[3] = ' ';
+            if(blink == 0)
+            {
+                if(warning_pos == 0) lower[0] = ' ';
+                if(warning_pos == 1) lower[2] = ' ';
+                if(warning_pos == 2) lower[3] = ' ';
+            }
         }
-        else
+        else if(blink == 0)
         {
             lower[0] = ' ';
             lower[2] = ' ';

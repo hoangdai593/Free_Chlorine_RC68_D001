@@ -484,6 +484,7 @@ uint8_t _Cb_LCD_Display(uint8_t x)
             {
                 cmd_result = CMD_RES_NONE;
                 display_tick = 0;
+                buzzer_done_state = 0;
 
                 interface = SETTING;
             }

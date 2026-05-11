@@ -97,18 +97,21 @@ void enter_button_handle(void)
         case WARNING:
             if(!warning_edit)
             {
-                warning_edit = 1;
-                warning_pos = 0;
-            }
-            else
-            {
                 if(warning_cursor == 0)
                 {
-                    warning_edit = 0;
+                    warning_mode ^= 1;
                     cmd_result = CMD_RES_DONE;
                     cmd_ui_tick = HAL_GetTick();
                 }
                 else
+                {
+                    warning_edit = 1;
+                    warning_pos = 0;
+                }
+            }
+            else
+            {
+                if(warning_cursor == 1 || warning_cursor == 2)
                 {
                     warning_pos++;
                     if(warning_pos >= 3)
