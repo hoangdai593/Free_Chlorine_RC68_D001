@@ -513,16 +513,8 @@ uint8_t _Cb_Sensor(uint8_t x)
 uint8_t _Cb_LCD_Display(uint8_t x)
 {
     static uint32_t display_tick = 0;
-    static CMD_RESULT_t prev_cmd_result = CMD_RES_NONE;
 
     blink_display();
-
-    /* Reset buzzer for WARNING */
-    if(cmd_result != prev_cmd_result && current_cmd == 0)
-    {
-        buzzer_done_state = 0;
-    }
-    prev_cmd_result = cmd_result;
 
     /* CMD UI */
     if(cmd_result != CMD_RES_NONE)
@@ -534,19 +526,11 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         {
             draw_string_small(10,20,"SENDING...");
 
-            /* Kêu còi nếu là WARNING */
-            if(current_cmd == 0 && buzzer_done_state == 0)
-            {
-                buzzer_done_state = 1;
-                buzzer_done_tick = HAL_GetTick();
-            }
-            else
-            {
-                buzzer_done_state = 2;
-                HAL_GPIO_WritePin(GPIOC,
-                                  GPIO_PIN_13,
-                                  GPIO_PIN_RESET);
-            }
+            /* KHÔNG KÊU */
+            buzzer_done_state = 2;
+            HAL_GPIO_WritePin(GPIOC,
+                              GPIO_PIN_13,
+                              GPIO_PIN_RESET);
 
         }
 
@@ -555,8 +539,8 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         {
             draw_string_small(10,20,"DONE");
 
-            /* Kêu còi nếu là WARNING */
-            if(current_cmd == 0 && buzzer_done_state == 0)
+            /* chỉ kêu 1 lần */
+            if(buzzer_done_state == 0)
             {
                 buzzer_done_state = 1;
                 buzzer_done_tick = HAL_GetTick();
