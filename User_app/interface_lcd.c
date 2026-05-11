@@ -85,8 +85,8 @@ uint8_t warning_edit   = 0;
 
 uint8_t warning_mode = 1;
 
-uint8_t upper_digit[3] = {1,0,0};
-uint8_t lower_digit[3] = {0,2,0};
+uint8_t upper_digit[3] = {1,5,0};
+uint8_t lower_digit[3] = {0,1,0};
 
 uint8_t warning_pos = 0;
 
@@ -511,7 +511,7 @@ void warning_display(void)
     {
         if(warning_cursor == 0 && blink == 0)
         {
-            draw_string_small(5,20,"Mode:   ");
+            draw_string_small(5,20,"Mode:      ");
         }
         else
         {
@@ -520,7 +520,6 @@ void warning_display(void)
     }
     else
     {
-        /* chưa edit → blink cả dòng */
         if(blink)
             draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
     }
@@ -530,16 +529,18 @@ void warning_display(void)
     {
         if(blink == 0)
         {
-            if(warning_pos == 0) upper[0]=' ';
-            if(warning_pos == 1) upper[2]=' ';
-            if(warning_pos == 2) upper[3]=' ';
+            if(warning_pos == 0) upper[0] = ' ';
+            if(warning_pos == 1) upper[2] = ' ';
+            if(warning_pos == 2) upper[3] = ' ';
         }
-        draw_string_small(5,30,upper);
+        draw_string_small(5,30,"Upper:");
+        draw_string_small(65,30,upper);
     }
     else
     {
+        draw_string_small(5,30,"Upper:");
         if(warning_cursor != 1 || blink)
-            draw_string_small(5,30,upper);
+            draw_string_small(65,30,upper);
     }
 
     /* LOWER */
@@ -547,16 +548,18 @@ void warning_display(void)
     {
         if(blink == 0)
         {
-            if(warning_pos == 0) lower[0]=' ';
-            if(warning_pos == 1) lower[2]=' ';
-            if(warning_pos == 2) lower[3]=' ';
+            if(warning_pos == 0) lower[0] = ' ';
+            if(warning_pos == 1) lower[2] = ' ';
+            if(warning_pos == 2) lower[3] = ' ';
         }
-        draw_string_small(5,40,lower);
+        draw_string_small(5,40,"Lower:");
+        draw_string_small(65,40,lower);
     }
     else
     {
+        draw_string_small(5,40,"Lower:");
         if(warning_cursor != 2 || blink)
-            draw_string_small(5,40,lower);
+            draw_string_small(65,40,lower);
     }
 }
 

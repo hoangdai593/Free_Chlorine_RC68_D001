@@ -412,31 +412,22 @@ uint8_t _Cb_Sensor(uint8_t x)
     float lower_threshold = lower_digit[0] + lower_digit[1] * 0.1f + lower_digit[2] * 0.01f;
 
     /* Đồng bộ giá trị và tắt còi nếu không phải âm báo DONE */
-    if(!buzzer_done)
-    {
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-    }
-
     if(buzzer_done)
     {
         uint32_t elapsed = HAL_GetTick() - buzzer_done_tick;
-        if(elapsed < 500)  // tít 0.5s
+        if(elapsed < 200)  // 0.2s pulse
         {
-            uint32_t beep_elapsed = elapsed % 100;  // 100ms cycle
-            if(beep_elapsed < 50)
-            {
-                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-            }
-            else
-            {
-                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-            }
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
         }
         else
         {
             buzzer_done = 0;
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
+    }
+    else
+    {
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
     }
 
     MB_SLAVE_SetFloat(&mb_slave, 0x0006, offset_value);   // Bù pH cho Clo
@@ -465,6 +456,8 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         if(cmd_result == CMD_RES_SENDING)
         {
             draw_string_small(10,20,"SENDING...");
+            buzzer_done = 0;
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
         else if(cmd_result == CMD_RES_DONE)
         {
@@ -478,6 +471,8 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         else if(cmd_result == CMD_RES_FAIL)
         {
             draw_string_small(10,20,"FAIL");
+            buzzer_done = 0;
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
 
         if(cmd_result != CMD_RES_SENDING)

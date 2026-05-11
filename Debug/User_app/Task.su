@@ -4,7 +4,7 @@
 ../User_app/Task.c:115:13:send_command	24	static
 ../User_app/Task.c:185:16:check_response	16	static
 ../User_app/Task.c:260:6:process_cmd_queue	16	static
-../User_app/Task.c:370:9:_Cb_Sensor	40	static
-../User_app/Task.c:454:9:_Cb_LCD_Display	16	static
-../User_app/Task.c:561:9:_Cb_Button	16	static
-../User_app/Task.c:595:9:Comm_Task	24	static
+../User_app/Task.c:370:9:_Cb_Sensor	32	static
+../User_app/Task.c:445:9:_Cb_LCD_Display	16	static
+../User_app/Task.c:556:9:_Cb_Button	16	static
+../User_app/Task.c:590:9:Comm_Task	24	static
