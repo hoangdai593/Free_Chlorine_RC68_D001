@@ -1,5 +1,5 @@
 ../User_app/button_handle.c:8:6:send_cmd	1
 ../User_app/button_handle.c:13:6:enter_button_handle	27
-../User_app/button_handle.c:184:6:up_button_handle	26
-../User_app/button_handle.c:283:6:down_button_handle	26
-../User_app/button_handle.c:381:6:exit_button_handle	14
+../User_app/button_handle.c:186:6:up_button_handle	26
+../User_app/button_handle.c:285:6:down_button_handle	26
+../User_app/button_handle.c:383:6:exit_button_handle	14

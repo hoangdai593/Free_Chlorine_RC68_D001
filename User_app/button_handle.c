@@ -141,6 +141,7 @@ void enter_button_handle(void)
                 {
                     warning_edit = 0;
                     warning_mode_saved = warning_mode;
+                    buzzer_done_state = 0;
                     cmd_result = CMD_RES_DONE;
                     cmd_ui_tick = HAL_GetTick();
                 }
@@ -155,6 +156,7 @@ void enter_button_handle(void)
                         warning_edit = 0;
                         memcpy(upper_digit_saved, upper_digit, 3);
                         memcpy(lower_digit_saved, lower_digit, 3);
+                        buzzer_done_state = 0;
                         cmd_result = CMD_RES_DONE;
                         cmd_ui_tick = HAL_GetTick();
                     }

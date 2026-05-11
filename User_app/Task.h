@@ -109,6 +109,8 @@ extern uint8_t range_index;
 /* UI */
 extern uint8_t display_update_needed;
 extern LCD_INTERFACE previous_interface;
+extern uint8_t buzzer_done_state;
+
 
 void CMD_Enqueue(CMD_TYPE_t type);
 void process_cmd_queue(void);

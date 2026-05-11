@@ -280,6 +280,7 @@ void process_cmd_queue(void)
 
     	        if(current_cmd >= CMD_SET_ID_BAUD)
     	        {
+    	        	buzzer_done_state = 0;
     	            cmd_result  = CMD_RES_FAIL;
     	            cmd_ui_tick = HAL_GetTick();
     	        }
@@ -527,7 +528,6 @@ uint8_t _Cb_LCD_Display(uint8_t x)
             draw_string_small(10,20,"SENDING...");
 
             /* KHÔNG KÊU */
-            buzzer_done_state = 2;
             HAL_GPIO_WritePin(GPIOC,
                               GPIO_PIN_13,
                               GPIO_PIN_RESET);
@@ -556,8 +556,6 @@ uint8_t _Cb_LCD_Display(uint8_t x)
             HAL_GPIO_WritePin(GPIOC,
                               GPIO_PIN_13,
                               GPIO_PIN_RESET);
-
-            buzzer_done_state = 0;
         }
 
         /* ================= AUTO EXIT ================= */
