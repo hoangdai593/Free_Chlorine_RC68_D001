@@ -35,6 +35,32 @@ void enter_button_handle(void)
             break;
 
         case SETTING:
+            // Reset cursor cho sub-setting
+            switch(setting_cursor)
+            {
+                case MODBUS_CUR:
+                    modbus_cursor = 0;
+                    modbus_edit = 0;
+                    break;
+                case CALIB_CUR:
+                    calib_cursor = 0;
+                    calib_edit = 0;
+                    break;
+                case OFFSET_CUR:
+                    offset_cursor = 0;
+                    offset_edit = 0;
+                    break;
+                case WARNING_CUR:
+                    warning_cursor = 0;
+                    warning_edit = 0;
+                    break;
+                case RANGE_CUR:
+                    range_edit = 0;
+                    break;
+                case INFO_CUR:
+                    // No cursor
+                    break;
+            }
             interface = (LCD_INTERFACE)(MODBUS + setting_cursor);
             break;
 
@@ -381,9 +407,15 @@ void exit_button_handle(void)
         else
             interface = SETTING;
     }
-    else if(interface != MAIN && interface < MODBUS)
+    else if(interface == SETTING)
     {
-        interface--;
+        interface = MAIN;
+        memset(password,0,4);
+        pass_cur = 0;
+    }
+    else if(interface == LOGIN)
+    {
+        interface = MAIN;
         memset(password,0,4);
         pass_cur = 0;
     }
