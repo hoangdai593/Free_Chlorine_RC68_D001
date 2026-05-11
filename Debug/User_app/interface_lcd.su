@@ -6,5 +6,5 @@
 ../User_app/interface_lcd.c:309:6:calib_display	64	static
 ../User_app/interface_lcd.c:362:6:offset_display	120	static
 ../User_app/interface_lcd.c:476:6:warning_display	40	static
-../User_app/interface_lcd.c:567:6:range_display	64	static
-../User_app/interface_lcd.c:615:6:info_display	16	static
+../User_app/interface_lcd.c:559:6:range_display	64	static
+../User_app/interface_lcd.c:607:6:info_display	16	static

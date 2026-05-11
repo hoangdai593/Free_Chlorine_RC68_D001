@@ -5796,7 +5796,7 @@ LOAD D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externa
                 0x08000000                g_pfnVectors
                 0x0800018c                        . = ALIGN (0x4)
 
-.text           0x08000190     0x9154
+.text           0x08000190     0x9144
                 0x08000190                        . = ALIGN (0x4)
  *(.text)
  .text          0x08000190       0x40 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
@@ -6236,354 +6236,354 @@ LOAD D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externa
                 0x08006aa4      0x210 ./User_app/interface_lcd.o
                 0x08006aa4                offset_display
  .text.warning_display
-                0x08006cb4      0x204 ./User_app/interface_lcd.o
+                0x08006cb4      0x1f4 ./User_app/interface_lcd.o
                 0x08006cb4                warning_display
  .text.range_display
-                0x08006eb8      0x108 ./User_app/interface_lcd.o
-                0x08006eb8                range_display
+                0x08006ea8      0x108 ./User_app/interface_lcd.o
+                0x08006ea8                range_display
  .text.info_display
-                0x08006fc0       0x4c ./User_app/interface_lcd.o
-                0x08006fc0                info_display
+                0x08006fb0       0x4c ./User_app/interface_lcd.o
+                0x08006fb0                info_display
  .text.glcd_command
-                0x0800700c       0x40 ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x0800700c                glcd_command
+                0x08006ffc       0x40 ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x08006ffc                glcd_command
  .text.glcd_data
-                0x0800704c       0x40 ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x0800704c                glcd_data
+                0x0800703c       0x40 ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x0800703c                glcd_data
  .text.glcd_set_contrast
-                0x0800708c       0x2e ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x0800708c                glcd_set_contrast
+                0x0800707c       0x2e ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x0800707c                glcd_set_contrast
  .text.glcd_set_y_address
-                0x080070ba       0x26 ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x080070ba                glcd_set_y_address
+                0x080070aa       0x26 ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x080070aa                glcd_set_y_address
  .text.glcd_set_x_address
-                0x080070e0       0x22 ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x080070e0                glcd_set_x_address
+                0x080070d0       0x22 ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x080070d0                glcd_set_x_address
  .text.glcd_set_column_upper
-                0x08007102       0x24 ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x08007102                glcd_set_column_upper
+                0x080070f2       0x24 ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x080070f2                glcd_set_column_upper
  .text.glcd_set_column_lower
-                0x08007126       0x20 ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x08007126                glcd_set_column_lower
- *fill*         0x08007146        0x2 
+                0x08007116       0x20 ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x08007116                glcd_set_column_lower
+ *fill*         0x08007136        0x2 
  .text.glcd_write
-                0x08007148       0x9c ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x08007148                glcd_write
+                0x08007138       0x9c ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x08007138                glcd_write
  .text.glcd_ST7565R_init
-                0x080071e4       0x60 ./User_bsp/glcd-master/controllers/ST7565R.o
-                0x080071e4                glcd_ST7565R_init
+                0x080071d4       0x60 ./User_bsp/glcd-master/controllers/ST7565R.o
+                0x080071d4                glcd_ST7565R_init
  .text.glcd_init
-                0x08007244       0x50 ./User_bsp/glcd-master/devices/STM32L4.o
-                0x08007244                glcd_init
+                0x08007234       0x50 ./User_bsp/glcd-master/devices/STM32L4.o
+                0x08007234                glcd_init
  .text.glcd_spi_write
-                0x08007294       0x3c ./User_bsp/glcd-master/devices/STM32L4.o
-                0x08007294                glcd_spi_write
+                0x08007284       0x3c ./User_bsp/glcd-master/devices/STM32L4.o
+                0x08007284                glcd_spi_write
  .text.glcd_reset
-                0x080072d0       0x2c ./User_bsp/glcd-master/devices/STM32L4.o
-                0x080072d0                glcd_reset
+                0x080072c0       0x2c ./User_bsp/glcd-master/devices/STM32L4.o
+                0x080072c0                glcd_reset
  .text.glcd_update_bbox
-                0x080072fc       0xa8 ./User_bsp/glcd-master/glcd.o
-                0x080072fc                glcd_update_bbox
+                0x080072ec       0xa8 ./User_bsp/glcd-master/glcd.o
+                0x080072ec                glcd_update_bbox
  .text.glcd_reset_bbox
-                0x080073a4       0x34 ./User_bsp/glcd-master/glcd.o
-                0x080073a4                glcd_reset_bbox
+                0x08007394       0x34 ./User_bsp/glcd-master/glcd.o
+                0x08007394                glcd_reset_bbox
  .text.glcd_clear
-                0x080073d8       0x2c ./User_bsp/glcd-master/glcd.o
-                0x080073d8                glcd_clear
+                0x080073c8       0x2c ./User_bsp/glcd-master/glcd.o
+                0x080073c8                glcd_clear
  .text.glcd_clear_buffer
-                0x08007404       0x28 ./User_bsp/glcd-master/glcd.o
-                0x08007404                glcd_clear_buffer
+                0x080073f4       0x28 ./User_bsp/glcd-master/glcd.o
+                0x080073f4                glcd_clear_buffer
  .text.glcd_select_screen
-                0x0800742c       0x2c ./User_bsp/glcd-master/glcd.o
-                0x0800742c                glcd_select_screen
+                0x0800741c       0x2c ./User_bsp/glcd-master/glcd.o
+                0x0800741c                glcd_select_screen
  .text.glcd_set_pixel
-                0x08007458       0xb0 ./User_bsp/glcd-master/graphics.o
-                0x08007458                glcd_set_pixel
+                0x08007448       0xb0 ./User_bsp/glcd-master/graphics.o
+                0x08007448                glcd_set_pixel
  .text.glcd_draw_line
-                0x08007508      0x120 ./User_bsp/glcd-master/graphics.o
-                0x08007508                glcd_draw_line
+                0x080074f8      0x120 ./User_bsp/glcd-master/graphics.o
+                0x080074f8                glcd_draw_line
  .text.glcd_draw_circle
-                0x08007628      0x1ce ./User_bsp/glcd-master/graphics.o
-                0x08007628                glcd_draw_circle
- *fill*         0x080077f6        0x2 
+                0x08007618      0x1ce ./User_bsp/glcd-master/graphics.o
+                0x08007618                glcd_draw_circle
+ *fill*         0x080077e6        0x2 
  .text.glcd_set_font
-                0x080077f8       0x50 ./User_bsp/glcd-master/text.o
-                0x080077f8                glcd_set_font
+                0x080077e8       0x50 ./User_bsp/glcd-master/text.o
+                0x080077e8                glcd_set_font
  .text.glcd_draw_char_xy
-                0x08007848      0x418 ./User_bsp/glcd-master/text.o
-                0x08007848                glcd_draw_char_xy
+                0x08007838      0x418 ./User_bsp/glcd-master/text.o
+                0x08007838                glcd_draw_char_xy
  .text.glcd_draw_string_xy
-                0x08007c60       0x5c ./User_bsp/glcd-master/text.o
-                0x08007c60                glcd_draw_string_xy
+                0x08007c50       0x5c ./User_bsp/glcd-master/text.o
+                0x08007c50                glcd_draw_string_xy
  .text.draw_string_small
-                0x08007cbc       0x3c ./User_bsp/glcd-master/text.o
-                0x08007cbc                draw_string_small
+                0x08007cac       0x3c ./User_bsp/glcd-master/text.o
+                0x08007cac                draw_string_small
  .text.draw_string_big
-                0x08007cf8       0x3c ./User_bsp/glcd-master/text.o
-                0x08007cf8                draw_string_big
+                0x08007ce8       0x3c ./User_bsp/glcd-master/text.o
+                0x08007ce8                draw_string_big
  .text.glcd_tiny_set_font
-                0x08007d34       0x50 ./User_bsp/glcd-master/text_tiny.o
-                0x08007d34                glcd_tiny_set_font
+                0x08007d24       0x50 ./User_bsp/glcd-master/text_tiny.o
+                0x08007d24                glcd_tiny_set_font
  .text.RS485_GetHandle
-                0x08007d84       0x34 ./User_bsp/rs485/bsp_rs485.o
+                0x08007d74       0x34 ./User_bsp/rs485/bsp_rs485.o
  .text.BSP_RS485_GetHandle
-                0x08007db8       0x1c ./User_bsp/rs485/bsp_rs485.o
-                0x08007db8                BSP_RS485_GetHandle
+                0x08007da8       0x1c ./User_bsp/rs485/bsp_rs485.o
+                0x08007da8                BSP_RS485_GetHandle
  .text.BSP_RS485_Init
-                0x08007dd4       0x14 ./User_bsp/rs485/bsp_rs485.o
-                0x08007dd4                BSP_RS485_Init
+                0x08007dc4       0x14 ./User_bsp/rs485/bsp_rs485.o
+                0x08007dc4                BSP_RS485_Init
  .text.BSP_RS485_TX_Mode
-                0x08007de8       0x40 ./User_bsp/rs485/bsp_rs485.o
-                0x08007de8                BSP_RS485_TX_Mode
+                0x08007dd8       0x40 ./User_bsp/rs485/bsp_rs485.o
+                0x08007dd8                BSP_RS485_TX_Mode
  .text.BSP_RS485_RX_Mode
-                0x08007e28       0x40 ./User_bsp/rs485/bsp_rs485.o
-                0x08007e28                BSP_RS485_RX_Mode
+                0x08007e18       0x40 ./User_bsp/rs485/bsp_rs485.o
+                0x08007e18                BSP_RS485_RX_Mode
  .text.BSP_RS485_Receive_IT
-                0x08007e68       0x3c ./User_bsp/rs485/bsp_rs485.o
-                0x08007e68                BSP_RS485_Receive_IT
+                0x08007e58       0x3c ./User_bsp/rs485/bsp_rs485.o
+                0x08007e58                BSP_RS485_Receive_IT
  .text.BSP_RS485_WaitTC
-                0x08007ea4       0x34 ./User_bsp/rs485/bsp_rs485.o
-                0x08007ea4                BSP_RS485_WaitTC
+                0x08007e94       0x34 ./User_bsp/rs485/bsp_rs485.o
+                0x08007e94                BSP_RS485_WaitTC
  .text.MB_CRC16
-                0x08007ed8       0x7c ./User_middleware/modbus/modbus_crc.o
-                0x08007ed8                MB_CRC16
+                0x08007ec8       0x7c ./User_middleware/modbus/modbus_crc.o
+                0x08007ec8                MB_CRC16
  .text.MB_CRC_Append
-                0x08007f54       0x40 ./User_middleware/modbus/modbus_crc.o
-                0x08007f54                MB_CRC_Append
+                0x08007f44       0x40 ./User_middleware/modbus/modbus_crc.o
+                0x08007f44                MB_CRC_Append
  .text.MB_CRC_Check
-                0x08007f94       0x64 ./User_middleware/modbus/modbus_crc.o
-                0x08007f94                MB_CRC_Check
+                0x08007f84       0x64 ./User_middleware/modbus/modbus_crc.o
+                0x08007f84                MB_CRC_Check
  .text.MB_Debug_Tx
-                0x08007ff8      0x110 ./User_middleware/modbus/modbus_master.o
+                0x08007fe8      0x110 ./User_middleware/modbus/modbus_master.o
  .text.MB_Master_SendReq
-                0x08008108       0x4a ./User_middleware/modbus/modbus_master.o
+                0x080080f8       0x4a ./User_middleware/modbus/modbus_master.o
  .text.MB_Master_ReadHoldingReg
-                0x08008152       0x5a ./User_middleware/modbus/modbus_master.o
-                0x08008152                MB_Master_ReadHoldingReg
+                0x08008142       0x5a ./User_middleware/modbus/modbus_master.o
+                0x08008142                MB_Master_ReadHoldingReg
  .text.MB_Master_WriteU16
-                0x080081ac       0x66 ./User_middleware/modbus/modbus_master.o
-                0x080081ac                MB_Master_WriteU16
+                0x0800819c       0x66 ./User_middleware/modbus/modbus_master.o
+                0x0800819c                MB_Master_WriteU16
  .text.MB_Master_WriteFloat
-                0x08008212       0x78 ./User_middleware/modbus/modbus_master.o
-                0x08008212                MB_Master_WriteFloat
+                0x08008202       0x78 ./User_middleware/modbus/modbus_master.o
+                0x08008202                MB_Master_WriteFloat
  .text.MB_Master_GetReg16
-                0x0800828a       0x54 ./User_middleware/modbus/modbus_master.o
-                0x0800828a                MB_Master_GetReg16
+                0x0800827a       0x54 ./User_middleware/modbus/modbus_master.o
+                0x0800827a                MB_Master_GetReg16
  .text.MB_Master_GetFloat
-                0x080082de       0x8c ./User_middleware/modbus/modbus_master.o
-                0x080082de                MB_Master_GetFloat
+                0x080082ce       0x8c ./User_middleware/modbus/modbus_master.o
+                0x080082ce                MB_Master_GetFloat
  .text.MB_RTU_Init
-                0x0800836a       0x30 ./User_middleware/modbus/modbus_rtu.o
-                0x0800836a                MB_RTU_Init
+                0x0800835a       0x30 ./User_middleware/modbus/modbus_rtu.o
+                0x0800835a                MB_RTU_Init
  .text.MB_RTU_Clear
-                0x0800839a       0x40 ./User_middleware/modbus/modbus_rtu.o
-                0x0800839a                MB_RTU_Clear
+                0x0800838a       0x40 ./User_middleware/modbus/modbus_rtu.o
+                0x0800838a                MB_RTU_Clear
  .text.MB_RTU_StartReceive
-                0x080083da       0x22 ./User_middleware/modbus/modbus_rtu.o
-                0x080083da                MB_RTU_StartReceive
+                0x080083ca       0x22 ./User_middleware/modbus/modbus_rtu.o
+                0x080083ca                MB_RTU_StartReceive
  .text.MB_RTU_RxByteHandler
-                0x080083fc       0x56 ./User_middleware/modbus/modbus_rtu.o
-                0x080083fc                MB_RTU_RxByteHandler
+                0x080083ec       0x56 ./User_middleware/modbus/modbus_rtu.o
+                0x080083ec                MB_RTU_RxByteHandler
  .text.MB_RTU_Send
-                0x08008452       0x9a ./User_middleware/modbus/modbus_rtu.o
-                0x08008452                MB_RTU_Send
+                0x08008442       0x9a ./User_middleware/modbus/modbus_rtu.o
+                0x08008442                MB_RTU_Send
  .text.MB_RTU_Poll
-                0x080084ec       0x74 ./User_middleware/modbus/modbus_rtu.o
-                0x080084ec                MB_RTU_Poll
+                0x080084dc       0x74 ./User_middleware/modbus/modbus_rtu.o
+                0x080084dc                MB_RTU_Poll
  .text.MB_SLAVE_Init
-                0x08008560       0x88 ./User_middleware/modbus/modbus_slave.o
-                0x08008560                MB_SLAVE_Init
+                0x08008550       0x88 ./User_middleware/modbus/modbus_slave.o
+                0x08008550                MB_SLAVE_Init
  .text.MB_SLAVE_RxByteHandler
-                0x080085e8       0x4e ./User_middleware/modbus/modbus_slave.o
-                0x080085e8                MB_SLAVE_RxByteHandler
+                0x080085d8       0x4e ./User_middleware/modbus/modbus_slave.o
+                0x080085d8                MB_SLAVE_RxByteHandler
  .text.MB_SLAVE_Poll
-                0x08008636      0x160 ./User_middleware/modbus/modbus_slave.o
-                0x08008636                MB_SLAVE_Poll
+                0x08008626      0x160 ./User_middleware/modbus/modbus_slave.o
+                0x08008626                MB_SLAVE_Poll
  .text.MB_SLAVE_SendResponse
-                0x08008796       0x72 ./User_middleware/modbus/modbus_slave.o
+                0x08008786       0x72 ./User_middleware/modbus/modbus_slave.o
  .text.MB_SLAVE_SendException
-                0x08008808       0x36 ./User_middleware/modbus/modbus_slave.o
+                0x080087f8       0x36 ./User_middleware/modbus/modbus_slave.o
  .text.MB_SLAVE_SetFloat
-                0x0800883e       0x50 ./User_middleware/modbus/modbus_slave.o
-                0x0800883e                MB_SLAVE_SetFloat
+                0x0800882e       0x50 ./User_middleware/modbus/modbus_slave.o
+                0x0800882e                MB_SLAVE_SetFloat
  .text.MB_SLAVE_SetU16
-                0x0800888e       0x2e ./User_middleware/modbus/modbus_slave.o
-                0x0800888e                MB_SLAVE_SetU16
+                0x0800887e       0x2e ./User_middleware/modbus/modbus_slave.o
+                0x0800887e                MB_SLAVE_SetU16
  .text.delay_us
-                0x080088bc       0x34 ./User_utils/delay.o
-                0x080088bc                delay_us
+                0x080088ac       0x34 ./User_utils/delay.o
+                0x080088ac                delay_us
  .text.snprintf
-                0x080088f0       0x6c D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-snprintf.o)
-                0x080088f0                sniprintf
-                0x080088f0                snprintf
- .text.sprintf  0x0800895c       0x44 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-sprintf.o)
-                0x0800895c                siprintf
-                0x0800895c                sprintf
- .text.memcmp   0x080089a0       0x20 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memcmp.o)
-                0x080089a0                memcmp
- .text.memset   0x080089c0       0x10 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memset.o)
-                0x080089c0                memset
- .text.__errno  0x080089d0        0xc D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-errno.o)
-                0x080089d0                __errno
+                0x080088e0       0x6c D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-snprintf.o)
+                0x080088e0                sniprintf
+                0x080088e0                snprintf
+ .text.sprintf  0x0800894c       0x44 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-sprintf.o)
+                0x0800894c                siprintf
+                0x0800894c                sprintf
+ .text.memcmp   0x08008990       0x20 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memcmp.o)
+                0x08008990                memcmp
+ .text.memset   0x080089b0       0x10 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memset.o)
+                0x080089b0                memset
+ .text.__errno  0x080089c0        0xc D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-errno.o)
+                0x080089c0                __errno
  .text.__libc_init_array
-                0x080089dc       0x48 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-init.o)
-                0x080089dc                __libc_init_array
+                0x080089cc       0x48 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-init.o)
+                0x080089cc                __libc_init_array
  .text.__retarget_lock_acquire_recursive
-                0x08008a24        0x2 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-lock.o)
-                0x08008a24                __retarget_lock_acquire_recursive
+                0x08008a14        0x2 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-lock.o)
+                0x08008a14                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x08008a26        0x2 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-lock.o)
-                0x08008a26                __retarget_lock_release_recursive
- .text.memcpy   0x08008a28       0x1c D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memcpy-stub.o)
-                0x08008a28                memcpy
- .text._free_r  0x08008a44       0x94 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-freer.o)
-                0x08008a44                _free_r
+                0x08008a16        0x2 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-lock.o)
+                0x08008a16                __retarget_lock_release_recursive
+ .text.memcpy   0x08008a18       0x1c D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memcpy-stub.o)
+                0x08008a18                memcpy
+ .text._free_r  0x08008a34       0x94 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-freer.o)
+                0x08008a34                _free_r
  .text.sbrk_aligned
-                0x08008ad8       0x44 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-mallocr.o)
+                0x08008ac8       0x44 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-mallocr.o)
  .text._malloc_r
-                0x08008b1c      0x100 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-mallocr.o)
-                0x08008b1c                _malloc_r
+                0x08008b0c      0x100 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-mallocr.o)
+                0x08008b0c                _malloc_r
  .text.__malloc_lock
-                0x08008c1c        0xc D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-mlock.o)
-                0x08008c1c                __malloc_lock
+                0x08008c0c        0xc D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-mlock.o)
+                0x08008c0c                __malloc_lock
  .text.__malloc_unlock
-                0x08008c28        0xc D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-mlock.o)
-                0x08008c28                __malloc_unlock
+                0x08008c18        0xc D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-mlock.o)
+                0x08008c18                __malloc_unlock
  .text.__ssputs_r
-                0x08008c34       0xc0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-svfprintf.o)
-                0x08008c34                __ssputs_r
+                0x08008c24       0xc0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08008c24                __ssputs_r
  .text._svfprintf_r
-                0x08008cf4      0x1f0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-svfprintf.o)
-                0x08008cf4                _svfiprintf_r
-                0x08008cf4                _svfprintf_r
+                0x08008ce4      0x1f0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08008ce4                _svfiprintf_r
+                0x08008ce4                _svfprintf_r
  .text._printf_common
-                0x08008ee4       0xda D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x08008ee4                _printf_common
- *fill*         0x08008fbe        0x2 
+                0x08008ed4       0xda D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08008ed4                _printf_common
+ *fill*         0x08008fae        0x2 
  .text._printf_i
-                0x08008fc0      0x24c D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x08008fc0                _printf_i
- .text.memmove  0x0800920c       0x32 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memmove.o)
-                0x0800920c                memmove
- *fill*         0x0800923e        0x2 
- .text._sbrk_r  0x08009240       0x20 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-sbrkr.o)
-                0x08009240                _sbrk_r
+                0x08008fb0      0x24c D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08008fb0                _printf_i
+ .text.memmove  0x080091fc       0x32 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memmove.o)
+                0x080091fc                memmove
+ *fill*         0x0800922e        0x2 
+ .text._sbrk_r  0x08009230       0x20 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-sbrkr.o)
+                0x08009230                _sbrk_r
  .text._realloc_r
-                0x08009260       0x5c D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-reallocr.o)
-                0x08009260                _realloc_r
+                0x08009250       0x5c D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-reallocr.o)
+                0x08009250                _realloc_r
  .text._malloc_usable_size_r
-                0x080092bc       0x10 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-msizer.o)
-                0x080092bc                _malloc_usable_size_r
+                0x080092ac       0x10 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-msizer.o)
+                0x080092ac                _malloc_usable_size_r
  *(.glue_7)
- .glue_7        0x080092cc        0x0 linker stubs
+ .glue_7        0x080092bc        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x080092cc        0x0 linker stubs
+ .glue_7t       0x080092bc        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x080092cc        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+ .eh_frame      0x080092bc        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
  *(.init)
- .init          0x080092cc        0x4 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crti.o
-                0x080092cc                _init
- .init          0x080092d0        0x8 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtn.o
+ .init          0x080092bc        0x4 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crti.o
+                0x080092bc                _init
+ .init          0x080092c0        0x8 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtn.o
  *(.fini)
- .fini          0x080092d8        0x4 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crti.o
-                0x080092d8                _fini
- .fini          0x080092dc        0x8 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtn.o
-                0x080092e4                        . = ALIGN (0x4)
-                0x080092e4                        _etext = .
+ .fini          0x080092c8        0x4 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crti.o
+                0x080092c8                _fini
+ .fini          0x080092cc        0x8 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtn.o
+                0x080092d4                        . = ALIGN (0x4)
+                0x080092d4                        _etext = .
 
-.vfp11_veneer   0x080092e4        0x0
- .vfp11_veneer  0x080092e4        0x0 linker stubs
+.vfp11_veneer   0x080092d4        0x0
+ .vfp11_veneer  0x080092d4        0x0 linker stubs
 
-.v4_bx          0x080092e4        0x0
- .v4_bx         0x080092e4        0x0 linker stubs
+.v4_bx          0x080092d4        0x0
+ .v4_bx         0x080092d4        0x0 linker stubs
 
-.iplt           0x080092e4        0x0
- .iplt          0x080092e4        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+.iplt           0x080092d4        0x0
+ .iplt          0x080092d4        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
 
-.rodata         0x080092e4      0x6a0
-                0x080092e4                        . = ALIGN (0x4)
+.rodata         0x080092d4      0x698
+                0x080092d4                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x080092e4       0x19 ./User_app/Task.o
- *fill*         0x080092fd        0x3 
- .rodata        0x08009300      0x1a3 ./User_app/interface_lcd.o
- *fill*         0x080094a3        0x1 
- .rodata        0x080094a4       0x26 ./User_middleware/modbus/modbus_master.o
+ .rodata        0x080092d4       0x19 ./User_app/Task.o
+ *fill*         0x080092ed        0x3 
+ .rodata        0x080092f0      0x19b ./User_app/interface_lcd.o
+ *fill*         0x0800948b        0x1 
+ .rodata        0x0800948c       0x26 ./User_middleware/modbus/modbus_master.o
  *(.rodata*)
- *fill*         0x080094ca        0x2 
+ *fill*         0x080094b2        0x2 
  .rodata.AHBPrescTable
-                0x080094cc       0x10 ./Core/Src/system_stm32l4xx.o
-                0x080094cc                AHBPrescTable
+                0x080094b4       0x10 ./Core/Src/system_stm32l4xx.o
+                0x080094b4                AHBPrescTable
  .rodata.APBPrescTable
-                0x080094dc        0x8 ./Core/Src/system_stm32l4xx.o
-                0x080094dc                APBPrescTable
+                0x080094c4        0x8 ./Core/Src/system_stm32l4xx.o
+                0x080094c4                APBPrescTable
  .rodata.MSIRangeTable
-                0x080094e4       0x30 ./Core/Src/system_stm32l4xx.o
-                0x080094e4                MSIRangeTable
+                0x080094cc       0x30 ./Core/Src/system_stm32l4xx.o
+                0x080094cc                MSIRangeTable
  .rodata.baud_list
-                0x08009514       0x24 ./User_app/interface_lcd.o
-                0x08009514                baud_list
+                0x080094fc       0x24 ./User_app/interface_lcd.o
+                0x080094fc                baud_list
  .rodata.range_list
-                0x08009538       0x10 ./User_app/interface_lcd.o
-                0x08009538                range_list
+                0x08009520       0x10 ./User_app/interface_lcd.o
+                0x08009520                range_list
  .rodata.Font5x7
-                0x08009548      0x1e0 ./User_bsp/glcd-master/text.o
+                0x08009530      0x1e0 ./User_bsp/glcd-master/text.o
  .rodata.Liberation_Sans15x21_Numbers
-                0x08009728      0x228 ./User_bsp/glcd-master/text.o
+                0x08009710      0x228 ./User_bsp/glcd-master/text.o
  .rodata._svfprintf_r.str1.1
-                0x08009950       0x33 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-svfprintf.o)
+                0x08009938       0x33 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-svfprintf.o)
                                  0x11 (size before relaxing)
  .rodata._printf_i.str1.1
-                0x08009983       0x22 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080099a8                        . = ALIGN (0x4)
- *fill*         0x08009983        0x1 
+                0x0800996b       0x22 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08009990                        . = ALIGN (0x4)
+ *fill*         0x0800996b        0x1 
 
-.ARM.extab      0x08009984        0x0
-                0x08009984                        . = ALIGN (0x4)
+.ARM.extab      0x0800996c        0x0
+                0x0800996c                        . = ALIGN (0x4)
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x08009984                        . = ALIGN (0x4)
+                0x0800996c                        . = ALIGN (0x4)
 
-.ARM            0x08009984        0x8
-                0x08009984                        . = ALIGN (0x4)
-                0x08009984                        __exidx_start = .
+.ARM            0x0800996c        0x8
+                0x0800996c                        . = ALIGN (0x4)
+                0x0800996c                        __exidx_start = .
  *(.ARM.exidx*)
- .ARM.exidx     0x08009984        0x8 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-strlen.o)
- .ARM.exidx     0x0800998c        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memchr.o)
+ .ARM.exidx     0x0800996c        0x8 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-strlen.o)
+ .ARM.exidx     0x08009974        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-memchr.o)
                                   0x8 (size before relaxing)
- .ARM.exidx     0x0800998c        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard\libgcc.a(_udivmoddi4.o)
+ .ARM.exidx     0x08009974        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard\libgcc.a(_udivmoddi4.o)
                                   0x8 (size before relaxing)
-                0x0800998c                        __exidx_end = .
-                0x0800998c                        . = ALIGN (0x4)
+                0x08009974                        __exidx_end = .
+                0x08009974                        . = ALIGN (0x4)
 
-.preinit_array  0x0800998c        0x0
-                0x0800998c                        . = ALIGN (0x4)
-                0x0800998c                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x08009974        0x0
+                0x08009974                        . = ALIGN (0x4)
+                0x08009974                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x0800998c                        PROVIDE (__preinit_array_end = .)
-                0x0800998c                        . = ALIGN (0x4)
+                0x08009974                        PROVIDE (__preinit_array_end = .)
+                0x08009974                        . = ALIGN (0x4)
 
-.init_array     0x0800998c        0x4
-                0x0800998c                        . = ALIGN (0x4)
-                0x0800998c                        PROVIDE (__init_array_start = .)
+.init_array     0x08009974        0x4
+                0x08009974                        . = ALIGN (0x4)
+                0x08009974                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x0800998c        0x4 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
-                0x08009990                        PROVIDE (__init_array_end = .)
-                0x08009990                        . = ALIGN (0x4)
+ .init_array    0x08009974        0x4 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+                0x08009978                        PROVIDE (__init_array_end = .)
+                0x08009978                        . = ALIGN (0x4)
 
-.fini_array     0x08009990        0x4
-                0x08009990                        . = ALIGN (0x4)
+.fini_array     0x08009978        0x4
+                0x08009978                        . = ALIGN (0x4)
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x08009990        0x4 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+ .fini_array    0x08009978        0x4 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
                 [!provide]                        PROVIDE (__fini_array_end = .)
-                0x08009994                        . = ALIGN (0x4)
-                0x08009994                        _sidata = LOADADDR (.data)
+                0x0800997c                        . = ALIGN (0x4)
+                0x0800997c                        _sidata = LOADADDR (.data)
 
-.rel.dyn        0x08009994        0x0
- .rel.iplt      0x08009994        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+.rel.dyn        0x0800997c        0x0
+ .rel.iplt      0x0800997c        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
 
-.data           0x20000000       0xa4 load address 0x08009994
+.data           0x20000000       0xa4 load address 0x0800997c
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -6637,11 +6637,11 @@ LOAD D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externa
                 0x200000a4                        . = ALIGN (0x4)
                 0x200000a4                        _edata = .
 
-.igot.plt       0x200000a4        0x0 load address 0x08009a38
+.igot.plt       0x200000a4        0x0 load address 0x08009a20
  .igot.plt      0x200000a4        0x0 D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740/tools/bin/../lib/gcc/arm-none-eabi/14.3.1/thumb/v7e-m+fp/hard/crtbegin.o
                 0x200000a4                        . = ALIGN (0x4)
 
-.bss            0x200000a4      0xa54 load address 0x08009a38
+.bss            0x200000a4      0xa54 load address 0x08009a20
                 0x200000a4                        _sbss = .
                 0x200000a4                        __bss_start__ = _sbss
  *(.bss)
@@ -6822,7 +6822,7 @@ LOAD D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externa
                 0x20000af8                        __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x20000af8      0x600 load address 0x08009a38
+                0x20000af8      0x600 load address 0x08009a20
                 0x20000af8                        . = ALIGN (0x8)
                 [!provide]                        PROVIDE (end = .)
                 0x20000af8                        PROVIDE (_end = .)
@@ -7319,7 +7319,7 @@ LOAD D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externa
  .debug_macro   0x000255d5      0x2ef ./User_middleware/modbus/modbus_slave.o
  .debug_macro   0x000258c4      0x1da ./User_utils/delay.o
 
-.debug_line     0x00000000    0x1ba13
+.debug_line     0x00000000    0x1ba2d
  .debug_line    0x00000000      0x7b7 ./Core/Src/gpio.o
  .debug_line    0x000007b7      0xc95 ./Core/Src/main.o
  .debug_line    0x0000144c      0x7d2 ./Core/Src/spi.o
@@ -7343,19 +7343,19 @@ LOAD D:/STM32CubeIDE_2.1.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externa
  .debug_line    0x00010756     0x10b6 ./User_app/Task.o
  .debug_line    0x0001180c     0x10f2 ./User_app/button_handle.o
  .debug_line    0x000128fe      0xabf ./User_app/clo_rc68.o
- .debug_line    0x000133bd     0x1218 ./User_app/interface_lcd.o
- .debug_line    0x000145d5      0xb16 ./User_bsp/glcd-master/controllers/ST7565R.o
- .debug_line    0x000150eb      0x96c ./User_bsp/glcd-master/devices/STM32L4.o
- .debug_line    0x00015a57      0x875 ./User_bsp/glcd-master/glcd.o
- .debug_line    0x000162cc      0xaa3 ./User_bsp/glcd-master/graphics.o
- .debug_line    0x00016d6f      0x8c9 ./User_bsp/glcd-master/text.o
- .debug_line    0x00017638      0x78f ./User_bsp/glcd-master/text_tiny.o
- .debug_line    0x00017dc7      0xab3 ./User_bsp/rs485/bsp_rs485.o
- .debug_line    0x0001887a      0x807 ./User_middleware/modbus/modbus_crc.o
- .debug_line    0x00019081      0xc35 ./User_middleware/modbus/modbus_master.o
- .debug_line    0x00019cb6      0xaa5 ./User_middleware/modbus/modbus_rtu.o
- .debug_line    0x0001a75b      0xb3f ./User_middleware/modbus/modbus_slave.o
- .debug_line    0x0001b29a      0x779 ./User_utils/delay.o
+ .debug_line    0x000133bd     0x1232 ./User_app/interface_lcd.o
+ .debug_line    0x000145ef      0xb16 ./User_bsp/glcd-master/controllers/ST7565R.o
+ .debug_line    0x00015105      0x96c ./User_bsp/glcd-master/devices/STM32L4.o
+ .debug_line    0x00015a71      0x875 ./User_bsp/glcd-master/glcd.o
+ .debug_line    0x000162e6      0xaa3 ./User_bsp/glcd-master/graphics.o
+ .debug_line    0x00016d89      0x8c9 ./User_bsp/glcd-master/text.o
+ .debug_line    0x00017652      0x78f ./User_bsp/glcd-master/text_tiny.o
+ .debug_line    0x00017de1      0xab3 ./User_bsp/rs485/bsp_rs485.o
+ .debug_line    0x00018894      0x807 ./User_middleware/modbus/modbus_crc.o
+ .debug_line    0x0001909b      0xc35 ./User_middleware/modbus/modbus_master.o
+ .debug_line    0x00019cd0      0xaa5 ./User_middleware/modbus/modbus_rtu.o
+ .debug_line    0x0001a775      0xb3f ./User_middleware/modbus/modbus_slave.o
+ .debug_line    0x0001b2b4      0x779 ./User_utils/delay.o
 
 .debug_str      0x00000000    0xd109d
  .debug_str     0x00000000    0xd109d ./Core/Src/gpio.o

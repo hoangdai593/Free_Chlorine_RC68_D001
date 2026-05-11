@@ -353,7 +353,7 @@ void calib_display(void)
 
     snprintf(mv_str,
              sizeof(mv_str),
-             "Value: %+0.2f mV",
+             "mV: %+0.2f",
              mV_value);
 
     draw_string_small(5,55,mv_str);
@@ -499,20 +499,10 @@ void warning_display(void)
     /* MODE */
     if(warning_cursor == 0)
     {
-        if(warning_edit)
-        {
-            if(blink == 0)
-                draw_string_small(5,20,"Mode:      ");
-            else
-                draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
-        }
+        if(blink == 0)
+            draw_string_small(5,20,"Mode:      ");
         else
-        {
-            if(blink == 0)
-                draw_string_small(5,20,"Mode:      ");
-            else
-                draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
-        }
+            draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
     }
     else
     {
@@ -520,44 +510,46 @@ void warning_display(void)
     }
 
     /* UPPER */
-    if(warning_cursor == 1)
+    if(warning_cursor == 1 && warning_edit == 0)
     {
-        if(warning_edit)
-        {
-            if(blink == 0)
-            {
-                if(warning_pos == 0) upper[0] = ' ';
-                if(warning_pos == 1) upper[2] = ' ';
-                if(warning_pos == 2) upper[3] = ' ';
-            }
-        }
-        else if(blink == 0)
+        if(blink == 0)
         {
             upper[0] = ' ';
+            upper[1] = ' ';
             upper[2] = ' ';
             upper[3] = ' ';
+        }
+    }
+    else if(warning_cursor == 1 && warning_edit == 1)
+    {
+        if(blink == 0)
+        {
+            if(warning_pos == 0) upper[0] = ' ';
+            if(warning_pos == 1) upper[2] = ' ';
+            if(warning_pos == 2) upper[3] = ' ';
         }
     }
     draw_string_small(5,30,"Upper:");
     draw_string_small(65,30,upper);
 
     /* LOWER */
-    if(warning_cursor == 2)
+    if(warning_cursor == 2 && warning_edit == 0)
     {
-        if(warning_edit)
-        {
-            if(blink == 0)
-            {
-                if(warning_pos == 0) lower[0] = ' ';
-                if(warning_pos == 1) lower[2] = ' ';
-                if(warning_pos == 2) lower[3] = ' ';
-            }
-        }
-        else if(blink == 0)
+        if(blink == 0)
         {
             lower[0] = ' ';
+            lower[1] = ' ';
             lower[2] = ' ';
             lower[3] = ' ';
+        }
+    }
+    else if(warning_cursor == 2 && warning_edit == 1)
+    {
+        if(blink == 0)
+        {
+            if(warning_pos == 0) lower[0] = ' ';
+            if(warning_pos == 1) lower[2] = ' ';
+            if(warning_pos == 2) lower[3] = ' ';
         }
     }
     draw_string_small(5,40,"Lower:");
