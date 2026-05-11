@@ -371,6 +371,14 @@ uint8_t _Cb_Sensor(uint8_t x)
 {
     static uint32_t read_tick = 0;
     static uint32_t slope_tick = 0;
+    static uint8_t gain_read_done = 0;
+
+     /* Đọc gain 1 lần sau khi hệ thống chạy ổn định */
+     if(!gain_read_done)
+     {
+         gain_read_done = 1;
+         CMD_Enqueue(CMD_READ_GAIN);
+     }
 
     /* Poll Master (Sensor) */
     MB_RTU_Poll(&mb1);
@@ -411,11 +419,64 @@ uint8_t _Cb_Sensor(uint8_t x)
     float upper_threshold = upper_digit[0] + upper_digit[1] * 0.1f + upper_digit[2] * 0.01f;
     float lower_threshold = lower_digit[0] + lower_digit[1] * 0.1f + lower_digit[2] * 0.01f;
 
-    /* Đồng bộ giá trị và tắt còi nếu không phải âm báo DONE */
+    /* =====================================================
+     * WARNING BUZZER
+     * Bíp 1 lần mỗi 5s khi vượt ngưỡng
+     * ===================================================== */
+    static uint32_t warning_buzz_tick = 0;
+    static uint32_t warning_pulse_tick = 0;
+    static uint8_t  warning_pulse = 0;
+
+    float current_cl = clo_value;
+
+    uint8_t warning_active = 0;
+
+    if(warning_mode)
+    {
+        if(current_cl > upper_threshold ||
+           current_cl < lower_threshold)
+        {
+            warning_active = 1;
+        }
+    }
+
+    /* Trigger pulse mỗi 5s */
+    if(warning_active)
+    {
+        if((HAL_GetTick() - warning_buzz_tick) >= 5000)
+        {
+            warning_buzz_tick = HAL_GetTick();
+
+            warning_pulse = 1;
+            warning_pulse_tick = HAL_GetTick();
+        }
+    }
+    else
+    {
+        warning_pulse = 0;
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+    }
+
+    /* Pulse 200ms */
+    if(warning_pulse)
+    {
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+
+        if(HAL_GetTick() - warning_pulse_tick >= 200)
+        {
+            warning_pulse = 0;
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+        }
+    }
+
+    /* =====================================================
+     * DONE BUZZER
+     * ===================================================== */
     if(buzzer_done_state == 1)
     {
         uint32_t elapsed = HAL_GetTick() - buzzer_done_tick;
-        if(elapsed < 200)  // 0.2s pulse
+
+        if(elapsed < 200)
         {
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
         }
@@ -424,10 +485,6 @@ uint8_t _Cb_Sensor(uint8_t x)
             buzzer_done_state = 2;
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
-    }
-    else
-    {
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
     }
 
     MB_SLAVE_SetFloat(&mb_slave, 0x0006, offset_value);   // Bù pH cho Clo

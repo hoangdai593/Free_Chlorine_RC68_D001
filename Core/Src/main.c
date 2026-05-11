@@ -115,8 +115,6 @@ int main(void)
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
 //  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
 
-  // Đọc gain hiện tại
-  CMD_Enqueue(CMD_READ_GAIN);
 
   /* USER CODE END 2 */
 
