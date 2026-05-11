@@ -102,9 +102,22 @@ void enter_button_handle(void)
             }
             else
             {
-                warning_edit = 0;
-                cmd_result = CMD_RES_DONE;
-                cmd_ui_tick = HAL_GetTick();
+                if(warning_cursor == 0)
+                {
+                    warning_edit = 0;
+                    cmd_result = CMD_RES_DONE;
+                    cmd_ui_tick = HAL_GetTick();
+                }
+                else
+                {
+                    warning_pos++;
+                    if(warning_pos >= 3)
+                    {
+                        warning_edit = 0;
+                        cmd_result = CMD_RES_DONE;
+                        cmd_ui_tick = HAL_GetTick();
+                    }
+                }
             }
             break;
 

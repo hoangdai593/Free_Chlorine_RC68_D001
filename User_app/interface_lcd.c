@@ -463,8 +463,8 @@ void offset_display(void)
 
     snprintf(intercept_str,
              sizeof(intercept_str),
-             "Intercept: %+d mV",
-             intercept_mv);
+             "Intercept: %+0.2f mV",
+             intercept_value);
 
     draw_string_small(5,38,intercept_str);
 
@@ -507,60 +507,52 @@ void warning_display(void)
     lower[4] = '\0';
 
     /* MODE */
-    if(warning_edit)
+    if(warning_cursor == 0 && blink == 0)
     {
-        if(warning_cursor == 0 && blink == 0)
-        {
-            draw_string_small(5,20,"Mode:      ");
-        }
-        else
-        {
-            draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
-        }
+        draw_string_small(5,20,"Mode:      ");
     }
     else
     {
-        if(blink)
-            draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
+        draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
     }
 
     /* UPPER */
-    if(warning_edit && warning_cursor == 1)
+    if(warning_cursor == 1 && blink == 0)
     {
-        if(blink == 0)
+        if(warning_edit)
         {
             if(warning_pos == 0) upper[0] = ' ';
             if(warning_pos == 1) upper[2] = ' ';
             if(warning_pos == 2) upper[3] = ' ';
         }
-        draw_string_small(5,30,"Upper:");
-        draw_string_small(65,30,upper);
+        else
+        {
+            upper[0] = ' ';
+            upper[2] = ' ';
+            upper[3] = ' ';
+        }
     }
-    else
-    {
-        draw_string_small(5,30,"Upper:");
-        if(warning_cursor != 1 || blink)
-            draw_string_small(65,30,upper);
-    }
+    draw_string_small(5,30,"Upper:");
+    draw_string_small(65,30,upper);
 
     /* LOWER */
-    if(warning_edit && warning_cursor == 2)
+    if(warning_cursor == 2 && blink == 0)
     {
-        if(blink == 0)
+        if(warning_edit)
         {
             if(warning_pos == 0) lower[0] = ' ';
             if(warning_pos == 1) lower[2] = ' ';
             if(warning_pos == 2) lower[3] = ' ';
         }
-        draw_string_small(5,40,"Lower:");
-        draw_string_small(65,40,lower);
+        else
+        {
+            lower[0] = ' ';
+            lower[2] = ' ';
+            lower[3] = ' ';
+        }
     }
-    else
-    {
-        draw_string_small(5,40,"Lower:");
-        if(warning_cursor != 2 || blink)
-            draw_string_small(65,40,lower);
-    }
+    draw_string_small(5,40,"Lower:");
+    draw_string_small(65,40,lower);
 }
 
 void range_display(void)

@@ -58,7 +58,7 @@ float slope_value     = 0;
 float intercept_value = 0;
 
 /* BUZZER */
-uint8_t buzzer_done = 0;
+uint8_t buzzer_done_state = 0;   // 0=idle, 1=active, 2=played
 uint32_t buzzer_done_tick = 0;
 
 /* UART RX */
@@ -412,7 +412,7 @@ uint8_t _Cb_Sensor(uint8_t x)
     float lower_threshold = lower_digit[0] + lower_digit[1] * 0.1f + lower_digit[2] * 0.01f;
 
     /* Đồng bộ giá trị và tắt còi nếu không phải âm báo DONE */
-    if(buzzer_done)
+    if(buzzer_done_state == 1)
     {
         uint32_t elapsed = HAL_GetTick() - buzzer_done_tick;
         if(elapsed < 200)  // 0.2s pulse
@@ -421,7 +421,7 @@ uint8_t _Cb_Sensor(uint8_t x)
         }
         else
         {
-            buzzer_done = 0;
+            buzzer_done_state = 2;
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
     }
@@ -456,22 +456,22 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         if(cmd_result == CMD_RES_SENDING)
         {
             draw_string_small(10,20,"SENDING...");
-            buzzer_done = 0;
+            buzzer_done_state = 0;
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
         else if(cmd_result == CMD_RES_DONE)
         {
             draw_string_small(10,20,"DONE");
-            if(!buzzer_done)
+            if(buzzer_done_state == 0)
             {
-                buzzer_done = 1;
+                buzzer_done_state = 1;
                 buzzer_done_tick = HAL_GetTick();
             }
         }
         else if(cmd_result == CMD_RES_FAIL)
         {
             draw_string_small(10,20,"FAIL");
-            buzzer_done = 0;
+            buzzer_done_state = 0;
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
 
