@@ -79,7 +79,15 @@ void enter_button_handle(void)
         case CALIB:
             if(calib_cursor == 0)   // Zero
             {
-                send_cmd(CMD_SET_CALIB_ZERO);
+                if(!calib_zero_confirm)
+                {
+                    calib_zero_confirm = 1;
+                }
+                else
+                {
+                    calib_zero_confirm = 0;
+                    send_cmd(CMD_SET_CALIB_ZERO);
+                }
             }
             else                    // Slope
             {
@@ -224,7 +232,11 @@ void up_button_handle(void)
             slope_digit[slope_pos]++;
             if(slope_digit[slope_pos] > 9) slope_digit[slope_pos] = 0;
         }
-        else calib_cursor ^= 1;
+        else 
+        {
+            calib_cursor ^= 1;
+            calib_zero_confirm = 0;
+        }
     }
 
     else if(interface == OFFSET)
@@ -321,7 +333,11 @@ void down_button_handle(void)
             if(slope_digit[slope_pos] == 0) slope_digit[slope_pos] = 9;
             else slope_digit[slope_pos]--;
         }
-        else calib_cursor ^= 1;
+        else 
+        {
+            calib_cursor ^= 1;
+            calib_zero_confirm = 0;
+        }
     }
 
     else if(interface == OFFSET)
@@ -389,7 +405,11 @@ void exit_button_handle(void)
     }
     else if(interface == CALIB)
     {
-        if(calib_edit) calib_edit = 0;
+        if(calib_edit) 
+        {
+            calib_edit = 0;
+            calib_zero_confirm = 0;
+        }
         else interface = SETTING;
     }
     else if(interface == OFFSET)

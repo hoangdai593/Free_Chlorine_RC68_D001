@@ -69,6 +69,8 @@ uint8_t slope_digit[4] = {0,7,5,0};
 
 int8_t slope_pos = 0;
 
+uint8_t calib_zero_confirm = 0;
+
 
 // OFFSET
 uint8_t offset_cursor = 0;
@@ -316,10 +318,6 @@ void calib_display(void)
     glcd_draw_line(0,10,128,10,BLACK);
     draw_string_small(5,0,"Calib");
 
-    /* ===== ZERO ===== */
-    if(calib_cursor != 0 || blink)
-        draw_string_small(5,20,"Calib zero point");
-
     /* ===== SLOPE STRING ===== */
     char str[25];
 
@@ -343,12 +341,21 @@ void calib_display(void)
             else if(slope_pos == 2) str[16] = ' ';
         }
 
-        draw_string_small(5,35,str);
+        draw_string_small(5,20,str);
     }
     else
     {
         if(calib_cursor != 1 || blink)
-            draw_string_small(5,35,str);
+            draw_string_small(5,20,str);
+    }
+
+    /* ===== ZERO ===== */
+    if(calib_cursor != 0 || blink)
+    {
+        if(calib_zero_confirm)
+            draw_string_small(5,35,"Confirm zero point");
+        else
+            draw_string_small(5,35,"Calib zero point");
     }
 
     /* ===== mV VALUE ===== */

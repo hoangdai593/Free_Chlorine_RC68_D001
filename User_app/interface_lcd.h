@@ -66,6 +66,7 @@ extern uint8_t calib_cursor;
 extern uint8_t calib_edit;
 extern uint8_t slope_digit[4];
 extern int8_t slope_pos;
+extern uint8_t calib_zero_confirm;
 // OFFSET
 extern uint8_t offset_cursor;
 extern uint8_t offset_edit;
