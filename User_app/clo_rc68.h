@@ -39,6 +39,8 @@ MB_MASTER_STATUS RC68_ReadTemperature(MB_RTU_t *mb);
 
 MB_MASTER_STATUS RC68_ReadID(MB_RTU_t *mb);
 
+MB_MASTER_STATUS RC68_ReadGain(MB_RTU_t *mb);
+
 MB_MASTER_STATUS RC68_ReadSlopeIntercept(MB_RTU_t *mb);
 
 /* ================= WRITE ================= */

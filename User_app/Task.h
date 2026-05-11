@@ -8,11 +8,13 @@
 #ifndef INC_TASK_H_
 #define INC_TASK_H_
 
+#include "interface_lcd.h"
+
 #include "modbus_rtu.h"
 #include "modbus_master.h"
 #include "modbus_slave.h"
 #include "clo_rc68.h"
-
+#include "interface_lcd.h"
 /* EVENT */
 typedef enum
 {
@@ -28,12 +30,12 @@ typedef enum
 
     CMD_READ_ALL,
     CMD_READ_SLOPE_INTERCEPT,
+    CMD_READ_GAIN,
 
     CMD_SET_ID_BAUD,
     CMD_SET_SLOPE,
     CMD_SET_CALIB_ZERO,
     CMD_SET_OFFSET,
-    CMD_SET_WARNING,
     CMD_SET_RANGE,
 
 } CMD_TYPE_t;
@@ -75,6 +77,10 @@ extern CMD_TYPE_t current_cmd;
 /* MODBUS */
 extern MB_RTU_t mb1;
 extern MB_SLAVE_t mb_slave;
+
+/* MODBUS SETTING */
+extern uint16_t modbus_id;
+extern uint8_t baud_index;
 /* SENSOR */
 extern float clo_value;
 extern float mV_value;
@@ -83,7 +89,27 @@ extern float rc68_temp;
 extern float slope_value;
 extern float intercept_value;
 
-/* FUNC */
+/* GAIN */
+extern uint8_t gain_current;
+
+/* WARNING */
+extern uint8_t warning_mode;
+extern uint8_t upper_digit[3];
+extern uint8_t lower_digit[3];
+
+/* CALIB */
+extern uint8_t slope_digit[4];
+
+/* OFFSET */
+extern uint8_t offset_digit[4];
+
+/* RANGE */
+extern uint8_t range_index;
+
+/* UI */
+extern uint8_t display_update_needed;
+extern LCD_INTERFACE previous_interface;
+
 void CMD_Enqueue(CMD_TYPE_t type);
 void process_cmd_queue(void);
 

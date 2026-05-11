@@ -103,7 +103,8 @@ void enter_button_handle(void)
             else
             {
                 warning_edit = 0;
-                send_cmd(CMD_SET_WARNING);   // Chỉ lưu biến
+                cmd_result = CMD_RES_DONE;
+                cmd_ui_tick = HAL_GetTick();
             }
             break;
 
@@ -116,6 +117,7 @@ void enter_button_handle(void)
             {
                 range_edit = 0;   // xác nhận
                 send_cmd(CMD_SET_RANGE);
+                gain_current = range_index;
             }
             break;
 

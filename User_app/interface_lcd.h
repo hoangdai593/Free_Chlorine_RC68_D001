@@ -10,7 +10,6 @@
 
 #include "GPIO.h"
 #include "event_driven.h"
-#include "Task.h"
 #include "main.h"
 #include "usart.h"
 #include <stdio.h>
@@ -23,7 +22,6 @@
 #include "modbus_master.h"
 #include "modbus_crc.h"
 #include "clo_rc68.h"
-
 
 
 typedef enum {
@@ -84,7 +82,7 @@ extern uint8_t warning_pos;
 extern const uint16_t range_list[];
 extern uint8_t range_index;
 extern uint8_t range_edit;
-
+extern uint8_t gain_current;
 
 void cmd_wait_display(void);
 void blink_display(void);

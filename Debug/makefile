@@ -62,6 +62,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 Free_Chlorine_RC68_D001.list \
 
+OBJCOPY_HEX += \
+Free_Chlorine_RC68_D001.hex \
+
 
 # All Target
 all: main-build
@@ -85,12 +88,17 @@ Free_Chlorine_RC68_D001.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TO
 	@echo 'Finished building: $@'
 	@echo ' '
 
+Free_Chlorine_RC68_D001.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "Free_Chlorine_RC68_D001.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) Free_Chlorine_RC68_D001.elf Free_Chlorine_RC68_D001.list Free_Chlorine_RC68_D001.map default.size.stdout
+	-$(RM) Free_Chlorine_RC68_D001.elf Free_Chlorine_RC68_D001.hex Free_Chlorine_RC68_D001.list Free_Chlorine_RC68_D001.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

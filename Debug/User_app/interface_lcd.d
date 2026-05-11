@@ -28,14 +28,9 @@ User_app/interface_lcd.o: ../User_app/interface_lcd.c ../Core/Inc/GPIO.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
- ../User_app/Task.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h \
- ../Core/Inc/main.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h \
- ../User_app/clo_rc68.h ../Core/Inc/usart.h \
+ ../User_app/Task.h ../User_app/interface_lcd.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven/event_driven.h \
+ ../Core/Inc/main.h ../Core/Inc/usart.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_controllers.h \
@@ -47,9 +42,13 @@ User_app/interface_lcd.o: ../User_app/interface_lcd.c ../Core/Inc/GPIO.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_crc.h \
- ../User_app/interface_lcd.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven/event_driven.h \
+ ../User_app/clo_rc68.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h \
  ../User_app/button_hanlde.h
 ../Core/Inc/GPIO.h:
 ../Core/Inc/main.h:
@@ -83,13 +82,9 @@ User_app/interface_lcd.o: ../User_app/interface_lcd.c ../Core/Inc/GPIO.h \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
 ../User_app/Task.h:
-D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
-D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h:
+../User_app/interface_lcd.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven/event_driven.h:
 ../Core/Inc/main.h:
-D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h:
-D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
-D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h:
-../User_app/clo_rc68.h:
 ../Core/Inc/usart.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_devices.h:
@@ -102,7 +97,11 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/unit_tests.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/controllers/ST7565R.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_text.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/glcd-master/glcd_graphics.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_bsp/rs485/bsp_rs485.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_crc.h:
-../User_app/interface_lcd.h:
-D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/event_driven/event_driven.h:
+../User_app/clo_rc68.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h:
 ../User_app/button_hanlde.h:

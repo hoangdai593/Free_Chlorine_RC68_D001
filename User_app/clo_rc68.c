@@ -37,6 +37,14 @@ MB_MASTER_STATUS RC68_ReadID(MB_RTU_t *mb)
                                     1);
 }
 
+MB_MASTER_STATUS RC68_ReadGain(MB_RTU_t *mb)
+{
+    return MB_Master_ReadHoldingReg(mb,
+                                    RC68_SLAVE_ID_DEFAULT,
+                                    RC68_REG_GAIN,
+                                    1);
+}
+
 MB_MASTER_STATUS RC68_ReadSlopeIntercept(MB_RTU_t *mb)
 {
     return MB_Master_ReadHoldingReg(mb,

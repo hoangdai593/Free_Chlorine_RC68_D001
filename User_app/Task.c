@@ -57,6 +57,13 @@ float rc68_temp       = 0;
 float slope_value     = 0;
 float intercept_value = 0;
 
+/* BUZZER */
+uint8_t buzzer_state = 0;
+uint32_t buzzer_tick = 0;
+uint8_t buzzer_beep_count = 0;
+uint8_t buzzer_done = 0;
+uint32_t buzzer_done_tick = 0;
+
 /* UART RX */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -120,6 +127,10 @@ static void send_command(CMD_TYPE_t type)
             RC68_ReadSlopeIntercept(&mb1);
             break;
 
+        case CMD_READ_GAIN:
+            RC68_ReadGain(&mb1);
+            break;
+
         case CMD_SET_ID_BAUD:
         {
             if(modbus_cursor == 0)
@@ -163,9 +174,6 @@ static void send_command(CMD_TYPE_t type)
 
         case CMD_SET_RANGE:
             RC68_WriteGain(&mb1, range_index);
-            break;
-
-        case CMD_SET_WARNING:
             break;
 
         default:
@@ -214,6 +222,17 @@ static uint8_t check_response(CMD_TYPE_t cmd)
 
             /* 4 reg = 8 byte */
             if(mb1.rx_buf[2] != 8)
+                return 0;
+
+            return 1;
+
+        case CMD_READ_GAIN:
+
+            if(mb1.rx_buf[1] != 0x03)
+                return 0;
+
+            /* 1 reg = 2 byte */
+            if(mb1.rx_buf[2] != 2)
                 return 0;
 
             return 1;
@@ -278,11 +297,17 @@ void process_cmd_queue(void)
                     clo_value = RC68_GetFloat(&mb1, 0);
                     mV_value  = RC68_GetFloat(&mb1, 2);
                     rc68_temp = RC68_GetFloat(&mb1, 4);
+                    display_update_needed = 1;
                 }
                 else if(current_cmd == CMD_READ_SLOPE_INTERCEPT)
                 {
                     slope_value     = RC68_GetFloat(&mb1, 0);
                     intercept_value = RC68_GetFloat(&mb1, 2);
+                }
+                else if(current_cmd == CMD_READ_GAIN)
+                {
+                    gain_current = RC68_GetU16(&mb1, 0);
+                    display_update_needed = 1;
                 }
             }
 
@@ -389,6 +414,62 @@ uint8_t _Cb_Sensor(uint8_t x)
     float upper_threshold = upper_digit[0] + upper_digit[1] * 0.1f + upper_digit[2] * 0.01f;
     float lower_threshold = lower_digit[0] + lower_digit[1] * 0.1f + lower_digit[2] * 0.01f;
 
+    /* CẢNH BÁO CÒI */
+    if(warning_mode && (clo_value < lower_threshold || clo_value > upper_threshold))
+    {
+        uint32_t elapsed = HAL_GetTick() - buzzer_tick;
+        if(elapsed >= 6000)  // reset sau 6s (1s beep + 5s off)
+        {
+            buzzer_tick = HAL_GetTick();
+            buzzer_beep_count = 0;
+        }
+
+        if(elapsed < 1000)  // trong 1s đầu, tít tít
+        {
+            uint32_t beep_elapsed = elapsed % 200;  // 200ms cycle
+            if(beep_elapsed < 100)
+            {
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+            }
+            else
+            {
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+            }
+        }
+        else  // 5s sau, tắt
+        {
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+        }
+    }
+    else
+    {
+        buzzer_tick = HAL_GetTick();  // reset khi không cảnh báo
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+    }
+
+    /* CÒI DONE */
+    if(buzzer_done)
+    {
+        uint32_t elapsed = HAL_GetTick() - buzzer_done_tick;
+        if(elapsed < 500)  // tít 0.5s
+        {
+            uint32_t beep_elapsed = elapsed % 100;  // 100ms cycle
+            if(beep_elapsed < 50)
+            {
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+            }
+            else
+            {
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+            }
+        }
+        else
+        {
+            buzzer_done = 0;
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+        }
+    }
+
     MB_SLAVE_SetFloat(&mb_slave, 0x0006, offset_value);   // Bù pH cho Clo
     MB_SLAVE_SetU16(&mb_slave, 0x000D, warning_mode ? 1 : 0); // Cảnh báo bật/tắt
     MB_SLAVE_SetFloat(&mb_slave, 0x000E, upper_threshold); // Ngưỡng trên
@@ -419,6 +500,11 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         else if(cmd_result == CMD_RES_DONE)
         {
             draw_string_small(10,20,"DONE");
+            if(!buzzer_done)
+            {
+                buzzer_done = 1;
+                buzzer_done_tick = HAL_GetTick();
+            }
         }
         else if(cmd_result == CMD_RES_FAIL)
         {
@@ -444,10 +530,20 @@ uint8_t _Cb_LCD_Display(uint8_t x)
 
     display_tick = 0;
 
+    if(interface != previous_interface)
+    {
+        display_update_needed = 1;
+        previous_interface = interface;
+    }
+
     switch(interface)
     {
         case MAIN:
-            main_display();
+            if(display_update_needed)
+            {
+                main_display();
+                display_update_needed = 0;
+            }
             break;
 
         case LOGIN:

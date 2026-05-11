@@ -28,6 +28,9 @@ SETTING_CUR   setting_cursor = MODBUS_CUR;
 uint8_t  blink = 0;
 uint32_t blink_tick = 0;
 
+uint8_t display_update_needed = 1;
+LCD_INTERFACE previous_interface = MAIN;
+
 
 // PASSWORD
 uint8_t password[4]      = {0,0,0,0};
@@ -103,6 +106,8 @@ const uint16_t range_list[] =
 
 uint8_t range_index = 0;
 uint8_t range_edit  = 0;
+
+uint8_t gain_current = 0;
 
 
 void blink_display(void)
@@ -502,10 +507,23 @@ void warning_display(void)
     lower[4] = '\0';
 
     /* MODE */
-    if(warning_edit && warning_cursor == 0 && blink == 0)
-        draw_string_small(5,20,"Mode:   ");
+    if(warning_edit)
+    {
+        if(warning_cursor == 0 && blink == 0)
+        {
+            draw_string_small(5,20,"Mode:   ");
+        }
+        else
+        {
+            draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
+        }
+    }
     else
-        draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
+    {
+        /* chưa edit → blink cả dòng */
+        if(blink)
+            draw_string_small(5,20, warning_mode ? "Mode: ON" : "Mode: OFF");
+    }
 
     /* UPPER */
     if(warning_edit && warning_cursor == 1)
@@ -551,8 +569,9 @@ void range_display(void)
     char str[30];
 
     /* tạo chuỗi bình thường */
+    uint8_t display_index = range_edit ? range_index : gain_current;
     snprintf(str, sizeof(str), "Range:0-%d ppm",
-             range_list[range_index]);
+             range_list[display_index]);
 
     if(range_edit)
     {
