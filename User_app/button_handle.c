@@ -124,6 +124,7 @@ void enter_button_handle(void)
             if(!warning_edit)
             {
                 warning_edit = 1;
+                cmd_result = CMD_RES_SENDING;
 
                 if(warning_cursor == 0)
                 {
