@@ -118,9 +118,6 @@ int main(void)
   // Đọc gain hiện tại
   CMD_Enqueue(CMD_READ_GAIN);
 
-  // TEST UART3 DIRECT TRANSMIT
-  uint8_t test_data[] = {0x01, 0x03, 0x01, 0x00, 0x00, 0x06, 0xC4, 0x34};
-  BSP_RS485_Send(RS485_PORT3, test_data, 8, 1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -58,9 +58,6 @@ float slope_value     = 0;
 float intercept_value = 0;
 
 /* BUZZER */
-uint8_t buzzer_state = 0;
-uint32_t buzzer_tick = 0;
-uint8_t buzzer_beep_count = 0;
 uint8_t buzzer_done = 0;
 uint32_t buzzer_done_tick = 0;
 
@@ -414,40 +411,12 @@ uint8_t _Cb_Sensor(uint8_t x)
     float upper_threshold = upper_digit[0] + upper_digit[1] * 0.1f + upper_digit[2] * 0.01f;
     float lower_threshold = lower_digit[0] + lower_digit[1] * 0.1f + lower_digit[2] * 0.01f;
 
-    /* CẢNH BÁO CÒI */
-    if(warning_mode && (clo_value < lower_threshold || clo_value > upper_threshold))
+    /* Đồng bộ giá trị và tắt còi nếu không phải âm báo DONE */
+    if(!buzzer_done)
     {
-        uint32_t elapsed = HAL_GetTick() - buzzer_tick;
-        if(elapsed >= 6000)  // reset sau 6s (1s beep + 5s off)
-        {
-            buzzer_tick = HAL_GetTick();
-            buzzer_beep_count = 0;
-        }
-
-        if(elapsed < 1000)  // trong 1s đầu, tít tít
-        {
-            uint32_t beep_elapsed = elapsed % 200;  // 200ms cycle
-            if(beep_elapsed < 100)
-            {
-                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-            }
-            else
-            {
-                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-            }
-        }
-        else  // 5s sau, tắt
-        {
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-        }
-    }
-    else
-    {
-        buzzer_tick = HAL_GetTick();  // reset khi không cảnh báo
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
     }
 
-    /* CÒI DONE */
     if(buzzer_done)
     {
         uint32_t elapsed = HAL_GetTick() - buzzer_done_tick;
