@@ -5,6 +5,22 @@
 
 #include <string.h>
 
+#define MB_SLAVE_BAUD_CODE_COUNT 11
+static const uint32_t MB_SLAVE_BAUD_CODE[MB_SLAVE_BAUD_CODE_COUNT] =
+{
+    1200,
+    2400,
+    4800,
+    9600,
+    14400,
+    19200,
+    28800,
+    38400,
+    56000,
+    57600,
+    115200
+};
+
 /* =========================================================
  * PRIVATE
  * ========================================================= */
@@ -14,6 +30,16 @@ static void MB_SLAVE_SendResponse(MB_SLAVE_t *slave,
 
 static void MB_SLAVE_SendException(MB_SLAVE_t *slave,
                                    uint8_t exception);
+
+static void MB_SLAVE_UpdateBaudFromHoldingReg(MB_SLAVE_t *slave)
+{
+    uint16_t baud_code = slave->holding_reg[0x0001];
+    if(baud_code >= MB_SLAVE_BAUD_CODE_COUNT)
+        return;
+
+    BSP_RS485_SetBaudrate(slave->port,
+                          MB_SLAVE_BAUD_CODE[baud_code]);
+}
 
 /* =========================================================
  * INIT
@@ -189,6 +215,11 @@ void MB_SLAVE_Poll(MB_SLAVE_t *slave)
                 slave->slave_id = value;
             }
 
+            if(addr == 0x0001)
+            {
+                MB_SLAVE_UpdateBaudFromHoldingReg(slave);
+            }
+
             /* echo request */
             MB_SLAVE_SendResponse(slave, 6);
 
@@ -235,6 +266,11 @@ void MB_SLAVE_Poll(MB_SLAVE_t *slave)
             {
                 slave->slave_id =
                         slave->holding_reg[0x0000];
+            }
+
+            if((0x0001 >= addr) && (0x0001 < addr + qty))
+            {
+                MB_SLAVE_UpdateBaudFromHoldingReg(slave);
             }
 
             /* response */
