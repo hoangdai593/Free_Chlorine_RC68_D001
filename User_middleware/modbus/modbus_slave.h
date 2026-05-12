@@ -4,11 +4,20 @@
 #include "modbus_rtu.h"
 #include <stdint.h>
 
+/* ================= CONFIG ================= */
+
 #define MB_SLAVE_MAX_REG        32
 
-/* ===== FIX TIMING ===== */
-//#define MB_FRAME_TIMEOUT_MS     5     // giữ ngắn để bắt frame nhanh
-#define MB_INTERFRAME_GAP_MS    3     // chống nhiễu giữa byte
+/* dùng buffer từ modbus_rtu.h luôn */
+#ifndef MB_RX_BUF_SIZE
+#error "MB_RX_BUF_SIZE not defined in modbus_rtu.h"
+#endif
+
+/* RTU timing */
+#define MB_SLAVE_T35_MS         4
+#define MB_SLAVE_RX_RESET_MS    100
+
+/* ================= STRUCT ================= */
 
 typedef struct
 {
@@ -23,36 +32,26 @@ typedef struct
 
     uint8_t     rx_byte;
 
-    uint8_t     frame_ready;
+    volatile uint8_t frame_ready;
     uint8_t     exception_code;
 
 } MB_SLAVE_t;
 
-/* ================= INIT ================= */
+/* ================= API ================= */
+
 void MB_SLAVE_Init(MB_SLAVE_t *slave,
                    RS485_PORT port,
                    uint8_t slave_id);
 
-/* ================= PROCESS ================= */
 void MB_SLAVE_Poll(MB_SLAVE_t *slave);
 
-/* ================= RX ================= */
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *slave,
                             uint8_t byte);
 
-/* ================= API ================= */
-void MB_SLAVE_SetFloat(MB_SLAVE_t *slave,
-                       uint16_t reg_addr,
-                       float value);
-
-void MB_SLAVE_SetU16(MB_SLAVE_t *slave,
-                     uint16_t reg_addr,
-                     uint16_t value);
-
-float MB_SLAVE_GetFloat(MB_SLAVE_t *slave,
-                        uint16_t reg_addr);
-
-uint16_t MB_SLAVE_GetU16(MB_SLAVE_t *slave,
-                         uint16_t reg_addr);
+/* register API */
+void MB_SLAVE_SetFloat(MB_SLAVE_t *slave, uint16_t addr, float v);
+void MB_SLAVE_SetU16(MB_SLAVE_t *slave, uint16_t addr, uint16_t v);
+float MB_SLAVE_GetFloat(MB_SLAVE_t *slave, uint16_t addr);
+uint16_t MB_SLAVE_GetU16(MB_SLAVE_t *slave, uint16_t addr);
 
 #endif
