@@ -62,7 +62,7 @@ uint8_t baud_index = 2;
 
 
 // CALIB
-uint8_t calib_cursor = 0;
+uint8_t calib_cursor = 1;
 uint8_t calib_edit   = 0;
 
 uint8_t slope_digit[4] = {0,7,5,0};
@@ -85,7 +85,7 @@ uint8_t offset_pos = 0;
 uint8_t warning_cursor = 0;
 uint8_t warning_edit   = 0;
 
-uint8_t warning_mode = 1;
+uint8_t warning_mode = 0;
 
 uint8_t upper_digit[3] = {1,5,0};
 uint8_t lower_digit[3] = {0,1,0};
