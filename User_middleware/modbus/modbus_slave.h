@@ -1,7 +1,3 @@
-/* =========================================================
- * modbus_slave.h
- * ========================================================= */
-
 #ifndef MODBUS_SLAVE_H
 #define MODBUS_SLAVE_H
 
@@ -9,7 +5,6 @@
 #include <stdint.h>
 
 #define MB_SLAVE_MAX_REG        32
-#define MB_FRAME_TIMEOUT_MS     10
 
 typedef struct
 {
@@ -18,33 +13,32 @@ typedef struct
 
     uint16_t    holding_reg[MB_SLAVE_MAX_REG];
 
-    /* RX */
     uint8_t     rx_buf[MB_RX_BUF_SIZE];
     uint16_t    rx_index;
     uint32_t    last_rx_tick;
     uint8_t     rx_byte;
 
-    /* TX */
-    uint8_t     tx_buf[MB_RX_BUF_SIZE];
-
     uint8_t     frame_ready;
     uint8_t     exception_code;
 
+    /* ===== FIX ADD ===== */
+    uint8_t     tx_lock;
+
 } MB_SLAVE_t;
 
-/* ================= INIT ================= */
+/* INIT */
 void MB_SLAVE_Init(MB_SLAVE_t *slave,
                    RS485_PORT port,
                    uint8_t slave_id);
 
-/* ================= PROCESS ================= */
+/* PROCESS */
 void MB_SLAVE_Poll(MB_SLAVE_t *slave);
 
-/* ================= RX BYTE ================= */
+/* RX */
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *slave,
                             uint8_t byte);
 
-/* ================= USER API ================= */
+/* API */
 void MB_SLAVE_SetFloat(MB_SLAVE_t *slave,
                        uint16_t reg_addr,
                        float value);

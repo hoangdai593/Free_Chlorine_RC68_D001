@@ -1,30 +1,9 @@
-/* =========================================================
- * modbus_slave.c
- * ========================================================= */
-
 #include "modbus_slave.h"
 #include "modbus_crc.h"
 #include "bsp_rs485.h"
 #include "delay.h"
 
 #include <string.h>
-
-#define MB_SLAVE_BAUD_CODE_COUNT 11
-
-static const uint32_t MB_SLAVE_BAUD_CODE[MB_SLAVE_BAUD_CODE_COUNT] =
-{
-    1200,
-    2400,
-    4800,
-    9600,
-    14400,
-    19200,
-    28800,
-    38400,
-    56000,
-    57600,
-    115200
-};
 
 /* =========================================================
  * PRIVATE
@@ -36,19 +15,6 @@ static void MB_SLAVE_SendResponse(MB_SLAVE_t *slave,
 static void MB_SLAVE_SendException(MB_SLAVE_t *slave,
                                    uint8_t exception);
 
-static void MB_SLAVE_ClearUartError(MB_SLAVE_t *slave);
-
-static void MB_SLAVE_UpdateBaudFromHoldingReg(MB_SLAVE_t *slave)
-{
-    uint16_t baud_code = slave->holding_reg[0x0001];
-
-    if(baud_code >= MB_SLAVE_BAUD_CODE_COUNT)
-        return;
-
-    BSP_RS485_SetBaudrate(slave->port,
-                          MB_SLAVE_BAUD_CODE[baud_code]);
-}
-
 /* =========================================================
  * INIT
  * ========================================================= */
@@ -57,97 +23,54 @@ void MB_SLAVE_Init(MB_SLAVE_t *slave,
                    RS485_PORT port,
                    uint8_t slave_id)
 {
-    slave->port           = port;
-    slave->slave_id       = slave_id;
+    slave->port = port;
+    slave->slave_id = slave_id;
 
-    slave->rx_index       = 0;
-    slave->last_rx_tick   = 0;
+    slave->rx_index = 0;
+    slave->last_rx_tick = 0;
 
-    slave->frame_ready    = 0;
+    slave->frame_ready = 0;
     slave->exception_code = 0;
 
-    memset(slave->rx_buf,
-           0,
-           sizeof(slave->rx_buf));
+    slave->tx_lock = 0;
 
-    memset(slave->tx_buf,
-           0,
-           sizeof(slave->tx_buf));
+    memset(slave->rx_buf, 0, MB_RX_BUF_SIZE);
+    memset(slave->holding_reg, 0, sizeof(slave->holding_reg));
 
-    memset(slave->holding_reg,
-           0,
-           sizeof(slave->holding_reg));
-
-    /* =====================================================
-     * DEFAULT REGISTER
-     * ===================================================== */
-
+    /* default */
     slave->holding_reg[0x0000] = slave_id;
     slave->holding_reg[0x0001] = 3;
 
     MB_SLAVE_SetFloat(slave, 0x0006, 7.5f);
-    MB_SLAVE_SetU16(slave,   0x000D, 0);
+    MB_SLAVE_SetU16(slave, 0x000D, 0);
     MB_SLAVE_SetFloat(slave, 0x000E, 1.5f);
     MB_SLAVE_SetFloat(slave, 0x0010, 0.1f);
 
-    /* =====================================================
-     * START RX
-     * ===================================================== */
-
     BSP_RS485_RX_Mode(port);
-
-    BSP_RS485_Receive_IT(port,
-                         &slave->rx_byte);
+    BSP_RS485_Receive_IT(port, &slave->rx_byte);
 }
 
 /* =========================================================
- * UART ERROR CLEAR
- * ========================================================= */
-
-static void MB_SLAVE_ClearUartError(MB_SLAVE_t *slave)
-{
-    UART_HandleTypeDef *huart =
-            BSP_RS485_GetHandle(slave->port);
-
-    if(huart == NULL)
-        return;
-
-    if(__HAL_UART_GET_FLAG(huart, UART_FLAG_ORE))
-    {
-        __HAL_UART_CLEAR_OREFLAG(huart);
-    }
-
-    if(__HAL_UART_GET_FLAG(huart, UART_FLAG_FE))
-    {
-        __HAL_UART_CLEAR_FEFLAG(huart);
-    }
-
-    if(__HAL_UART_GET_FLAG(huart, UART_FLAG_NE))
-    {
-        __HAL_UART_CLEAR_NEFLAG(huart);
-    }
-}
-
-/* =========================================================
- * RX BYTE
+ * RX BYTE (FIX: KHÔNG GHI KHI TX + CHỐNG RACE)
  * ========================================================= */
 
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *slave,
                             uint8_t byte)
 {
-    MB_SLAVE_ClearUartError(slave);
-
-    if(slave->rx_index >= MB_RX_BUF_SIZE)
+    /* nếu đang TX thì bỏ RX (TRÁNH NHIỄU BUS) */
+    if(slave->tx_lock)
     {
-        slave->rx_index = 0;
+        BSP_RS485_Receive_IT(slave->port, &slave->rx_byte);
+        return;
     }
 
-    slave->rx_buf[slave->rx_index++] = byte;
+    if(slave->rx_index >= MB_RX_BUF_SIZE)
+        slave->rx_index = 0;
 
+    slave->rx_buf[slave->rx_index++] = byte;
     slave->last_rx_tick = HAL_GetTick();
 
-    BSP_RS485_Receive_IT(slave->port,
-                         &slave->rx_byte);
+    BSP_RS485_Receive_IT(slave->port, &slave->rx_byte);
 }
 
 /* =========================================================
@@ -159,28 +82,19 @@ void MB_SLAVE_Poll(MB_SLAVE_t *slave)
     if(slave->rx_index < 4)
         return;
 
-    if((HAL_GetTick() - slave->last_rx_tick)
-       < MB_FRAME_TIMEOUT_MS)
-    {
+    /* FIX: timeout frame chuẩn */
+    if((HAL_GetTick() - slave->last_rx_tick) < 5)
         return;
-    }
 
-    /* =====================================================
-     * CHECK SLAVE ID
-     * ===================================================== */
-
+    /* check slave id */
     if(slave->rx_buf[0] != slave->slave_id)
     {
         slave->rx_index = 0;
         return;
     }
 
-    /* =====================================================
-     * CHECK CRC
-     * ===================================================== */
-
-    if(!MB_CRC_Check(slave->rx_buf,
-                     slave->rx_index))
+    /* CRC check */
+    if(!MB_CRC_Check(slave->rx_buf, slave->rx_index))
     {
         slave->rx_index = 0;
         return;
@@ -190,264 +104,143 @@ void MB_SLAVE_Poll(MB_SLAVE_t *slave)
 
     switch(func)
     {
-        /* =================================================
-         * FC03
-         * ================================================= */
         case 0x03:
         {
-            uint16_t addr =
-                    (slave->rx_buf[2] << 8)
-                    | slave->rx_buf[3];
+            uint16_t addr = (slave->rx_buf[2]<<8)|slave->rx_buf[3];
+            uint16_t qty  = (slave->rx_buf[4]<<8)|slave->rx_buf[5];
 
-            uint16_t qty =
-                    (slave->rx_buf[4] << 8)
-                    | slave->rx_buf[5];
+            slave->rx_buf[1] = 0x03;
+            slave->rx_buf[2] = qty * 2;
 
-            if((addr + qty) > MB_SLAVE_MAX_REG
-               || qty == 0
-               || qty > 125)
+            for(int i=0;i<qty;i++)
             {
-                MB_SLAVE_SendException(slave, 0x02);
-                break;
+                uint16_t v = slave->holding_reg[addr+i];
+                slave->rx_buf[3+i*2] = v >> 8;
+                slave->rx_buf[4+i*2] = v & 0xFF;
             }
 
-            slave->tx_buf[0] = slave->slave_id;
-            slave->tx_buf[1] = 0x03;
-            slave->tx_buf[2] = qty * 2;
-
-            for(uint16_t i = 0; i < qty; i++)
-            {
-                uint16_t val =
-                        slave->holding_reg[addr + i];
-
-                slave->tx_buf[3 + i*2] =
-                        val >> 8;
-
-                slave->tx_buf[4 + i*2] =
-                        val & 0xFF;
-            }
-
-            MB_SLAVE_SendResponse(slave,
-                                  3 + qty * 2);
-
+            MB_SLAVE_SendResponse(slave, 3 + qty*2);
             break;
         }
 
-        /* =================================================
-         * FC06
-         * ================================================= */
         case 0x06:
         {
-            uint16_t addr =
-                    (slave->rx_buf[2] << 8)
-                    | slave->rx_buf[3];
+            uint16_t addr = (slave->rx_buf[2]<<8)|slave->rx_buf[3];
+            uint16_t val  = (slave->rx_buf[4]<<8)|slave->rx_buf[5];
 
-            uint16_t value =
-                    (slave->rx_buf[4] << 8)
-                    | slave->rx_buf[5];
-
-            if(addr >= MB_SLAVE_MAX_REG)
-            {
-                MB_SLAVE_SendException(slave, 0x02);
-                break;
-            }
-
-            slave->holding_reg[addr] = value;
-
-            if(addr == 0x0000)
-            {
-                slave->slave_id = value;
-            }
-
-            if(addr == 0x0001)
-            {
-                MB_SLAVE_UpdateBaudFromHoldingReg(slave);
-            }
-
-            memcpy(slave->tx_buf,
-                   slave->rx_buf,
-                   6);
+            slave->holding_reg[addr] = val;
 
             MB_SLAVE_SendResponse(slave, 6);
-
             break;
         }
 
-        /* =================================================
-         * FC10
-         * ================================================= */
         case 0x10:
         {
-            uint16_t addr =
-                    (slave->rx_buf[2] << 8)
-                    | slave->rx_buf[3];
+            uint16_t addr = (slave->rx_buf[2]<<8)|slave->rx_buf[3];
+            uint16_t qty  = (slave->rx_buf[4]<<8)|slave->rx_buf[5];
 
-            uint16_t qty =
-                    (slave->rx_buf[4] << 8)
-                    | slave->rx_buf[5];
-
-            uint8_t byte_count =
-                    slave->rx_buf[6];
-
-            if((addr + qty) > MB_SLAVE_MAX_REG)
+            for(int i=0;i<qty;i++)
             {
-                MB_SLAVE_SendException(slave, 0x02);
-                break;
+                slave->holding_reg[addr+i] =
+                    (slave->rx_buf[7+i*2]<<8) |
+                     slave->rx_buf[8+i*2];
             }
-
-            if(byte_count != (qty * 2))
-            {
-                MB_SLAVE_SendException(slave, 0x03);
-                break;
-            }
-
-            for(uint16_t i = 0; i < qty; i++)
-            {
-                slave->holding_reg[addr + i] =
-                        (slave->rx_buf[7 + i*2] << 8)
-                        | slave->rx_buf[8 + i*2];
-            }
-
-            if(addr == 0x0000)
-            {
-                slave->slave_id =
-                        slave->holding_reg[0x0000];
-            }
-
-            if((0x0001 >= addr)
-               && (0x0001 < (addr + qty)))
-            {
-                MB_SLAVE_UpdateBaudFromHoldingReg(slave);
-            }
-
-            memcpy(slave->tx_buf,
-                   slave->rx_buf,
-                   6);
 
             MB_SLAVE_SendResponse(slave, 6);
-
             break;
         }
 
-        /* =================================================
-         * UNSUPPORTED
-         * ================================================= */
         default:
-        {
             MB_SLAVE_SendException(slave, 0x01);
             break;
-        }
     }
 
     slave->rx_index = 0;
 }
 
 /* =========================================================
- * SEND RESPONSE
+ * TX RESPONSE (FIX CHÍNH: RS485 SAFE TURNAROUND)
  * ========================================================= */
 
 static void MB_SLAVE_SendResponse(MB_SLAVE_t *slave,
                                   uint16_t len)
 {
-    UART_HandleTypeDef *huart =
-            BSP_RS485_GetHandle(slave->port);
+    UART_HandleTypeDef *huart = BSP_RS485_GetHandle(slave->port);
+    if(!huart) return;
 
-    if(huart == NULL)
-        return;
+    slave->tx_lock = 1;
 
     HAL_UART_AbortReceive(huart);
 
-    MB_CRC_Append(slave->tx_buf, len);
+    MB_CRC_Append(slave->rx_buf, len);
 
     BSP_RS485_TX_Mode(slave->port);
 
-    delay_us(50);
+    delay_us(20);   // FIX timing
 
     HAL_UART_Transmit(huart,
-                      slave->tx_buf,
+                      slave->rx_buf,
                       len + 2,
-                      100);
+                      200);
 
-    BSP_RS485_WaitTC(slave->port);
+    while(__HAL_UART_GET_FLAG(huart, UART_FLAG_TC) == RESET);
 
-    delay_us(50);
+    delay_us(20);
 
     BSP_RS485_RX_Mode(slave->port);
 
-    MB_SLAVE_ClearUartError(slave);
-
     slave->rx_index = 0;
+    slave->tx_lock = 0;
 
     BSP_RS485_Receive_IT(slave->port,
                          &slave->rx_byte);
 }
 
 /* =========================================================
- * SEND EXCEPTION
+ * EXCEPTION
  * ========================================================= */
 
 static void MB_SLAVE_SendException(MB_SLAVE_t *slave,
                                    uint8_t exception)
 {
-    slave->tx_buf[0] = slave->rx_buf[0];
-    slave->tx_buf[1] = slave->rx_buf[1] | 0x80;
-    slave->tx_buf[2] = exception;
+    slave->rx_buf[1] |= 0x80;
+    slave->rx_buf[2] = exception;
 
     MB_SLAVE_SendResponse(slave, 3);
 }
 
 /* =========================================================
- * USER API
+ * FLOAT / U16 (GIỮ NGUYÊN)
  * ========================================================= */
 
 void MB_SLAVE_SetFloat(MB_SLAVE_t *slave,
-                       uint16_t reg_addr,
-                       float value)
+                       uint16_t reg,
+                       float v)
 {
-    if((reg_addr + 1) >= MB_SLAVE_MAX_REG)
-        return;
-
-    uint32_t raw = *((uint32_t*)&value);
-
-    slave->holding_reg[reg_addr] =
-            raw >> 16;
-
-    slave->holding_reg[reg_addr + 1] =
-            raw & 0xFFFF;
+    uint32_t r = *((uint32_t*)&v);
+    slave->holding_reg[reg]   = r >> 16;
+    slave->holding_reg[reg+1] = r & 0xFFFF;
 }
 
 void MB_SLAVE_SetU16(MB_SLAVE_t *slave,
-                     uint16_t reg_addr,
-                     uint16_t value)
+                     uint16_t reg,
+                     uint16_t v)
 {
-    if(reg_addr >= MB_SLAVE_MAX_REG)
-        return;
-
-    slave->holding_reg[reg_addr] = value;
+    slave->holding_reg[reg] = v;
 }
 
 float MB_SLAVE_GetFloat(MB_SLAVE_t *slave,
-                        uint16_t reg_addr)
+                        uint16_t reg)
 {
-    if((reg_addr + 1) >= MB_SLAVE_MAX_REG)
-        return 0;
+    uint32_t r =
+        ((uint32_t)slave->holding_reg[reg]<<16) |
+        slave->holding_reg[reg+1];
 
-    uint32_t raw;
-
-    raw =
-        ((uint32_t)slave->holding_reg[reg_addr]
-         << 16)
-        |
-        slave->holding_reg[reg_addr + 1];
-
-    return *((float*)&raw);
+    return *((float*)&r);
 }
 
 uint16_t MB_SLAVE_GetU16(MB_SLAVE_t *slave,
-                         uint16_t reg_addr)
+                         uint16_t reg)
 {
-    if(reg_addr >= MB_SLAVE_MAX_REG)
-        return 0;
-
-    return slave->holding_reg[reg_addr];
+    return slave->holding_reg[reg];
 }
