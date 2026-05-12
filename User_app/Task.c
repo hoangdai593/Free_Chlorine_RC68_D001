@@ -71,6 +71,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     else if(huart->Instance == USART1)      // Slave - Datalogger
     {
         MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_buf[0]);  // byte đã nhận
+        BSP_RS485_Receive_IT(RS485_PORT1, &mb_slave.rx_buf[0]);  // Tiếp tục nhận byte tiếp theo
     }
 }
 
