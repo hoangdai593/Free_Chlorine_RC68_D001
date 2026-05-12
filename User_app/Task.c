@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <string.h>
 
 #include "modbus_rtu.h"
 #include "modbus_master.h"
@@ -404,10 +405,14 @@ uint8_t _Cb_Sensor(uint8_t x)
     float lower_threshold =
             MB_SLAVE_GetFloat(&mb_slave, 0x0010);
 
-    warning_mode_saved =
-            MB_SLAVE_GetU16(&mb_slave, 0x000D) ? 1 : 0;
+    /* Only update warning_mode from slave when NOT editing */
+    if(!warning_edit)
+    {
+        warning_mode_saved =
+                MB_SLAVE_GetU16(&mb_slave, 0x000D) ? 1 : 0;
 
-    warning_mode = warning_mode_saved;
+        warning_mode = warning_mode_saved;
+    }
 
     /* =====================================================
      * SYNC UI DIGIT
@@ -432,6 +437,13 @@ uint8_t _Cb_Sensor(uint8_t x)
 
     lower_digit_saved[2] =
             ((uint16_t)(lower_threshold * 100)) % 10;
+
+    /* Copy from saved to edit arrays when NOT editing */
+    if(!warning_edit)
+    {
+        memcpy(upper_digit, upper_digit_saved, 3);
+        memcpy(lower_digit, lower_digit_saved, 3);
+    }
 
     /* =====================================================
      * READ GAIN 1 TIME
