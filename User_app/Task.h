@@ -83,6 +83,8 @@ extern MB_SLAVE_t mb_slave;
 extern uint16_t modbus_id;
 extern uint8_t baud_index;
 /* SENSOR */
+extern float clo_raw_value;
+
 extern float clo_value;
 extern float mV_value;
 extern float rc68_temp;

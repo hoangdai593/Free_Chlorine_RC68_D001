@@ -50,7 +50,8 @@ MB_RTU_t mb1;
 MB_SLAVE_t mb_slave;    // Slave   - USART1 (Datalogger)
 
 /* SENSOR */
-float clo_value       = 0;
+float clo_raw_value   = 0;   // giá trị gốc từ sensor
+float clo_value       = 0;   // giá trị đã bù pH
 float mV_value        = 0;
 float rc68_temp       = 0;
 
@@ -308,7 +309,7 @@ void process_cmd_queue(void)
             {
                 if(current_cmd == CMD_READ_ALL)
                 {
-                    clo_value = RC68_GetFloat(&mb1, 0);
+                	clo_raw_value = RC68_GetFloat(&mb1, 0);
                     mV_value  = RC68_GetFloat(&mb1, 2);
                     rc68_temp = RC68_GetFloat(&mb1, 4);
                     display_update_needed = 1;
@@ -390,135 +391,236 @@ uint8_t _Cb_Sensor(uint8_t x)
     static uint32_t slope_tick = 0;
     static uint8_t gain_read_done = 0;
 
-     /* Đọc gain 1 lần sau khi hệ thống chạy ổn định */
-     if(!gain_read_done)
-     {
-         if(HAL_GetTick() >= 4000)
-         {
-             CMD_Enqueue(CMD_READ_GAIN);
+    /* =====================================================
+     * READ VALUE FROM HOLDING REGISTER
+     * ===================================================== */
 
-             gain_read_done = 1;
-         }
-     }
+    float PH_value =
+            MB_SLAVE_GetFloat(&mb_slave, 0x0006);
 
-    /* Poll Master (Sensor) */
+    float upper_threshold =
+            MB_SLAVE_GetFloat(&mb_slave, 0x000E);
+
+    float lower_threshold =
+            MB_SLAVE_GetFloat(&mb_slave, 0x0010);
+
+    warning_mode_saved =
+            MB_SLAVE_GetU16(&mb_slave, 0x000D) ? 1 : 0;
+
+    warning_mode = warning_mode_saved;
+
+    /* =====================================================
+     * SYNC UI DIGIT
+     * ===================================================== */
+
+    /* Upper */
+    upper_digit_saved[0] =
+            (uint8_t)upper_threshold;
+
+    upper_digit_saved[1] =
+            ((uint16_t)(upper_threshold * 10)) % 10;
+
+    upper_digit_saved[2] =
+            ((uint16_t)(upper_threshold * 100)) % 10;
+
+    /* Lower */
+    lower_digit_saved[0] =
+            (uint8_t)lower_threshold;
+
+    lower_digit_saved[1] =
+            ((uint16_t)(lower_threshold * 10)) % 10;
+
+    lower_digit_saved[2] =
+            ((uint16_t)(lower_threshold * 100)) % 10;
+
+    /* =====================================================
+     * READ GAIN 1 TIME
+     * ===================================================== */
+
+    if(!gain_read_done)
+    {
+        if(HAL_GetTick() >= 4000)
+        {
+            CMD_Enqueue(CMD_READ_GAIN);
+
+            gain_read_done = 1;
+        }
+    }
+
+    /* =====================================================
+     * MODBUS POLL
+     * ===================================================== */
+
     MB_RTU_Poll(&mb1);
 
-    /* Poll Slave (Datalogger) */
     MB_SLAVE_Poll(&mb_slave);
 
-    /* Xử lý command queue cho Master */
     process_cmd_queue();
 
-    /* Đọc dữ liệu realtime từ Sensor */
+    /* =====================================================
+     * READ SENSOR REALTIME
+     * ===================================================== */
+
     if(HAL_GetTick() - read_tick >= 1000)
     {
         read_tick = HAL_GetTick();
+
         CMD_Enqueue(CMD_READ_ALL);
     }
 
-    /* Đọc Slope/Intercept định kỳ */
+    /* =====================================================
+     * READ SLOPE / INTERCEPT
+     * ===================================================== */
+
     if(HAL_GetTick() - slope_tick >= 10000)
     {
         slope_tick = HAL_GetTick();
+
         CMD_Enqueue(CMD_READ_SLOPE_INTERCEPT);
     }
 
-    /* Cập nhật dữ liệu lên Slave Registers (cho Datalogger đọc) */
-    MB_SLAVE_SetFloat(&mb_slave, 0x0002, clo_value);      // Giá trị Clo dư
-    MB_SLAVE_SetFloat(&mb_slave, 0x0004, rc68_temp);      // Nhiệt độ
+    /* =====================================================
+     * CLO PH COMPENSATION
+     *
+     * Clo_final =
+     * Clo_sensor *
+     * (1 + K * (PH - 7.53))
+     *
+     * K:
+     * PH > 7.53 -> 0.1
+     * PH <=7.53 -> 0.15
+     * ===================================================== */
 
-    float offset_value =
-            offset_digit[1] * 100.0f
-            + offset_digit[2] * 10.0f
-            + offset_digit[3];
-    if(offset_digit[0] && offset_value != 0.0f)
+    float k_value;
+
+    if(PH_value > 7.53f)
     {
-        offset_value = -offset_value;
+        k_value = 0.1f;
+    }
+    else
+    {
+        k_value = 0.15f;
     }
 
-    float upper_threshold =
-            upper_digit_saved[0]
-            + upper_digit_saved[1] * 0.1f
-            + upper_digit_saved[2] * 0.01f;
+    float clo_comp_value = clo_raw_value *(1.0f+ (k_value* (PH_value - 7.53f)));
 
-    float lower_threshold =
-            lower_digit_saved[0]
-            + lower_digit_saved[1] * 0.1f
-            + lower_digit_saved[2] * 0.01f;
+    /* chống âm */
+    if(clo_comp_value < 0)
+    {
+        clo_comp_value = 0;
+    }
+
+    /* =====================================================
+     * UPDATE HOLDING REGISTER
+     * ===================================================== */
+
+    MB_SLAVE_SetFloat(&mb_slave,
+                      0x0002,
+                      clo_comp_value);
+
+    MB_SLAVE_SetFloat(&mb_slave,
+                      0x0004,
+                      rc68_temp);
+
+    /* =====================================================
+     * UPDATE DISPLAY VALUE
+     * ===================================================== */
+
+    clo_value = clo_comp_value;
 
     /* =====================================================
      * WARNING BUZZER
-     * Bíp 1 lần mỗi 5s khi vượt ngưỡng
      * ===================================================== */
+
     static uint32_t warning_buzz_tick = 0;
     static uint32_t warning_pulse_tick = 0;
-    static uint8_t  warning_pulse = 0;
+    static uint8_t warning_pulse = 0;
 
-    float current_cl = clo_value;
+    float current_cl = clo_comp_value;
 
     uint8_t warning_active = 0;
 
-    if((warning_mode_saved == 1) && (ui_buzzer_lock == 0))
+    if((warning_mode_saved == 1)
+       && (ui_buzzer_lock == 0))
     {
-        if(current_cl > upper_threshold ||
-           current_cl < lower_threshold)
+        if((current_cl > upper_threshold)
+           || (current_cl < lower_threshold))
         {
             warning_active = 1;
         }
     }
 
-    /* Trigger pulse mỗi 5s */
+    /* =====================================================
+     * TRIGGER WARNING EVERY 5S
+     * ===================================================== */
+
     if(warning_active)
     {
-        if((HAL_GetTick() - warning_buzz_tick) >= 5000)
+        if((HAL_GetTick() - warning_buzz_tick)
+           >= 5000)
         {
             warning_buzz_tick = HAL_GetTick();
 
             warning_pulse = 1;
+
             warning_pulse_tick = HAL_GetTick();
         }
     }
     else
     {
         warning_pulse = 0;
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+
+        HAL_GPIO_WritePin(GPIOC,
+                          GPIO_PIN_13,
+                          GPIO_PIN_RESET);
     }
 
-    /* Pulse 200ms */
+    /* =====================================================
+     * WARNING PULSE 200ms
+     * ===================================================== */
+
     if(warning_pulse)
     {
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOC,
+                          GPIO_PIN_13,
+                          GPIO_PIN_SET);
 
-        if(HAL_GetTick() - warning_pulse_tick >= 200)
+        if((HAL_GetTick() - warning_pulse_tick)
+           >= 200)
         {
             warning_pulse = 0;
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+
+            HAL_GPIO_WritePin(GPIOC,
+                              GPIO_PIN_13,
+                              GPIO_PIN_RESET);
         }
     }
 
     /* =====================================================
      * DONE BUZZER
      * ===================================================== */
+
     if(buzzer_done_state == 1)
     {
-        uint32_t elapsed = HAL_GetTick() - buzzer_done_tick;
+        uint32_t elapsed =
+                HAL_GetTick()
+                - buzzer_done_tick;
 
         if(elapsed < 200)
         {
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOC,
+                              GPIO_PIN_13,
+                              GPIO_PIN_SET);
         }
         else
         {
             buzzer_done_state = 2;
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+
+            HAL_GPIO_WritePin(GPIOC,
+                              GPIO_PIN_13,
+                              GPIO_PIN_RESET);
         }
     }
-
-    MB_SLAVE_SetFloat(&mb_slave, 0x0006, offset_value);   // Bù pH cho Clo
-    MB_SLAVE_SetU16(&mb_slave, 0x000D, warning_mode ? 1 : 0); // Cảnh báo bật/tắt
-    MB_SLAVE_SetFloat(&mb_slave, 0x000E, upper_threshold); // Ngưỡng trên
-    MB_SLAVE_SetFloat(&mb_slave, 0x0010, lower_threshold); // Ngưỡng dưới
 
     return 0;
 }
