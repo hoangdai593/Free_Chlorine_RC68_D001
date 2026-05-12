@@ -17,7 +17,7 @@ static const uint32_t MB_BAUD[MB_BAUD_COUNT] =
 
 #define T35_MS          4
 #define RX_RESET_MS     100
-
+volatile uint8_t frame_ready = 0;
 /* ================= INTERNAL ================= */
 
 static void MB_Send(MB_SLAVE_t *s, uint16_t len);
@@ -64,10 +64,16 @@ void MB_SLAVE_Init(MB_SLAVE_t *s, RS485_PORT port, uint8_t id)
 
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *s, uint8_t b)
 {
-    if(s->rx_index >= MB_RX_BUF_SIZE)
-        s->rx_index = 0;
+    if(s->rx_index < MB_RX_BUF_SIZE)
+    {
+        s->rx_buf[s->rx_index++] = b;
+    }
+    else
+    {
+        // buffer full -> KHÔNG reset bừa, chỉ clamp
+        s->rx_index = MB_RX_BUF_SIZE - 1;
+    }
 
-    s->rx_buf[s->rx_index++] = b;
     s->last_rx_tick = HAL_GetTick();
 
     BSP_RS485_Receive_IT(s->port, &s->rx_byte);
@@ -84,28 +90,31 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
     if(s->rx_index == 0)
         return;
 
-    /* reset nếu treo */
+    // timeout frame RTU
     if(now - s->last_rx_tick > RX_RESET_MS)
     {
         s->rx_index = 0;
+        s->frame_ready = 0;
         return;
     }
 
-    /* chờ end frame RTU */
+    // chưa đủ thời gian kết thúc frame
     if(now - s->last_rx_tick < T35_MS)
         return;
 
-    if(s->rx_buf[0] != s->slave_id)
-    {
-        s->rx_index = 0;
+    s->frame_ready = 1;
+
+    if(!s->frame_ready)
         return;
-    }
+
+    s->frame_ready = 0;
+
+    // validate basic
+    if(s->rx_buf[0] != s->slave_id)
+        goto reset;
 
     if(!MB_CRC_Check(s->rx_buf, s->rx_index))
-    {
-        s->rx_index = 0;
-        return;
-    }
+        goto reset;
 
     uint8_t f = s->rx_buf[1];
 
@@ -114,23 +123,23 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
         uint16_t addr = (s->rx_buf[2]<<8)|s->rx_buf[3];
         uint16_t qty  = (s->rx_buf[4]<<8)|s->rx_buf[5];
 
-        if(addr+qty > MB_SLAVE_MAX_REG)
+        if(addr + qty > MB_SLAVE_MAX_REG)
         {
             MB_Except(s, 0x02);
-            goto end;
+            goto reset;
         }
 
         s->rx_buf[1] = 0x03;
-        s->rx_buf[2] = qty*2;
+        s->rx_buf[2] = qty * 2;
 
         for(int i=0;i<qty;i++)
         {
             uint16_t v = s->holding_reg[addr+i];
-            s->rx_buf[3+i*2] = v>>8;
+            s->rx_buf[3+i*2] = v >> 8;
             s->rx_buf[4+i*2] = v;
         }
 
-        MB_Send(s, 3+qty*2);
+        MB_Send(s, 3 + qty*2);
     }
     else if(f == 0x06)
     {
@@ -156,7 +165,7 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
                 (s->rx_buf[8+i*2]);
         }
 
-        if(addr<=0x0001 && 0x0001<addr+qty)
+        if(addr <= 0x0001 && (addr + qty) > 0x0001)
             MB_UpdateBaud(s);
 
         MB_Send(s, 6);
@@ -166,7 +175,7 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
         MB_Except(s, 0x01);
     }
 
-end:
+reset:
     s->rx_index = 0;
 }
 

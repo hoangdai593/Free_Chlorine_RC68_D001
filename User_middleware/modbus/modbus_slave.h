@@ -16,7 +16,7 @@
 /* RTU timing */
 #define MB_SLAVE_T35_MS         4
 #define MB_SLAVE_RX_RESET_MS    100
-
+extern volatile uint8_t frame_ready;
 /* ================= STRUCT ================= */
 
 typedef struct
