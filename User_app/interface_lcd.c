@@ -89,7 +89,7 @@ uint8_t warning_mode = 0;
 
 uint8_t upper_digit[3] = {1,5,0};
 uint8_t lower_digit[3] = {0,1,0};
-uint8_t warning_mode_saved = 1;
+uint8_t warning_mode_saved = 0;
 
 uint8_t upper_digit_saved[3] = {1,5,0};
 uint8_t lower_digit_saved[3] = {0,1,0};

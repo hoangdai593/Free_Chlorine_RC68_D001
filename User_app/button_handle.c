@@ -43,8 +43,9 @@ void enter_button_handle(void)
                     modbus_edit = 0;
                     break;
                 case CALIB_CUR:
-                    calib_cursor = 0;
+                    calib_cursor = 1;
                     calib_edit = 0;
+                    calib_zero_confirm = 0;
                     break;
                 case OFFSET_CUR:
                     offset_cursor = 0;
