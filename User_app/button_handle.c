@@ -74,7 +74,7 @@ void enter_button_handle(void)
             else
             {
                 modbus_edit = 0;
-                send_cmd(CMD_SET_ID_BAUD);
+                send_cmd(CMD_SET_SENSOR_ID_BAUD);
             }
             break;
 

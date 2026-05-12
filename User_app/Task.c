@@ -128,7 +128,7 @@ static void send_command(CMD_TYPE_t type)
             RC68_ReadGain(&mb1);
             break;
 
-        case CMD_SET_ID_BAUD:
+        case CMD_SET_SENSOR_ID_BAUD:
         {
             if(modbus_cursor == 0)
                 RC68_WriteID(&mb1, modbus_id);
@@ -172,6 +172,22 @@ static void send_command(CMD_TYPE_t type)
         case CMD_SET_RANGE:
             RC68_WriteGain(&mb1, range_index);
             break;
+
+        case CMD_SET_SLAVE_ID_BAUD:
+        {
+            if(modbus_cursor == 0)
+            {
+                mb_slave.slave_id = modbus_id;
+
+                mb_slave.holding_reg[0x0000] = modbus_id;
+            }
+            else
+            {
+                mb_slave.holding_reg[0x0001] = baud_index + 1;
+            }
+
+            break;
+        }
 
         default:
             break;
@@ -236,7 +252,7 @@ static uint8_t check_response(CMD_TYPE_t cmd)
 
         /* ================= WRITE ================= */
 
-        case CMD_SET_ID_BAUD:
+        case CMD_SET_SENSOR_ID_BAUD:
         case CMD_SET_SLOPE:
         case CMD_SET_CALIB_ZERO:
         case CMD_SET_OFFSET:
@@ -278,7 +294,7 @@ void process_cmd_queue(void)
 
     	        cmd_running = 0;
 
-    	        if(current_cmd >= CMD_SET_ID_BAUD)
+    	        if(current_cmd >= CMD_SET_SENSOR_ID_BAUD)
     	        {
     	        	buzzer_done_state = 0;
     	            cmd_result  = CMD_RES_FAIL;
@@ -314,7 +330,7 @@ void process_cmd_queue(void)
             cmd_running = 0;
 
             /* ===== chỉ hiện UI cho lệnh SET ===== */
-            if(current_cmd >= CMD_SET_ID_BAUD)
+            if(current_cmd >= CMD_SET_SENSOR_ID_BAUD)
             {
                 cmd_result  = CMD_RES_DONE;
                 cmd_ui_tick = HAL_GetTick();
@@ -332,7 +348,7 @@ void process_cmd_queue(void)
             mb1.frame_ready = 0;
 
             /* ===== chỉ hiện UI cho lệnh SET ===== */
-            if(current_cmd >= CMD_SET_ID_BAUD)
+            if(current_cmd >= CMD_SET_SENSOR_ID_BAUD)
             {
                 cmd_result  = CMD_RES_FAIL;
                 cmd_ui_tick = HAL_GetTick();
@@ -358,7 +374,7 @@ void process_cmd_queue(void)
     cmd_tick = HAL_GetTick();
 
     /* ===== chỉ hiện UI cho lệnh SET ===== */
-    if(current_cmd >= CMD_SET_ID_BAUD)
+    if(current_cmd >= CMD_SET_SENSOR_ID_BAUD)
     {
         cmd_result = CMD_RES_SENDING;
     }
