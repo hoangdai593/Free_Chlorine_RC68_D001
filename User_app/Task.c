@@ -63,7 +63,6 @@ float intercept_value = 0;
 uint8_t buzzer_done_state = 0;   // 0=idle, 1=active, 2=played
 uint32_t buzzer_done_tick = 0;
 uint8_t ui_buzzer_lock = 0;
-uint8_t done_beep_played = 0;
 /* UART RX */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -592,7 +591,7 @@ uint8_t _Cb_Sensor(uint8_t x)
      * WARNING PULSE 200ms
      * ===================================================== */
 
-    if(warning_pulse)
+    if(warning_pulse && (buzzer_done_state == 0))
     {
         HAL_GPIO_WritePin(GPIOC,
                           GPIO_PIN_13,
@@ -608,7 +607,6 @@ uint8_t _Cb_Sensor(uint8_t x)
                               GPIO_PIN_RESET);
         }
     }
-
     /* =====================================================
      * DONE BUZZER
      * ===================================================== */
@@ -672,10 +670,8 @@ uint8_t _Cb_LCD_Display(uint8_t x)
             draw_string_small(10,20,"DONE");
             ui_buzzer_lock = 1;
             /* chỉ kêu 1 lần */
-            if(done_beep_played == 0)
+            if(buzzer_done_state == 0)
             {
-                done_beep_played = 1;
-
                 buzzer_done_state = 1;
                 buzzer_done_tick = HAL_GetTick();
             }
@@ -703,7 +699,7 @@ uint8_t _Cb_LCD_Display(uint8_t x)
                 cmd_result = CMD_RES_NONE;
 
                 display_tick = 0;
-                done_beep_played = 0;
+
                 buzzer_done_state = 0;
                 ui_buzzer_lock = 0;
                 HAL_GPIO_WritePin(GPIOC,
