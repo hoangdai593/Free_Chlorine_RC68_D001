@@ -151,6 +151,7 @@ void enter_button_handle(void)
                 {
                     warning_edit = 0;
                     warning_mode_saved = warning_mode;
+                    MB_SLAVE_SetU16(&mb_slave, 0x000D, warning_mode ? 1 : 0);
                     buzzer_done_state = 0;
                     cmd_result = CMD_RES_DONE;
                     cmd_ui_tick = HAL_GetTick();
@@ -166,6 +167,21 @@ void enter_button_handle(void)
                         warning_edit = 0;
                         memcpy(upper_digit_saved, upper_digit, 3);
                         memcpy(lower_digit_saved, lower_digit, 3);
+
+                        float upper_threshold =
+                                upper_digit[0]
+                                + upper_digit[1] * 0.1f
+                                + upper_digit[2] * 0.01f;
+
+                        float lower_threshold =
+                                lower_digit[0]
+                                + lower_digit[1] * 0.1f
+                                + lower_digit[2] * 0.01f;
+
+                        MB_SLAVE_SetFloat(&mb_slave, 0x000E, upper_threshold);
+                        MB_SLAVE_SetFloat(&mb_slave, 0x0010, lower_threshold);
+                        MB_SLAVE_SetU16(&mb_slave, 0x000D, warning_mode ? 1 : 0);
+
                         buzzer_done_state = 0;
                         cmd_result = CMD_RES_DONE;
                         cmd_ui_tick = HAL_GetTick();

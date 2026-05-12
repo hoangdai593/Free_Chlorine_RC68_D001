@@ -47,6 +47,9 @@ void MB_SLAVE_Init(MB_SLAVE_t *slave,
     slave->holding_reg[0x0000] = slave_id;
     slave->holding_reg[0x0001] = 3;   // 9600
     MB_SLAVE_SetFloat(slave, 0x0006, 7.5f);
+    MB_SLAVE_SetU16(slave, 0x000D, 0);
+    MB_SLAVE_SetFloat(slave, 0x000E, 1.5f);
+    MB_SLAVE_SetFloat(slave, 0x0010, 0.1f);
     /* =====================================================
      * START RX
      * ===================================================== */
@@ -313,12 +316,12 @@ void MB_SLAVE_SetFloat(MB_SLAVE_t *slave,
 
     uint32_t raw = *((uint32_t*)&value);
 
-    /* CDAB */
+    /* store high word first, low word second */
     slave->holding_reg[reg_addr] =
-            raw & 0xFFFF;
+            raw >> 16;
 
     slave->holding_reg[reg_addr + 1] =
-            raw >> 16;
+            raw & 0xFFFF;
 }
 
 void MB_SLAVE_SetU16(MB_SLAVE_t *slave,
@@ -340,10 +343,10 @@ float MB_SLAVE_GetFloat(MB_SLAVE_t *slave,
     uint32_t raw;
 
     raw =
-        ((uint32_t)slave->holding_reg[reg_addr + 1]
+        ((uint32_t)slave->holding_reg[reg_addr]
          << 16)
         |
-        slave->holding_reg[reg_addr];
+        slave->holding_reg[reg_addr + 1];
 
     return *((float*)&raw);
 }
