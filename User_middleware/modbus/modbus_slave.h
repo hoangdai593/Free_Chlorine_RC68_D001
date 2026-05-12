@@ -6,6 +6,10 @@
 
 #define MB_SLAVE_MAX_REG        32
 
+/* ===== FIX TIMING ===== */
+//#define MB_FRAME_TIMEOUT_MS     5     // giữ ngắn để bắt frame nhanh
+#define MB_INTERFRAME_GAP_MS    3     // chống nhiễu giữa byte
+
 typedef struct
 {
     uint8_t     slave_id;
@@ -16,6 +20,7 @@ typedef struct
     uint8_t     rx_buf[MB_RX_BUF_SIZE];
     uint16_t    rx_index;
     uint32_t    last_rx_tick;
+
     uint8_t     rx_byte;
 
     uint8_t     frame_ready;
@@ -31,11 +36,11 @@ void MB_SLAVE_Init(MB_SLAVE_t *slave,
 /* ================= PROCESS ================= */
 void MB_SLAVE_Poll(MB_SLAVE_t *slave);
 
-/* ================= RX BYTE ================= */
+/* ================= RX ================= */
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *slave,
                             uint8_t byte);
 
-/* ================= USER API ================= */
+/* ================= API ================= */
 void MB_SLAVE_SetFloat(MB_SLAVE_t *slave,
                        uint16_t reg_addr,
                        float value);
