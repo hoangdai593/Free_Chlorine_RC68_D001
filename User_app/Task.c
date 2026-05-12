@@ -13,7 +13,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <string.h>
 
 #include "modbus_rtu.h"
 #include "modbus_master.h"
@@ -391,334 +390,200 @@ void process_cmd_queue(void)
 }
 
 /* =========================================================
- * SENSOR
+ * SENSOR HELPER FUNCTIONS
  * ========================================================= */
 
-uint8_t _Cb_Sensor(uint8_t x)
+static void read_holding_registers(void)
 {
-    static uint32_t read_tick = 0;
-    static uint32_t slope_tick = 0;
-    static uint8_t gain_read_done = 0;
+//    float PH_value = MB_SLAVE_GetFloat(&mb_slave, 0x0006);
+    float upper_threshold = MB_SLAVE_GetFloat(&mb_slave, 0x000E);
+    float lower_threshold = MB_SLAVE_GetFloat(&mb_slave, 0x0010);
 
-    /* =====================================================
-     * READ VALUE FROM HOLDING REGISTER
-     * ===================================================== */
-
-    float PH_value =
-            MB_SLAVE_GetFloat(&mb_slave, 0x0006);
-
-    float upper_threshold =
-            MB_SLAVE_GetFloat(&mb_slave, 0x000E);
-
-    float lower_threshold =
-            MB_SLAVE_GetFloat(&mb_slave, 0x0010);
-
-    /* Only update warning_mode from slave when NOT editing */
     if(!warning_edit)
     {
-        warning_mode_saved =
-                MB_SLAVE_GetU16(&mb_slave, 0x000D) ? 1 : 0;
-
+        warning_mode_saved = MB_SLAVE_GetU16(&mb_slave, 0x000D) ? 1 : 0;
         warning_mode = warning_mode_saved;
     }
 
-    /* =====================================================
-     * SYNC UI DIGIT
-     * ===================================================== */
+    upper_digit_saved[0] = (uint8_t)upper_threshold;
+    upper_digit_saved[1] = ((uint16_t)(upper_threshold * 10)) % 10;
+    upper_digit_saved[2] = ((uint16_t)(upper_threshold * 100)) % 10;
 
-    upper_digit_saved[0] =
-            (uint8_t)upper_threshold;
-
-    upper_digit_saved[1] =
-            ((uint16_t)(upper_threshold * 10)) % 10;
-
-    upper_digit_saved[2] =
-            ((uint16_t)(upper_threshold * 100)) % 10;
-
-    lower_digit_saved[0] =
-            (uint8_t)lower_threshold;
-
-    lower_digit_saved[1] =
-            ((uint16_t)(lower_threshold * 10)) % 10;
-
-    lower_digit_saved[2] =
-            ((uint16_t)(lower_threshold * 100)) % 10;
+    lower_digit_saved[0] = (uint8_t)lower_threshold;
+    lower_digit_saved[1] = ((uint16_t)(lower_threshold * 10)) % 10;
+    lower_digit_saved[2] = ((uint16_t)(lower_threshold * 100)) % 10;
 
     if(!warning_edit)
     {
         memcpy(upper_digit, upper_digit_saved, 3);
         memcpy(lower_digit, lower_digit_saved, 3);
     }
+}
 
-    /* =====================================================
-     * READ GAIN 1 TIME
-     * ===================================================== */
+static void read_gain_once(void)
+{
+    static uint8_t gain_read_done = 0;
 
-    if(!gain_read_done)
+    if(!gain_read_done && HAL_GetTick() >= 4000)
     {
-        if(HAL_GetTick() >= 4000)
-        {
-            CMD_Enqueue(CMD_READ_GAIN);
-
-            gain_read_done = 1;
-        }
+        CMD_Enqueue(CMD_READ_GAIN);
+        gain_read_done = 1;
     }
+}
 
-    /* =====================================================
-     * MODBUS POLL
-     * ===================================================== */
-
+static void poll_modbus(void)
+{
     MB_RTU_Poll(&mb1);
-
     MB_SLAVE_Poll(&mb_slave);
-
     process_cmd_queue();
+}
 
-    /* =====================================================
-     * READ SENSOR REALTIME
-     * ===================================================== */
+static void enqueue_read_all(void)
+{
+    static uint32_t read_tick = 0;
 
     if(HAL_GetTick() - read_tick >= 1000)
     {
         read_tick = HAL_GetTick();
-
         CMD_Enqueue(CMD_READ_ALL);
     }
+}
 
-    /* =====================================================
-     * READ SLOPE / INTERCEPT
-     * ===================================================== */
+static void enqueue_read_slope(void)
+{
+    static uint32_t slope_tick = 0;
 
     if(HAL_GetTick() - slope_tick >= 10000)
     {
         slope_tick = HAL_GetTick();
-
         CMD_Enqueue(CMD_READ_SLOPE_INTERCEPT);
     }
+}
 
-    /* =====================================================
-     * CLO PH COMPENSATION
-     * ===================================================== */
+static void compensate_ph(void)
+{
+    float PH_value = MB_SLAVE_GetFloat(&mb_slave, 0x0006);
+    float k_value = (PH_value > 7.5f) ? 0.1f : 0.15f;
 
-    float k_value;
+    float clo_comp_value = clo_raw_value * (1.0f + (k_value * (PH_value - 7.53f)));
+    if(clo_comp_value < 0) clo_comp_value = 0;
 
-    if(PH_value > 7.5f)
-    {
-        k_value = 0.1f;
-    }
-    else
-    {
-        k_value = 0.15f;
-    }
-
-    float clo_comp_value =
-            clo_raw_value *
-            (1.0f + (k_value * (PH_value - 7.53f)));
-
-    if(clo_comp_value < 0)
-    {
-        clo_comp_value = 0;
-    }
-
-    /* =====================================================
-     * UPDATE HOLDING REGISTER
-     * ===================================================== */
-
-    MB_SLAVE_SetFloat(&mb_slave,
-                      0x0002,
-                      clo_comp_value);
-
-    MB_SLAVE_SetFloat(&mb_slave,
-                      0x0004,
-                      rc68_temp);
-
-    /* =====================================================
-     * UPDATE DISPLAY VALUE
-     * ===================================================== */
+    MB_SLAVE_SetFloat(&mb_slave, 0x0002, clo_comp_value);
+    MB_SLAVE_SetFloat(&mb_slave, 0x0004, rc68_temp);
 
     clo_value = clo_comp_value;
+}
 
-    /* =====================================================
-     * WARNING BUZZER
-     * ===================================================== */
-
+static void handle_warning_buzzer(void)
+{
     static uint32_t warning_buzz_tick = 0;
     static uint32_t warning_pulse_tick = 0;
     static uint8_t warning_pulse = 0;
 
-    float current_cl = clo_comp_value;
-
-    uint8_t warning_active = 0;
-
-    if((warning_mode_saved == 1)
-       && (ui_buzzer_lock == 0))
-    {
-        if((current_cl > upper_threshold)
-           || (current_cl < lower_threshold))
-        {
-            warning_active = 1;
-        }
-    }
-
-    /* =====================================================
-     * TRIGGER WARNING EVERY 5S
-     * ===================================================== */
+    float current_cl = clo_value;
+    uint8_t warning_active = (warning_mode_saved == 1 && ui_buzzer_lock == 0 &&
+                              (current_cl > MB_SLAVE_GetFloat(&mb_slave, 0x000E) ||
+                               current_cl < MB_SLAVE_GetFloat(&mb_slave, 0x0010))) ? 1 : 0;
 
     if(warning_active)
     {
-        if((HAL_GetTick() - warning_buzz_tick)
-           >= 5000)
+        if(HAL_GetTick() - warning_buzz_tick >= 5000)
         {
             warning_buzz_tick = HAL_GetTick();
-
             warning_pulse = 1;
-
             warning_pulse_tick = HAL_GetTick();
         }
     }
     else
     {
         warning_pulse = 0;
-
-        HAL_GPIO_WritePin(GPIOC,
-                          GPIO_PIN_13,
-                          GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
     }
-
-    /* =====================================================
-     * WARNING PULSE 200ms
-     * ===================================================== */
 
     if(warning_pulse)
     {
-        HAL_GPIO_WritePin(GPIOC,
-                          GPIO_PIN_13,
-                          GPIO_PIN_SET);
-
-        if((HAL_GetTick() - warning_pulse_tick)
-           >= 200)
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+        if(HAL_GetTick() - warning_pulse_tick >= 200)
         {
             warning_pulse = 0;
-
-            HAL_GPIO_WritePin(GPIOC,
-                              GPIO_PIN_13,
-                              GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
     }
-
-    return 0;
 }
 
 /* =========================================================
- * LCD
+ * LCD HELPER FUNCTIONS
  * ========================================================= */
 
-uint8_t _Cb_LCD_Display(uint8_t x)
+static void handle_cmd_ui(void)
 {
     static uint32_t display_tick = 0;
 
     blink_display();
 
-    if((cmd_result == CMD_RES_SENDING)
-       && (pending_result != CMD_RES_NONE))
+    if(cmd_result == CMD_RES_SENDING && pending_result != CMD_RES_NONE)
     {
         if(HAL_GetTick() - sending_start_tick >= 500)
         {
             cmd_result = pending_result;
-
             pending_result = CMD_RES_NONE;
         }
     }
-    /* CMD UI */
+
     if(cmd_result != CMD_RES_NONE)
     {
         glcd_clear_buffer();
 
-        /* ================= SENDING ================= */
         if(cmd_result == CMD_RES_SENDING)
         {
             draw_string_small(10,20,"SENDING...");
-
             ui_buzzer_lock = 1;
-
-            HAL_GPIO_WritePin(GPIOC,
-                              GPIO_PIN_13,
-                              GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
-
-        /* ================= DONE ================= */
         else if(cmd_result == CMD_RES_DONE)
         {
             draw_string_small(10,20,"DONE");
-
             ui_buzzer_lock = 1;
 
-            /* ===== DONE BEEP ===== */
             if(buzzer_done_state == 0)
             {
                 buzzer_done_state = 1;
-
                 buzzer_done_tick = HAL_GetTick();
-
-                HAL_GPIO_WritePin(GPIOC,
-                                  GPIO_PIN_13,
-                                  GPIO_PIN_SET);
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
             }
 
-            if(buzzer_done_state == 1)
+            if(buzzer_done_state == 1 && HAL_GetTick() - buzzer_done_tick >= 200)
             {
-                if(HAL_GetTick() - buzzer_done_tick >= 200)
-                {
-                    buzzer_done_state = 2;
-
-                    HAL_GPIO_WritePin(GPIOC,
-                                      GPIO_PIN_13,
-                                      GPIO_PIN_RESET);
-                }
+                buzzer_done_state = 2;
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
             }
         }
-
-        /* ================= FAIL ================= */
         else if(cmd_result == CMD_RES_FAIL)
         {
             draw_string_small(10,20,"FAIL");
-
             ui_buzzer_lock = 1;
-
-            HAL_GPIO_WritePin(GPIOC,
-                              GPIO_PIN_13,
-                              GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         }
 
-        /* ================= AUTO EXIT ================= */
         if(cmd_result != CMD_RES_SENDING)
         {
-            if(display_tick == 0)
-                display_tick = HAL_GetTick();
+            if(display_tick == 0) display_tick = HAL_GetTick();
 
             if(HAL_GetTick() - display_tick >= 1000)
             {
                 cmd_result = CMD_RES_NONE;
-
                 display_tick = 0;
-
                 buzzer_done_state = 0;
-
                 ui_buzzer_lock = 0;
-
-                HAL_GPIO_WritePin(GPIOC,
-                                  GPIO_PIN_13,
-                                  GPIO_PIN_RESET);
-
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
                 interface = SETTING;
             }
         }
-
-        return 0;
     }
+}
 
-    display_tick = 0;
-
+static void handle_interface_display(void)
+{
     if(interface != previous_interface)
     {
         display_update_needed = 1;
@@ -734,41 +599,45 @@ uint8_t _Cb_LCD_Display(uint8_t x)
                 display_update_needed = 0;
             }
             break;
+        case LOGIN: login_display(); break;
+        case SETTING: setting_display(); break;
+        case MODBUS: modbus_display(); break;
+        case CALIB: calib_display(); break;
+        case OFFSET: offset_display(); break;
+        case WARNING: warning_display(); break;
+        case RANGE: range_display(); break;
+        case INFO: info_display(); break;
+    }
+}
 
-        case LOGIN:
-            login_display();
-            break;
+/* =========================================================
+ * SENSOR
+ * ========================================================= */
 
-        case SETTING:
-            setting_display();
-            break;
+uint8_t _Cb_Sensor(uint8_t x)
+{
+    read_holding_registers();
+    read_gain_once();
+    poll_modbus();
+    enqueue_read_all();
+    enqueue_read_slope();
+    compensate_ph();
+    handle_warning_buzzer();
 
-        case MODBUS:
-            modbus_display();
-            break;
+    return 0;
+}
 
-        case CALIB:
-            calib_display();
-            break;
+/* =========================================================
+ * LCD
+ * ========================================================= */
 
-        case OFFSET:
-            offset_display();
-            break;
+uint8_t _Cb_LCD_Display(uint8_t x)
+{
+    handle_cmd_ui();
 
-        case WARNING:
-            warning_display();
-            break;
-
-        case RANGE:
-            range_display();
-            break;
-
-        case INFO:
-            info_display();
-            break;
-
-        default:
-            break;
+    if(cmd_result == CMD_RES_NONE)
+    {
+        handle_interface_display();
     }
 
     return 0;
@@ -783,25 +652,21 @@ uint8_t _Cb_Button(uint8_t x)
     if(HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0)
     {
         while(HAL_GPIO_ReadPin(BT_ENTER_PORT, BT_ENTER_PIN) == 0){}
-
         enter_button_handle();
     }
     else if(HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0)
     {
         while(HAL_GPIO_ReadPin(BT_DOWN_PORT, BT_DOWN_PIN) == 0){}
-
         down_button_handle();
     }
     else if(HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0)
     {
         while(HAL_GPIO_ReadPin(BT_UP_PORT, BT_UP_PIN) == 0){}
-
         up_button_handle();
     }
     else if(HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0)
     {
         while(HAL_GPIO_ReadPin(BT_EXIT_PORT, BT_EXIT_PIN) == 0){}
-
         exit_button_handle();
     }
 
