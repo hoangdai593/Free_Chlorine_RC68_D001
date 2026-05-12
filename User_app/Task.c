@@ -63,6 +63,10 @@ float intercept_value = 0;
 uint8_t buzzer_done_state = 0;   // 0=idle, 1=active, 2=played
 uint32_t buzzer_done_tick = 0;
 uint8_t ui_buzzer_lock = 0;
+
+uint32_t sending_start_tick = 0;
+CMD_RESULT_t pending_result = CMD_RES_NONE;
+
 /* UART RX */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -334,8 +338,8 @@ void process_cmd_queue(void)
             /* ===== chỉ hiện UI cho lệnh SET ===== */
             if(current_cmd >= CMD_SET_SENSOR_ID_BAUD)
             {
-                cmd_result  = CMD_RES_DONE;
-                cmd_ui_tick = HAL_GetTick();
+            	pending_result = CMD_RES_DONE;
+            	cmd_ui_tick = HAL_GetTick();
             }
 
             return;
@@ -352,8 +356,8 @@ void process_cmd_queue(void)
             /* ===== chỉ hiện UI cho lệnh SET ===== */
             if(current_cmd >= CMD_SET_SENSOR_ID_BAUD)
             {
-                cmd_result  = CMD_RES_FAIL;
-                cmd_ui_tick = HAL_GetTick();
+            	pending_result = CMD_RES_FAIL;
+            	cmd_ui_tick = HAL_GetTick();
             }
         }
 
@@ -379,6 +383,10 @@ void process_cmd_queue(void)
     if(current_cmd >= CMD_SET_SENSOR_ID_BAUD)
     {
         cmd_result = CMD_RES_SENDING;
+
+        sending_start_tick = HAL_GetTick();
+
+        pending_result = CMD_RES_NONE;
     }
 }
 
@@ -611,6 +619,16 @@ uint8_t _Cb_LCD_Display(uint8_t x)
 
     blink_display();
 
+    if((cmd_result == CMD_RES_SENDING)
+       && (pending_result != CMD_RES_NONE))
+    {
+        if(HAL_GetTick() - sending_start_tick >= 500)
+        {
+            cmd_result = pending_result;
+
+            pending_result = CMD_RES_NONE;
+        }
+    }
     /* CMD UI */
     if(cmd_result != CMD_RES_NONE)
     {
