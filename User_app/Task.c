@@ -418,7 +418,6 @@ uint8_t _Cb_Sensor(uint8_t x)
      * SYNC UI DIGIT
      * ===================================================== */
 
-    /* Upper */
     upper_digit_saved[0] =
             (uint8_t)upper_threshold;
 
@@ -428,7 +427,6 @@ uint8_t _Cb_Sensor(uint8_t x)
     upper_digit_saved[2] =
             ((uint16_t)(upper_threshold * 100)) % 10;
 
-    /* Lower */
     lower_digit_saved[0] =
             (uint8_t)lower_threshold;
 
@@ -438,7 +436,6 @@ uint8_t _Cb_Sensor(uint8_t x)
     lower_digit_saved[2] =
             ((uint16_t)(lower_threshold * 100)) % 10;
 
-    /* Copy from saved to edit arrays when NOT editing */
     if(!warning_edit)
     {
         memcpy(upper_digit, upper_digit_saved, 3);
@@ -493,14 +490,6 @@ uint8_t _Cb_Sensor(uint8_t x)
 
     /* =====================================================
      * CLO PH COMPENSATION
-     *
-     * Clo_final =
-     * Clo_sensor *
-     * (1 + K * (PH - 7.53))
-     *
-     * K:
-     * PH > 7.5 -> 0.1
-     * PH <=7.5 -> 0.15
      * ===================================================== */
 
     float k_value;
@@ -514,9 +503,10 @@ uint8_t _Cb_Sensor(uint8_t x)
         k_value = 0.15f;
     }
 
-    float clo_comp_value = clo_raw_value *(1.0f+ (k_value* (PH_value - 7.53f)));
+    float clo_comp_value =
+            clo_raw_value *
+            (1.0f + (k_value * (PH_value - 7.53f)));
 
-    /* chống âm */
     if(clo_comp_value < 0)
     {
         clo_comp_value = 0;
@@ -591,7 +581,7 @@ uint8_t _Cb_Sensor(uint8_t x)
      * WARNING PULSE 200ms
      * ===================================================== */
 
-    if(warning_pulse && (buzzer_done_state == 0))
+    if(warning_pulse)
     {
         HAL_GPIO_WritePin(GPIOC,
                           GPIO_PIN_13,
@@ -601,31 +591,6 @@ uint8_t _Cb_Sensor(uint8_t x)
            >= 200)
         {
             warning_pulse = 0;
-
-            HAL_GPIO_WritePin(GPIOC,
-                              GPIO_PIN_13,
-                              GPIO_PIN_RESET);
-        }
-    }
-    /* =====================================================
-     * DONE BUZZER
-     * ===================================================== */
-
-    if(buzzer_done_state == 1)
-    {
-        uint32_t elapsed =
-                HAL_GetTick()
-                - buzzer_done_tick;
-
-        if(elapsed < 200)
-        {
-            HAL_GPIO_WritePin(GPIOC,
-                              GPIO_PIN_13,
-                              GPIO_PIN_SET);
-        }
-        else
-        {
-            buzzer_done_state = 2;
 
             HAL_GPIO_WritePin(GPIOC,
                               GPIO_PIN_13,
@@ -655,25 +620,43 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         if(cmd_result == CMD_RES_SENDING)
         {
             draw_string_small(10,20,"SENDING...");
-            /* khóa buzzer warning */
+
             ui_buzzer_lock = 1;
-            /* KHÔNG KÊU */
+
             HAL_GPIO_WritePin(GPIOC,
                               GPIO_PIN_13,
                               GPIO_PIN_RESET);
-
         }
 
         /* ================= DONE ================= */
         else if(cmd_result == CMD_RES_DONE)
         {
             draw_string_small(10,20,"DONE");
+
             ui_buzzer_lock = 1;
-            /* chỉ kêu 1 lần */
+
+            /* ===== DONE BEEP ===== */
             if(buzzer_done_state == 0)
             {
                 buzzer_done_state = 1;
+
                 buzzer_done_tick = HAL_GetTick();
+
+                HAL_GPIO_WritePin(GPIOC,
+                                  GPIO_PIN_13,
+                                  GPIO_PIN_SET);
+            }
+
+            if(buzzer_done_state == 1)
+            {
+                if(HAL_GetTick() - buzzer_done_tick >= 200)
+                {
+                    buzzer_done_state = 2;
+
+                    HAL_GPIO_WritePin(GPIOC,
+                                      GPIO_PIN_13,
+                                      GPIO_PIN_RESET);
+                }
             }
         }
 
@@ -681,8 +664,9 @@ uint8_t _Cb_LCD_Display(uint8_t x)
         else if(cmd_result == CMD_RES_FAIL)
         {
             draw_string_small(10,20,"FAIL");
+
             ui_buzzer_lock = 1;
-            /* KHÔNG KÊU */
+
             HAL_GPIO_WritePin(GPIOC,
                               GPIO_PIN_13,
                               GPIO_PIN_RESET);
@@ -701,7 +685,9 @@ uint8_t _Cb_LCD_Display(uint8_t x)
                 display_tick = 0;
 
                 buzzer_done_state = 0;
+
                 ui_buzzer_lock = 0;
+
                 HAL_GPIO_WritePin(GPIOC,
                                   GPIO_PIN_13,
                                   GPIO_PIN_RESET);
