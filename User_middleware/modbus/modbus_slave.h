@@ -16,6 +16,7 @@ typedef struct
     uint8_t     rx_buf[MB_RX_BUF_SIZE];
     uint16_t    rx_index;
     uint32_t    last_rx_tick;
+    uint8_t 	rx_byte;
 
     uint8_t     frame_ready;
     uint8_t     exception_code;

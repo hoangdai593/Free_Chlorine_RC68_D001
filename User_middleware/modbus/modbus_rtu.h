@@ -6,7 +6,7 @@
 
 /* ================= CONFIG ================= */
 #define MB_RX_BUF_SIZE          256
-#define MB_FRAME_TIMEOUT_MS     5
+#define MB_FRAME_TIMEOUT_MS     10
 
 /* ================= STATUS ================= */
 typedef enum

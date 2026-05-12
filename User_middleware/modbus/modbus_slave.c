@@ -34,11 +34,14 @@ void MB_SLAVE_RxByteHandler(MB_SLAVE_t *slave, uint8_t byte)
     if(slave->rx_index >= MB_RX_BUF_SIZE)
     {
         slave->rx_index = 0;
-        return;
     }
 
     slave->rx_buf[slave->rx_index++] = byte;
+
     slave->last_rx_tick = HAL_GetTick();
+
+    BSP_RS485_Receive_IT(slave->port,
+                         &slave->rx_byte);
 }
 
 /* ====================== POLL ====================== */
