@@ -4,7 +4,7 @@
 ../User_app/Task.c:115:13:send_command	12
 ../User_app/Task.c:185:16:check_response	15
 ../User_app/Task.c:260:6:process_cmd_queue	14
-../User_app/Task.c:371:9:_Cb_Sensor	16
+../User_app/Task.c:371:9:_Cb_Sensor	17
 ../User_app/Task.c:514:9:_Cb_LCD_Display	20
-../User_app/Task.c:647:9:_Cb_Button	9
-../User_app/Task.c:681:9:Comm_Task	5
+../User_app/Task.c:648:9:_Cb_Button	9
+../User_app/Task.c:682:9:Comm_Task	5

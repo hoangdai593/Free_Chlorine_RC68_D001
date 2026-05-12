@@ -46,6 +46,7 @@ void enter_button_handle(void)
                     calib_cursor = 1;
                     calib_edit = 0;
                     calib_zero_confirm = 0;
+                    slope_pos = 0;
                     break;
                 case OFFSET_CUR:
                     offset_cursor = 0;
