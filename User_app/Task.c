@@ -72,12 +72,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     if(huart->Instance == USART3)
     {
         MB_RTU_RxByteHandler(&mb1);
-        HAL_UART_Receive_IT(&huart3, &mb1.rx_byte, 1);
     }
-    else if(huart->Instance == USART1)
+
+    if(huart->Instance == USART1)
     {
-        MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_byte);
-        HAL_UART_Receive_IT(&huart1, &mb_slave.rx_byte, 1);
+        if(HAL_GPIO_ReadPin(RS485_1_DIR_PORT,
+                            RS485_1_DIR_PIN) == GPIO_PIN_RESET)
+        {
+            MB_SLAVE_RxByteHandler(&mb_slave,
+                                   mb_slave.rx_byte);
+        }
     }
 }
 

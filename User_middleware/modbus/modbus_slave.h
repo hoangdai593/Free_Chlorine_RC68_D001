@@ -1,3 +1,6 @@
+/*=========================================================
+ * File: modbus_slave.h
+ *=========================================================*/
 #ifndef MODBUS_SLAVE_H
 #define MODBUS_SLAVE_H
 
@@ -9,8 +12,12 @@
 #define MB_SLAVE_MAX_REG        32
 
 #ifndef MB_RX_BUF_SIZE
-#define MB_RX_BUF_SIZE          256
+#error "MB_RX_BUF_SIZE not defined"
 #endif
+
+/* RTU timing */
+#define MB_SLAVE_T35_MS         2
+#define MB_SLAVE_RX_RESET_MS    50
 
 /* ================= STRUCT ================= */
 
@@ -21,14 +28,17 @@ typedef struct
 
     uint16_t    holding_reg[MB_SLAVE_MAX_REG];
 
-    /* RX */
     uint8_t     rx_buf[MB_RX_BUF_SIZE];
     uint16_t    rx_index;
-    uint8_t     rx_byte;
+
+    uint8_t     frame_buf[MB_RX_BUF_SIZE];
+    uint16_t    frame_len;
+
     uint32_t    last_rx_tick;
 
-    /* TX */
-    uint8_t     tx_buf[MB_RX_BUF_SIZE];
+    uint8_t     rx_byte;
+
+    volatile uint8_t frame_ready;
 
 } MB_SLAVE_t;
 
