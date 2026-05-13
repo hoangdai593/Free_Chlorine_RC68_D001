@@ -66,16 +66,20 @@ uint8_t ui_buzzer_lock = 0;
 uint32_t sending_start_tick = 0;
 CMD_RESULT_t pending_result = CMD_RES_NONE;
 
-/* UART RX */
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if(huart->Instance == USART3)           // Master - Sensor
+    if(huart->Instance == USART3)   // Sensor Master
     {
         MB_RTU_RxByteHandler(&mb1);
+
+        BSP_RS485_Receive_IT(RS485_PORT3, &mb1.rx_byte);
     }
-    else if(huart->Instance == USART1)      // Slave - Datalogger
+    else if(huart->Instance == USART1)  // Datalogger Slave
     {
-    	MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_byte);
+        MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_byte);
+
+        BSP_RS485_Receive_IT(RS485_PORT1, &mb_slave.rx_byte);
     }
 }
 

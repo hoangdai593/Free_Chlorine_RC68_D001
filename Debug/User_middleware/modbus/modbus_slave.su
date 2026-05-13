@@ -1,10 +1,10 @@
 ../User_middleware/modbus/modbus_slave.c:29:13:MB_UpdateBaud	24	static
 ../User_middleware/modbus/modbus_slave.c:40:6:MB_SLAVE_Init	16	static
 ../User_middleware/modbus/modbus_slave.c:62:6:MB_SLAVE_RxByteHandler	16	static
-../User_middleware/modbus/modbus_slave.c:81:6:MB_SLAVE_Poll	48	static
-../User_middleware/modbus/modbus_slave.c:172:13:MB_Send	24	static
-../User_middleware/modbus/modbus_slave.c:197:6:MB_SLAVE_SetFloat	32	static
-../User_middleware/modbus/modbus_slave.c:206:6:MB_SLAVE_SetU16	16	static
-../User_middleware/modbus/modbus_slave.c:212:7:MB_SLAVE_GetFloat	24	static
-../User_middleware/modbus/modbus_slave.c:221:10:MB_SLAVE_GetU16	16	static
-../User_middleware/modbus/modbus_slave.c:225:13:MB_Except	16	static
+../User_middleware/modbus/modbus_slave.c:75:6:MB_SLAVE_Poll	48	static
+../User_middleware/modbus/modbus_slave.c:166:13:MB_Send	24	static
+../User_middleware/modbus/modbus_slave.c:182:6:MB_SLAVE_SetFloat	32	static
+../User_middleware/modbus/modbus_slave.c:191:6:MB_SLAVE_SetU16	16	static
+../User_middleware/modbus/modbus_slave.c:197:7:MB_SLAVE_GetFloat	24	static
+../User_middleware/modbus/modbus_slave.c:206:10:MB_SLAVE_GetU16	16	static
+../User_middleware/modbus/modbus_slave.c:210:13:MB_Except	16	static

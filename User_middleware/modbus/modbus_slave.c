@@ -62,13 +62,7 @@ void MB_SLAVE_Init(MB_SLAVE_t *s, RS485_PORT port, uint8_t id)
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *s, uint8_t b)
 {
     if(s->rx_index < MB_RX_BUF_SIZE)
-    {
         s->rx_buf[s->rx_index++] = b;
-    }
-    else
-    {
-        s->rx_index = MB_RX_BUF_SIZE - 1;
-    }
 
     s->last_rx_tick = HAL_GetTick();
 
@@ -172,24 +166,15 @@ reset:
 static void MB_Send(MB_SLAVE_t *s, uint16_t len)
 {
     UART_HandleTypeDef *huart = BSP_RS485_GetHandle(s->port);
-
     if(!huart) return;
 
     MB_CRC_Append(s->rx_buf, len);
 
-    BSP_RS485_TX_Mode(s->port);
+    /* TX start (DE ON inside BSP) */
+    BSP_RS485_Send_IT(s->port, s->rx_buf, len + 2);
 
-    delay_us(20);
-
-    HAL_UART_Transmit(huart, s->rx_buf, len + 2, 50);
-
-    /* QUAN TRỌNG: chờ TX complete thật sự */
-    while(__HAL_UART_GET_FLAG(huart, UART_FLAG_TC) == RESET);
-
-    delay_us(20);
-
-    BSP_RS485_RX_Mode(s->port);
-    BSP_RS485_Receive_IT(s->port, &s->rx_byte);
+    /* KHÔNG RX MODE Ở ĐÂY
+       RX sẽ do HAL_UART_TxCpltCallback xử lý */
 }
 
 /* ================= API ================= */
