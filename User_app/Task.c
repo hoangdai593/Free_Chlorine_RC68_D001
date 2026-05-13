@@ -27,7 +27,7 @@ sEvent_struct ALLTASK[] =
 {
     {_EVENT_LCD_DISPLAY, 1, 0, 200,  _Cb_LCD_Display},
     {_EVENT_BUTTON,      1, 0, 20,   _Cb_Button},
-    {_EVENT_SENSOR,      1, 0, 50,   _Cb_Sensor},
+    {_EVENT_SENSOR,      1, 0, 1,   _Cb_Sensor},
 };
 
 /* CMD */
