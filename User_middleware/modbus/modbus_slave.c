@@ -171,21 +171,22 @@ reset:
  * ========================================================= */
 static void MB_Send(MB_SLAVE_t *s, uint16_t len)
 {
-    BSP_RS485_TX_Mode(s->port);
-    delay_us(50);
+    UART_HandleTypeDef *huart = BSP_RS485_GetHandle(s->port);
+
+    if(!huart) return;
 
     MB_CRC_Append(s->rx_buf, len);
 
-    UART_HandleTypeDef *huart = BSP_RS485_GetHandle(s->port);
+    BSP_RS485_TX_Mode(s->port);
 
-    if(huart)
-    {
-        HAL_UART_Transmit_IT(huart, s->rx_buf, len + 2);
-    }
+    delay_us(20);
 
-    BSP_RS485_WaitTC(s->port);
+    HAL_UART_Transmit(huart, s->rx_buf, len + 2, 50);
 
-    delay_us(50);
+    /* QUAN TRỌNG: chờ TX complete thật sự */
+    while(__HAL_UART_GET_FLAG(huart, UART_FLAG_TC) == RESET);
+
+    delay_us(20);
 
     BSP_RS485_RX_Mode(s->port);
     BSP_RS485_Receive_IT(s->port, &s->rx_byte);
