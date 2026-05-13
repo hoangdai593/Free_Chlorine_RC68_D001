@@ -748,8 +748,8 @@ int main(void)
  8000774:	2101      	movs	r1, #1
  8000776:	480d      	ldr	r0, [pc, #52]	@ (80007ac <main+0x68>)
  8000778:	f008 f8ad 	bl	80088d6 <MB_RTU_Init>
-  MB_SLAVE_Init(&mb_slave, RS485_PORT1, 1);
- 800077c:	2201      	movs	r2, #1
+  MB_SLAVE_Init(&mb_slave, RS485_PORT1, 2);
+ 800077c:	2202      	movs	r2, #2
  800077e:	2100      	movs	r1, #0
  8000780:	480b      	ldr	r0, [pc, #44]	@ (80007b0 <main+0x6c>)
  8000782:	f008 f9b3 	bl	8008aec <MB_SLAVE_Init>

@@ -109,7 +109,7 @@ int main(void)
   BSP_RS485_Init();
 
   MB_RTU_Init(&mb1, RS485_PORT3, 1);   // port + slave_id (ko quá quan trọng với master)
-  MB_SLAVE_Init(&mb_slave, RS485_PORT1, 1);
+  MB_SLAVE_Init(&mb_slave, RS485_PORT1, 2);
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
