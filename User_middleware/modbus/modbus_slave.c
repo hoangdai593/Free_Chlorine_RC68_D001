@@ -215,11 +215,16 @@ static void MB_Except(MB_SLAVE_t *s, uint8_t ex)
 
 void MB_SLAVE_SetFloat(MB_SLAVE_t *s, uint16_t a, float v)
 {
-    if(a+1 >= MB_SLAVE_MAX_REG) return;
+    if(a + 1 >= MB_SLAVE_MAX_REG)
+        return;
 
-    uint32_t r = *((uint32_t*)&v);
-    s->holding_reg[a] = r>>16;
-    s->holding_reg[a+1] = r;
+    uint32_t r;
+
+    memcpy(&r, &v, 4);
+
+    /* WORD SWAP */
+    s->holding_reg[a]     = r & 0xFFFF;
+    s->holding_reg[a + 1] = (r >> 16) & 0xFFFF;
 }
 
 void MB_SLAVE_SetU16(MB_SLAVE_t *s, uint16_t a, uint16_t v)
@@ -231,10 +236,14 @@ void MB_SLAVE_SetU16(MB_SLAVE_t *s, uint16_t a, uint16_t v)
 float MB_SLAVE_GetFloat(MB_SLAVE_t *s, uint16_t a)
 {
     uint32_t r =
-        ((uint32_t)s->holding_reg[a]<<16) |
-        s->holding_reg[a+1];
+        ((uint32_t)s->holding_reg[a + 1] << 16) |
+        s->holding_reg[a];
 
-    return *((float*)&r);
+    float v;
+
+    memcpy(&v, &r, 4);
+
+    return v;
 }
 
 uint16_t MB_SLAVE_GetU16(MB_SLAVE_t *s, uint16_t a)

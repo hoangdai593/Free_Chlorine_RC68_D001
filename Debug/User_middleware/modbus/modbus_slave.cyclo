@@ -5,6 +5,6 @@
 ../User_middleware/modbus/modbus_slave.c:186:13:MB_Send	2
 ../User_middleware/modbus/modbus_slave.c:207:13:MB_Except	1
 ../User_middleware/modbus/modbus_slave.c:216:6:MB_SLAVE_SetFloat	2
-../User_middleware/modbus/modbus_slave.c:225:6:MB_SLAVE_SetU16	2
-../User_middleware/modbus/modbus_slave.c:231:7:MB_SLAVE_GetFloat	1
-../User_middleware/modbus/modbus_slave.c:240:10:MB_SLAVE_GetU16	1
+../User_middleware/modbus/modbus_slave.c:230:6:MB_SLAVE_SetU16	2
+../User_middleware/modbus/modbus_slave.c:236:7:MB_SLAVE_GetFloat	1
+../User_middleware/modbus/modbus_slave.c:249:10:MB_SLAVE_GetU16	1
