@@ -32,16 +32,15 @@ void MB_RTU_StartReceive(MB_RTU_t *mb)
 /* ================= RX BYTE ================= */
 void MB_RTU_RxByteHandler(MB_RTU_t *mb)
 {
-    if(mb->rx_index >= MB_RX_BUF_SIZE)
+    if(mb->rx_index < MB_RX_BUF_SIZE)
     {
-        MB_RTU_Clear(mb);
-        MB_RTU_StartReceive(mb);
-        return;
+        mb->rx_buf[mb->rx_index++] = mb->rx_byte;
+        mb->last_rx_tick = HAL_GetTick();
     }
-
-    mb->rx_buf[mb->rx_index++] = mb->rx_byte;
-    mb->last_rx_tick = HAL_GetTick();
-    MB_RTU_StartReceive(mb);
+    else
+    {
+        mb->rx_index = 0;
+    }
 }
 
 /* ================= SEND ================= */
@@ -52,20 +51,19 @@ HAL_StatusTypeDef MB_RTU_Send(MB_RTU_t *mb, uint8_t *buf, uint16_t len)
     UART_HandleTypeDef *huart = BSP_RS485_GetHandle(mb->port);
     if(huart == NULL) return HAL_ERROR;
 
-    HAL_UART_AbortReceive_IT(huart);
-    uint32_t start = HAL_GetTick();
-    while(huart->RxState != HAL_UART_STATE_READY && (HAL_GetTick() - start) < 10);
-
     BSP_RS485_TX_Mode(mb->port);
-    delay_us(10);
+    delay_us(5);
 
     HAL_StatusTypeDef ret = HAL_UART_Transmit(huart, buf, len, 100);
 
     BSP_RS485_WaitTC(mb->port);
-    delay_us(10);
+
+    delay_us(5);
 
     BSP_RS485_RX_Mode(mb->port);
-    MB_RTU_StartReceive(mb);
+
+    /* restart RX 1 lần duy nhất */
+    BSP_RS485_Receive_IT(mb->port, &mb->rx_byte);
 
     return ret;
 }
@@ -73,8 +71,11 @@ HAL_StatusTypeDef MB_RTU_Send(MB_RTU_t *mb, uint8_t *buf, uint16_t len)
 /* ================= POLL ================= */
 void MB_RTU_Poll(MB_RTU_t *mb)
 {
-    if(mb->rx_index == 0 || mb->frame_ready) return;
-    if((HAL_GetTick() - mb->last_rx_tick) < MB_FRAME_TIMEOUT_MS) return;
+    if(mb->rx_index == 0 || mb->frame_ready)
+        return;
+
+    if((HAL_GetTick() - mb->last_rx_tick) < MB_FRAME_TIMEOUT_MS)
+        return;
 
     if(MB_CRC_Check(mb->rx_buf, mb->rx_index))
     {
@@ -84,6 +85,7 @@ void MB_RTU_Poll(MB_RTU_t *mb)
     else
     {
         mb->status = MB_RTU_CRC_ERROR;
-        MB_RTU_Clear(mb);
     }
+
+    mb->rx_index = 0;
 }
