@@ -7,4 +7,4 @@
 ../User_middleware/modbus/modbus_slave.c:216:6:MB_SLAVE_SetFloat	32	static
 ../User_middleware/modbus/modbus_slave.c:230:6:MB_SLAVE_SetU16	16	static
 ../User_middleware/modbus/modbus_slave.c:236:7:MB_SLAVE_GetFloat	24	static
-../User_middleware/modbus/modbus_slave.c:249:10:MB_SLAVE_GetU16	16	static
+../User_middleware/modbus/modbus_slave.c:245:10:MB_SLAVE_GetU16	16	static

@@ -236,14 +236,10 @@ void MB_SLAVE_SetU16(MB_SLAVE_t *s, uint16_t a, uint16_t v)
 float MB_SLAVE_GetFloat(MB_SLAVE_t *s, uint16_t a)
 {
     uint32_t r =
-        ((uint32_t)s->holding_reg[a + 1] << 16) |
-        s->holding_reg[a];
+        ((uint32_t)s->holding_reg[a]<<16) |
+        s->holding_reg[a+1];
 
-    float v;
-
-    memcpy(&v, &r, 4);
-
-    return v;
+    return *((float*)&r);
 }
 
 uint16_t MB_SLAVE_GetU16(MB_SLAVE_t *s, uint16_t a)
