@@ -55,21 +55,36 @@ void MB_SLAVE_Init(MB_SLAVE_t *s,
 
     BSP_RS485_RX_Mode(port);
 
+    s->rx_index = 0;
+    s->frame_ready = 0;
+    s->frame_len = 0;
+
     BSP_RS485_Receive_IT(port,
                          &s->rx_byte);
 }
 
 /* ========================================================= */
+/* RX IRQ ONLY */
+/* ========================================================= */
 
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *s,
                             uint8_t b)
 {
-    if(s->rx_index >= MB_RX_BUF_SIZE)
+    if(s->frame_ready)
+    {
+        BSP_RS485_Receive_IT(s->port,
+                             &s->rx_byte);
+        return;
+    }
+
+    if(s->rx_index < MB_RX_BUF_SIZE)
+    {
+        s->rx_buf[s->rx_index++] = b;
+    }
+    else
     {
         s->rx_index = 0;
     }
-
-    s->rx_buf[s->rx_index++] = b;
 
     s->last_rx_tick = HAL_GetTick();
 
@@ -92,9 +107,12 @@ static void MB_Send(MB_SLAVE_t *s,
 
     MB_CRC_Append(buf, len);
 
+    /* tránh RX ăn echo khi TX */
+    HAL_UART_AbortReceive_IT(huart);
+
     BSP_RS485_TX_Mode(s->port);
 
-    delay_us(100);
+    delay_us(20);
 
     HAL_UART_Transmit(huart,
                       buf,
@@ -103,9 +121,16 @@ static void MB_Send(MB_SLAVE_t *s,
 
     BSP_RS485_WaitTC(s->port);
 
-    delay_us(100);
+    delay_us(20);
 
     BSP_RS485_RX_Mode(s->port);
+
+    s->rx_index = 0;
+    s->frame_ready = 0;
+    s->frame_len = 0;
+
+    BSP_RS485_Receive_IT(s->port,
+                         &s->rx_byte);
 }
 
 /* ========================================================= */
@@ -131,30 +156,45 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
 
     now = HAL_GetTick();
 
-    if(s->rx_index < 8)
+    /* đang nhận */
+    if(s->rx_index == 0)
         return;
 
-    /* frame timeout */
-    if((now - s->last_rx_tick) <
-        MB_SLAVE_T35_MS)
-    {
-        return;
-    }
-
-    /* reset stale */
+    /* frame timeout reset */
     if((now - s->last_rx_tick) >
         MB_SLAVE_RX_RESET_MS)
     {
         s->rx_index = 0;
+        s->frame_ready = 0;
         return;
     }
 
-    /* validate */
+    /* chưa đủ silent time */
+    if(!s->frame_ready)
+    {
+        if((now - s->last_rx_tick) >=
+            MB_SLAVE_T35_MS)
+        {
+            s->frame_ready = 1;
+            s->frame_len = s->rx_index;
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    /* frame tối thiểu */
+    if(s->frame_len < 8)
+        goto reset;
+
+    /* slave id */
     if(s->rx_buf[0] != s->slave_id)
         goto reset;
 
+    /* CRC */
     if(MB_CRC_Check(s->rx_buf,
-                    s->rx_index) == 0)
+                    s->frame_len) == 0)
     {
         goto reset;
     }
@@ -178,8 +218,7 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
             ((uint16_t)s->rx_buf[4] << 8) |
              s->rx_buf[5];
 
-        if((qty == 0) ||
-           (qty > 125))
+        if((qty == 0) || (qty > 125))
         {
             MB_Except(s, func, 0x03);
             goto reset;
@@ -202,17 +241,17 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
                 s->holding_reg[addr + i];
 
             s->tx_buf[3 + i * 2] =
-                v >> 8;
+                (v >> 8);
 
             s->tx_buf[4 + i * 2] =
-                v & 0xFF;
+                (v & 0xFF);
         }
 
         MB_Send(s,
                 s->tx_buf,
                 3 + qty * 2);
 
-        goto reset;
+        return;
     }
 
     /* ===================================================== */
@@ -248,14 +287,13 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
                 s->tx_buf,
                 6);
 
-        /* đổi baud SAU ACK */
         if(addr == 0x0001)
         {
             HAL_Delay(20);
             MB_UpdateBaud(s);
         }
 
-        goto reset;
+        return;
     }
 
     /* ===================================================== */
@@ -275,8 +313,7 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
             ((uint16_t)s->rx_buf[4] << 8) |
              s->rx_buf[5];
 
-        if((qty == 0) ||
-           (qty > 123))
+        if((qty == 0) || (qty > 123))
         {
             MB_Except(s, func, 0x03);
             goto reset;
@@ -307,7 +344,6 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
                 s->tx_buf,
                 6);
 
-        /* đổi baud SAU ACK */
         if((addr <= 0x0001) &&
            ((addr + qty) > 0x0001))
         {
@@ -315,15 +351,20 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
             MB_UpdateBaud(s);
         }
 
-        goto reset;
+        return;
     }
 
     MB_Except(s,
               func,
               0x01);
 
+    return;
+
 reset:
+
     s->rx_index = 0;
+    s->frame_ready = 0;
+    s->frame_len = 0;
 }
 
 /* ========================================================= */

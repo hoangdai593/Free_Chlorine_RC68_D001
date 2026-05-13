@@ -10,6 +10,7 @@
 #error "MB_RX_BUF_SIZE not defined in modbus_rtu.h"
 #endif
 
+/* timing */
 #define MB_SLAVE_T35_MS         5
 #define MB_SLAVE_RX_RESET_MS    50
 
@@ -25,12 +26,15 @@ typedef struct
     uint16_t    rx_index;
     uint32_t    last_rx_tick;
 
-    /* TX riêng */
+    /* TX */
     uint8_t     tx_buf[MB_RX_BUF_SIZE];
 
     uint8_t     rx_byte;
 
     volatile uint8_t frame_ready;
+
+    /* chống poll xử lý lặp */
+    uint16_t    frame_len;
 
 } MB_SLAVE_t;
 
