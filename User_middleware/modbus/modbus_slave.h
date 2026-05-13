@@ -1,46 +1,30 @@
-/*=========================================================
- * File: modbus_slave.h
- *=========================================================*/
 #ifndef MODBUS_SLAVE_H
 #define MODBUS_SLAVE_H
 
 #include "modbus_rtu.h"
 #include <stdint.h>
 
-/* ================= CONFIG ================= */
-
-#define MB_SLAVE_MAX_REG        32
+#define MB_SLAVE_MAX_REG 32
 
 #ifndef MB_RX_BUF_SIZE
-#error "MB_RX_BUF_SIZE not defined in modbus_rtu.h"
+#error "MB_RX_BUF_SIZE not defined"
 #endif
-
-/* =========================================================
- * QUAN TRỌNG:
- * Không dùng HAL_GetTick detect RTU nữa
- * Dùng UART IDLE flag
- * ========================================================= */
 
 typedef struct
 {
-    uint8_t     slave_id;
-    RS485_PORT  port;
+    uint8_t slave_id;
+    RS485_PORT port;
 
-    uint16_t    holding_reg[MB_SLAVE_MAX_REG];
+    uint16_t holding_reg[MB_SLAVE_MAX_REG];
 
-    uint8_t     rx_buf[MB_RX_BUF_SIZE];
-    uint16_t    rx_index;
+    uint8_t rx_buf[MB_RX_BUF_SIZE];
 
-    uint8_t     frame_buf[MB_RX_BUF_SIZE];
-    uint16_t    frame_len;
-
-    uint8_t     rx_byte;
-
+    volatile uint16_t rx_index;
     volatile uint8_t frame_ready;
 
-} MB_SLAVE_t;
+    uint8_t rx_byte;
 
-/* ================= API ================= */
+}MB_SLAVE_t;
 
 void MB_SLAVE_Init(MB_SLAVE_t *slave,
                    RS485_PORT port,
@@ -51,10 +35,8 @@ void MB_SLAVE_Poll(MB_SLAVE_t *slave);
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *slave,
                             uint8_t byte);
 
-/* UART IDLE detect */
 void MB_SLAVE_IdleHandler(MB_SLAVE_t *slave);
 
-/* register API */
 void MB_SLAVE_SetFloat(MB_SLAVE_t *slave,
                        uint16_t addr,
                        float v);
