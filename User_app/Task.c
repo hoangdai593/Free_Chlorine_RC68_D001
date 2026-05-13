@@ -72,14 +72,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     if(huart->Instance == USART3)   // Sensor Master
     {
         MB_RTU_RxByteHandler(&mb1);
-
-        BSP_RS485_Receive_IT(RS485_PORT3, &mb1.rx_byte);
+        // KHÔNG RE-ARM Ở ĐÂY
     }
     else if(huart->Instance == USART1)  // Datalogger Slave
     {
         MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_byte);
-
-        BSP_RS485_Receive_IT(RS485_PORT1, &mb_slave.rx_byte);
+        // KHÔNG RE-ARM Ở ĐÂY
     }
 }
 
