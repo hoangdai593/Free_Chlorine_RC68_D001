@@ -4,28 +4,29 @@
 #include "delay.h"
 #include <string.h>
 
-/* ================= CONFIG ================= */
+/* ================= BAUD TABLE (GIỮ NGUYÊN) ================= */
 
 #define MB_BAUD_COUNT 11
-
 static const uint32_t MB_BAUD[MB_BAUD_COUNT] =
 {
     1200,2400,4800,9600,14400,
     19200,28800,38400,56000,57600,115200
 };
 
-/* FIX: RTU timing relax */
-#define T35_MS          10
-#define RX_RESET_MS     200
+/* ================= TIMING FIX ================= */
 
+#define T35_MS          4
+#define RX_RESET_MS     100
+volatile uint8_t frame_ready = 0;
 /* ================= INTERNAL ================= */
 
 static void MB_Send(MB_SLAVE_t *s, uint16_t len);
 static void MB_Except(MB_SLAVE_t *s, uint8_t ex);
 
 /* =========================================================
- * BAUD UPDATE
+ * BAUD UPDATE (GIỮ NGUYÊN YÊU CẦU MÀY)
  * ========================================================= */
+
 static void MB_UpdateBaud(MB_SLAVE_t *s)
 {
     uint16_t b = s->holding_reg[0x0001];
@@ -37,6 +38,7 @@ static void MB_UpdateBaud(MB_SLAVE_t *s)
 /* =========================================================
  * INIT
  * ========================================================= */
+
 void MB_SLAVE_Init(MB_SLAVE_t *s, RS485_PORT port, uint8_t id)
 {
     memset(s, 0, sizeof(MB_SLAVE_t));
@@ -57,12 +59,20 @@ void MB_SLAVE_Init(MB_SLAVE_t *s, RS485_PORT port, uint8_t id)
 }
 
 /* =========================================================
- * RX HANDLER (FIX: NO RESET BỪA)
+ * RX (CHỈ BUFFER - KHÔNG LOGIC)
  * ========================================================= */
+
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *s, uint8_t b)
 {
     if(s->rx_index < MB_RX_BUF_SIZE)
+    {
         s->rx_buf[s->rx_index++] = b;
+    }
+    else
+    {
+        // buffer full -> KHÔNG reset bừa, chỉ clamp
+        s->rx_index = MB_RX_BUF_SIZE - 1;
+    }
 
     s->last_rx_tick = HAL_GetTick();
 
@@ -70,8 +80,9 @@ void MB_SLAVE_RxByteHandler(MB_SLAVE_t *s, uint8_t b)
 }
 
 /* =========================================================
- * POLL (FIX RTU STABLE)
+ * POLL (FIX RTU STABLE FRAME DETECT)
  * ========================================================= */
+
 void MB_SLAVE_Poll(MB_SLAVE_t *s)
 {
     uint32_t now = HAL_GetTick();
@@ -79,18 +90,26 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
     if(s->rx_index == 0)
         return;
 
-    /* reset timeout */
+    // timeout frame RTU
     if(now - s->last_rx_tick > RX_RESET_MS)
     {
         s->rx_index = 0;
+        s->frame_ready = 0;
         return;
     }
 
-    /* chờ end frame */
+    // chưa đủ thời gian kết thúc frame
     if(now - s->last_rx_tick < T35_MS)
         return;
 
-    /* validate */
+    s->frame_ready = 1;
+
+    if(!s->frame_ready)
+        return;
+
+    s->frame_ready = 0;
+
+    // validate basic
     if(s->rx_buf[0] != s->slave_id)
         goto reset;
 
@@ -161,20 +180,35 @@ reset:
 }
 
 /* =========================================================
- * TX FIX: NON BLOCKING
+ * TX SAFE (KHÔNG ĐỤNG BUS)
  * ========================================================= */
+
 static void MB_Send(MB_SLAVE_t *s, uint16_t len)
 {
-    UART_HandleTypeDef *huart = BSP_RS485_GetHandle(s->port);
-    if(!huart) return;
+    BSP_RS485_TX_Mode(s->port);
+    delay_us(20);
 
     MB_CRC_Append(s->rx_buf, len);
 
-    /* TX start (DE ON inside BSP) */
-    BSP_RS485_Send_IT(s->port, s->rx_buf, len + 2);
+    UART_HandleTypeDef *huart = BSP_RS485_GetHandle(s->port);
 
-    /* KHÔNG RX MODE Ở ĐÂY
-       RX sẽ do HAL_UART_TxCpltCallback xử lý */
+    if(huart)
+        HAL_UART_Transmit(huart, s->rx_buf, len+2, 200);
+
+    BSP_RS485_WaitTC(s->port);
+
+    delay_us(20);
+
+    BSP_RS485_RX_Mode(s->port);
+    BSP_RS485_Receive_IT(s->port, &s->rx_byte);
+}
+
+/* exception */
+static void MB_Except(MB_SLAVE_t *s, uint8_t ex)
+{
+    s->rx_buf[1] |= 0x80;
+    s->rx_buf[2] = ex;
+    MB_Send(s, 3);
 }
 
 /* ================= API ================= */
@@ -184,7 +218,7 @@ void MB_SLAVE_SetFloat(MB_SLAVE_t *s, uint16_t a, float v)
     if(a+1 >= MB_SLAVE_MAX_REG) return;
 
     uint32_t r = *((uint32_t*)&v);
-    s->holding_reg[a] = r >> 16;
+    s->holding_reg[a] = r>>16;
     s->holding_reg[a+1] = r;
 }
 
@@ -197,7 +231,7 @@ void MB_SLAVE_SetU16(MB_SLAVE_t *s, uint16_t a, uint16_t v)
 float MB_SLAVE_GetFloat(MB_SLAVE_t *s, uint16_t a)
 {
     uint32_t r =
-        ((uint32_t)s->holding_reg[a] << 16) |
+        ((uint32_t)s->holding_reg[a]<<16) |
         s->holding_reg[a+1];
 
     return *((float*)&r);
@@ -206,11 +240,4 @@ float MB_SLAVE_GetFloat(MB_SLAVE_t *s, uint16_t a)
 uint16_t MB_SLAVE_GetU16(MB_SLAVE_t *s, uint16_t a)
 {
     return s->holding_reg[a];
-}
-static void MB_Except(MB_SLAVE_t *s, uint8_t ex)
-{
-    s->rx_buf[1] |= 0x80;
-    s->rx_buf[2] = ex;
-
-    MB_Send(s, 3);
 }
