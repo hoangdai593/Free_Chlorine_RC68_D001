@@ -4,18 +4,14 @@
 #include "modbus_rtu.h"
 #include <stdint.h>
 
-/* ================= CONFIG ================= */
-
 #define MB_SLAVE_MAX_REG        32
 
 #ifndef MB_RX_BUF_SIZE
 #error "MB_RX_BUF_SIZE not defined in modbus_rtu.h"
 #endif
 
-#define MB_SLAVE_T35_MS         4
+#define MB_SLAVE_T35_MS         5
 #define MB_SLAVE_RX_RESET_MS    50
-
-/* ================= STRUCT ================= */
 
 typedef struct
 {
@@ -35,12 +31,10 @@ typedef struct
     uint8_t     rx_byte;
 
     volatile uint8_t frame_ready;
-    volatile uint8_t tx_busy;
 
 } MB_SLAVE_t;
 
-/* ================= API ================= */
-
+/* API */
 void MB_SLAVE_Init(MB_SLAVE_t *slave,
                    RS485_PORT port,
                    uint8_t slave_id);
