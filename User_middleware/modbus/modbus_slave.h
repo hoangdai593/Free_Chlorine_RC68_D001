@@ -8,15 +8,14 @@
 
 #define MB_SLAVE_MAX_REG        32
 
-/* dùng buffer từ modbus_rtu.h luôn */
 #ifndef MB_RX_BUF_SIZE
 #error "MB_RX_BUF_SIZE not defined in modbus_rtu.h"
 #endif
 
-/* RTU timing */
-#define MB_SLAVE_T35_MS         4
-#define MB_SLAVE_RX_RESET_MS    100
-extern volatile uint8_t frame_ready;
+/* RTU timing (sync với .c) */
+#define MB_SLAVE_T35_MS         10
+#define MB_SLAVE_RX_RESET_MS    200
+
 /* ================= STRUCT ================= */
 
 typedef struct
@@ -32,7 +31,9 @@ typedef struct
 
     uint8_t     rx_byte;
 
+    /* FIX: frame detect nằm trong struct, không dùng global */
     volatile uint8_t frame_ready;
+
     uint8_t     exception_code;
 
 } MB_SLAVE_t;
