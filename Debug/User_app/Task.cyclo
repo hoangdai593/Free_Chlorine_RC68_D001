@@ -10,10 +10,10 @@
 ../User_app/Task.c:441:13:enqueue_read_all	2
 ../User_app/Task.c:452:13:enqueue_read_slope	2
 ../User_app/Task.c:463:13:compensate_ph	7
-../User_app/Task.c:520:13:handle_warning_buzzer	9
-../User_app/Task.c:561:13:handle_cmd_ui	14
-../User_app/Task.c:628:13:handle_interface_display	12
-../User_app/Task.c:660:9:_Cb_Sensor	1
-../User_app/Task.c:677:9:_Cb_LCD_Display	2
-../User_app/Task.c:693:9:_Cb_Button	9
-../User_app/Task.c:723:9:Comm_Task	5
+../User_app/Task.c:508:13:handle_warning_buzzer	9
+../User_app/Task.c:549:13:handle_cmd_ui	14
+../User_app/Task.c:616:13:handle_interface_display	12
+../User_app/Task.c:648:9:_Cb_Sensor	1
+../User_app/Task.c:665:9:_Cb_LCD_Display	2
+../User_app/Task.c:681:9:_Cb_Button	9
+../User_app/Task.c:711:9:Comm_Task	5

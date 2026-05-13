@@ -462,57 +462,45 @@ static void enqueue_read_slope(void)
 
 static void compensate_ph(void)
 {
-    static float last_cl = 0;
-    static float last_temp = 0;
-
     float PH_value = MB_SLAVE_GetFloat(&mb_slave, 0x0006);
 
-    float k_value =
-            (PH_value > 7.5f)
-            ? 0.1f
-            : 0.15f;
+    /* ================= FIX PH RÁC ================= */
+    if(PH_value < 0.0f || PH_value > 14.0f)
+    {
+        PH_value = 7.5f;
+    }
+
+    /* chống NaN */
+    if(PH_value != PH_value)
+    {
+        PH_value = 7.5f;
+    }
+
+    float k_value;
+
+    if(PH_value > 7.5f)
+        k_value = 0.1f;
+    else
+        k_value = 0.15f;
 
     float clo_comp_value =
             clo_raw_value *
             (1.0f + (k_value * (PH_value - 7.5f)));
 
-    if(clo_comp_value < 0)
+    /* ================= FIX ÂM ================= */
+    if(clo_comp_value < 0.0f)
     {
-        clo_comp_value = 0;
+        clo_comp_value = 0.0f;
     }
 
-    /* =====================================================
-     * CHỈ update khi thay đổi đáng kể
-     * tránh datalogger đọc trúng lúc đang ghi float
-     * ===================================================== */
-
-    if((clo_comp_value > (last_cl + 0.001f)) ||
-       (clo_comp_value < (last_cl - 0.001f)))
+    /* chống NaN */
+    if(clo_comp_value != clo_comp_value)
     {
-        __disable_irq();
-
-        MB_SLAVE_SetFloat(&mb_slave,
-                          0x0002,
-                          clo_comp_value);
-
-        __enable_irq();
-
-        last_cl = clo_comp_value;
+        clo_comp_value = clo_raw_value;
     }
 
-    if((rc68_temp > (last_temp + 0.01f)) ||
-       (rc68_temp < (last_temp - 0.01f)))
-    {
-        __disable_irq();
-
-        MB_SLAVE_SetFloat(&mb_slave,
-                          0x0004,
-                          rc68_temp);
-
-        __enable_irq();
-
-        last_temp = rc68_temp;
-    }
+    MB_SLAVE_SetFloat(&mb_slave, 0x0002, clo_comp_value);
+    MB_SLAVE_SetFloat(&mb_slave, 0x0004, rc68_temp);
 
     clo_value = clo_comp_value;
 }
