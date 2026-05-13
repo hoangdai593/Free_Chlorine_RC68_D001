@@ -69,13 +69,15 @@ CMD_RESULT_t pending_result = CMD_RES_NONE;
 /* UART RX */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if(huart->Instance == USART3)           // Master - Sensor
+    if(huart->Instance == USART3)
     {
         MB_RTU_RxByteHandler(&mb1);
+        HAL_UART_Receive_IT(&huart3, &mb1.rx_byte, 1);
     }
-    else if(huart->Instance == USART1)      // Slave - Datalogger
+    else if(huart->Instance == USART1)
     {
-    	MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_byte);
+        MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_byte);
+        HAL_UART_Receive_IT(&huart1, &mb_slave.rx_byte, 1);
     }
 }
 
