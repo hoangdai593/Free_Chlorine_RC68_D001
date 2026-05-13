@@ -69,19 +69,13 @@ CMD_RESULT_t pending_result = CMD_RES_NONE;
 /* UART RX */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if(huart->Instance == USART3)
+    if(huart->Instance == USART3)           // Master - Sensor
     {
         MB_RTU_RxByteHandler(&mb1);
     }
-
-    if(huart->Instance == USART1)
+    else if(huart->Instance == USART1)      // Slave - Datalogger
     {
-        if(HAL_GPIO_ReadPin(RS485_1_DIR_PORT,
-                            RS485_1_DIR_PIN) == GPIO_PIN_RESET)
-        {
-            MB_SLAVE_RxByteHandler(&mb_slave,
-                                   mb_slave.rx_byte);
-        }
+    	MB_SLAVE_RxByteHandler(&mb_slave, mb_slave.rx_byte);
     }
 }
 
