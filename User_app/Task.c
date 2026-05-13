@@ -465,7 +465,7 @@ static void compensate_ph(void)
     float PH_value = MB_SLAVE_GetFloat(&mb_slave, 0x0006);
     float k_value = (PH_value > 7.5f) ? 0.1f : 0.15f;
 
-    float clo_comp_value = clo_raw_value * (1.0f + (k_value * (PH_value - 7.53f)));
+    float clo_comp_value = clo_raw_value * (1.0f + (k_value * (PH_value - 7.5f)));
     if(clo_comp_value < 0) clo_comp_value = 0;
 
     MB_SLAVE_SetFloat(&mb_slave, 0x0002, clo_comp_value);

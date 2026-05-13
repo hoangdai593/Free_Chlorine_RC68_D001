@@ -19,8 +19,8 @@ void MB_RTU_Clear(MB_RTU_t *mb)
     mb->rx_index = 0;
     mb->frame_ready = 0;
     mb->status = MB_RTU_OK;
-    mb->last_rx_tick = 0;
-    memset(mb->rx_buf, 0, MB_RX_BUF_SIZE);
+//    mb->last_rx_tick = 0;
+//    memset(mb->rx_buf, 0, MB_RX_BUF_SIZE);
 }
 
 /* ================= START RX ================= */
@@ -52,7 +52,7 @@ HAL_StatusTypeDef MB_RTU_Send(MB_RTU_t *mb, uint8_t *buf, uint16_t len)
     UART_HandleTypeDef *huart = BSP_RS485_GetHandle(mb->port);
     if(huart == NULL) return HAL_ERROR;
 
-    HAL_UART_AbortReceive_IT(huart);
+//    HAL_UART_AbortReceive_IT(huart);
     uint32_t start = HAL_GetTick();
     while(huart->RxState != HAL_UART_STATE_READY && (HAL_GetTick() - start) < 10);
 
