@@ -12,14 +12,14 @@
 #define MB_SLAVE_MAX_REG        32
 
 #ifndef MB_RX_BUF_SIZE
-#error "MB_RX_BUF_SIZE not defined"
+#error "MB_RX_BUF_SIZE not defined in modbus_rtu.h"
 #endif
 
-/* RTU timing */
-#define MB_SLAVE_T35_MS         2
-#define MB_SLAVE_RX_RESET_MS    50
-
-/* ================= STRUCT ================= */
+/* =========================================================
+ * QUAN TRỌNG:
+ * Không dùng HAL_GetTick detect RTU nữa
+ * Dùng UART IDLE flag
+ * ========================================================= */
 
 typedef struct
 {
@@ -33,8 +33,6 @@ typedef struct
 
     uint8_t     frame_buf[MB_RX_BUF_SIZE];
     uint16_t    frame_len;
-
-    uint32_t    last_rx_tick;
 
     uint8_t     rx_byte;
 
@@ -52,6 +50,9 @@ void MB_SLAVE_Poll(MB_SLAVE_t *slave);
 
 void MB_SLAVE_RxByteHandler(MB_SLAVE_t *slave,
                             uint8_t byte);
+
+/* UART IDLE detect */
+void MB_SLAVE_IdleHandler(MB_SLAVE_t *slave);
 
 /* register API */
 void MB_SLAVE_SetFloat(MB_SLAVE_t *slave,

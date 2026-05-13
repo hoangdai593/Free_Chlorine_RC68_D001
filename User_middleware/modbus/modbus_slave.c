@@ -45,16 +45,18 @@ void MB_SLAVE_Init(MB_SLAVE_t *s,
                    RS485_PORT port,
                    uint8_t id)
 {
+    UART_HandleTypeDef *huart;
+
     memset(s, 0, sizeof(MB_SLAVE_t));
 
-    s->port     = port;
+    s->port = port;
     s->slave_id = id;
 
     s->holding_reg[0x0000] = id;
     s->holding_reg[0x0001] = 3;
 
     MB_SLAVE_SetFloat(s, 0x0006, 7.5f);
-    MB_SLAVE_SetU16(s,   0x000D, 0);
+    MB_SLAVE_SetU16(s, 0x000D, 0);
     MB_SLAVE_SetFloat(s, 0x000E, 1.5f);
     MB_SLAVE_SetFloat(s, 0x0010, 0.1f);
 
@@ -62,6 +64,12 @@ void MB_SLAVE_Init(MB_SLAVE_t *s,
 
     BSP_RS485_Receive_IT(port,
                          &s->rx_byte);
+
+    /* ENABLE UART IDLE IRQ */
+    huart = BSP_RS485_GetHandle(port);
+
+    __HAL_UART_ENABLE_IT(huart,
+                         UART_IT_IDLE);
 }
 
 /* =========================================================
@@ -77,13 +85,32 @@ void MB_SLAVE_RxByteHandler(MB_SLAVE_t *s,
     }
     else
     {
+        /* overflow reset */
         s->rx_index = 0;
     }
 
-    s->last_rx_tick = HAL_GetTick();
-
     BSP_RS485_Receive_IT(s->port,
                          &s->rx_byte);
+}
+
+/* =========================================================
+ * UART IDLE FRAME DETECT
+ * ========================================================= */
+
+void MB_SLAVE_IdleHandler(MB_SLAVE_t *s)
+{
+    if(s->rx_index == 0)
+        return;
+
+    memcpy(s->frame_buf,
+           s->rx_buf,
+           s->rx_index);
+
+    s->frame_len = s->rx_index;
+
+    s->rx_index = 0;
+
+    s->frame_ready = 1;
 }
 
 /* =========================================================
@@ -101,19 +128,16 @@ static void MB_Send(MB_SLAVE_t *s,
     if(huart == NULL)
         return;
 
-    /* STOP RX IRQ */
+    /* STOP RX */
     HAL_UART_AbortReceive_IT(huart);
 
-    uint32_t t = HAL_GetTick();
-
-    while((huart->RxState != HAL_UART_STATE_READY) &&
-          ((HAL_GetTick() - t) < 10));
+    while(huart->RxState != HAL_UART_STATE_READY);
 
     MB_CRC_Append(buf, len);
 
     BSP_RS485_TX_Mode(s->port);
 
-    delay_us(20);
+    delay_us(30);
 
     HAL_UART_Transmit(huart,
                       buf,
@@ -122,11 +146,11 @@ static void MB_Send(MB_SLAVE_t *s,
 
     BSP_RS485_WaitTC(s->port);
 
-    delay_us(20);
+    delay_us(30);
 
     BSP_RS485_RX_Mode(s->port);
 
-    /* CLEAR RX STATE */
+    /* CLEAR */
     s->rx_index = 0;
     s->frame_ready = 0;
 
@@ -158,8 +182,6 @@ static void MB_Except(MB_SLAVE_t *s,
 
 void MB_SLAVE_Poll(MB_SLAVE_t *s)
 {
-    uint32_t now;
-
     uint8_t func;
 
     uint16_t addr;
@@ -167,47 +189,21 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
 
     uint8_t tx[128];
 
-    now = HAL_GetTick();
-
-    /* no data */
-    if(s->rx_index == 0)
+    if(s->frame_ready == 0)
         return;
 
-    /* frame timeout reset */
-    if((now - s->last_rx_tick) > MB_SLAVE_RX_RESET_MS)
-    {
-        s->rx_index = 0;
-        return;
-    }
+    s->frame_ready = 0;
 
-    /* wait end frame */
-    if((now - s->last_rx_tick) < MB_SLAVE_T35_MS)
-        return;
-
-    /* LOCK FRAME */
-    __disable_irq();
-
-    s->frame_len = s->rx_index;
-
-    memcpy(s->frame_buf,
-           s->rx_buf,
-           s->frame_len);
-
-    s->rx_index = 0;
-
-    __enable_irq();
-
-    /* minimum frame */
     if(s->frame_len < 8)
         return;
 
-    /* slave id */
+    /* CHECK ID */
     if(s->frame_buf[0] != s->slave_id)
         return;
 
     /* CRC */
-    if(!MB_CRC_Check(s->frame_buf,
-                     s->frame_len))
+    if(MB_CRC_Check(s->frame_buf,
+                    s->frame_len) == 0)
     {
         return;
     }
@@ -215,18 +211,20 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
     func = s->frame_buf[1];
 
     /* =====================================================
-     * READ HOLDING 0x03
+     * READ HOLDING
      * ===================================================== */
+
     if(func == 0x03)
     {
-        addr = ((uint16_t)s->frame_buf[2] << 8)
-             | s->frame_buf[3];
+        addr =
+            ((uint16_t)s->frame_buf[2] << 8) |
+             s->frame_buf[3];
 
-        qty  = ((uint16_t)s->frame_buf[4] << 8)
-             | s->frame_buf[5];
+        qty =
+            ((uint16_t)s->frame_buf[4] << 8) |
+             s->frame_buf[5];
 
         if((qty == 0) ||
-           (qty > 32) ||
            ((addr + qty) > MB_SLAVE_MAX_REG))
         {
             MB_Except(s, func, 0x02);
@@ -255,17 +253,18 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
     }
 
     /* =====================================================
-     * WRITE SINGLE 0x06
+     * WRITE SINGLE
      * ===================================================== */
+
     if(func == 0x06)
     {
-        addr = ((uint16_t)s->frame_buf[2] << 8)
-             | s->frame_buf[3];
+        addr =
+            ((uint16_t)s->frame_buf[2] << 8) |
+             s->frame_buf[3];
 
-        uint16_t val;
-
-        val = ((uint16_t)s->frame_buf[4] << 8)
-            | s->frame_buf[5];
+        uint16_t val =
+            ((uint16_t)s->frame_buf[4] << 8) |
+             s->frame_buf[5];
 
         if(addr >= MB_SLAVE_MAX_REG)
         {
@@ -298,15 +297,18 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
     }
 
     /* =====================================================
-     * WRITE MULTI 0x10
+     * WRITE MULTI
      * ===================================================== */
+
     if(func == 0x10)
     {
-        addr = ((uint16_t)s->frame_buf[2] << 8)
-             | s->frame_buf[3];
+        addr =
+            ((uint16_t)s->frame_buf[2] << 8) |
+             s->frame_buf[3];
 
-        qty  = ((uint16_t)s->frame_buf[4] << 8)
-             | s->frame_buf[5];
+        qty =
+            ((uint16_t)s->frame_buf[4] << 8) |
+             s->frame_buf[5];
 
         if((qty == 0) ||
            ((addr + qty) > MB_SLAVE_MAX_REG))
@@ -318,8 +320,8 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
         for(uint16_t i = 0; i < qty; i++)
         {
             s->holding_reg[addr + i] =
-                ((uint16_t)s->frame_buf[7 + i * 2] << 8)
-              | s->frame_buf[8 + i * 2];
+                ((uint16_t)s->frame_buf[7 + i * 2] << 8) |
+                 s->frame_buf[8 + i * 2];
         }
 
         tx[0] = s->slave_id;
@@ -336,7 +338,9 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
         if((addr <= 0x0001) &&
            ((addr + qty) > 0x0001))
         {
-            uint16_t b = s->holding_reg[0x0001];
+            uint16_t b;
+
+            b = s->holding_reg[0x0001];
 
             if(b < MB_BAUD_COUNT)
             {
@@ -357,17 +361,17 @@ void MB_SLAVE_Poll(MB_SLAVE_t *s)
 }
 
 /* =========================================================
- * API
+ * REGISTER API
  * ========================================================= */
 
 void MB_SLAVE_SetFloat(MB_SLAVE_t *s,
                        uint16_t a,
                        float v)
 {
+    uint32_t r;
+
     if((a + 1) >= MB_SLAVE_MAX_REG)
         return;
-
-    uint32_t r;
 
     memcpy(&r, &v, 4);
 
@@ -389,12 +393,11 @@ float MB_SLAVE_GetFloat(MB_SLAVE_t *s,
                         uint16_t a)
 {
     uint32_t r;
-
     float v;
 
     r =
-        ((uint32_t)s->holding_reg[a] << 16)
-      | ((uint32_t)s->holding_reg[a + 1]);
+        ((uint32_t)s->holding_reg[a] << 16) |
+         s->holding_reg[a + 1];
 
     memcpy(&v, &r, 4);
 
