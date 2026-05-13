@@ -7,8 +7,11 @@
 /* ================= INIT ================= */
 void MB_RTU_Init(MB_RTU_t *mb, RS485_PORT port, uint8_t slave_id)
 {
+    memset(mb, 0, sizeof(MB_RTU_t));
+
     mb->port = port;
     mb->slave_id = slave_id;
+
     MB_RTU_Clear(mb);
     MB_RTU_StartReceive(mb);
 }
@@ -20,6 +23,7 @@ void MB_RTU_Clear(MB_RTU_t *mb)
     mb->frame_ready = 0;
     mb->status = MB_RTU_OK;
     mb->last_rx_tick = 0;
+
     memset(mb->rx_buf, 0, MB_RX_BUF_SIZE);
 }
 
@@ -29,9 +33,10 @@ void MB_RTU_StartReceive(MB_RTU_t *mb)
     BSP_RS485_Receive_IT(mb->port, &mb->rx_byte);
 }
 
-/* ================= RX BYTE ================= */
+/* ================= RX BYTE HANDLER ================= */
 void MB_RTU_RxByteHandler(MB_RTU_t *mb)
 {
+    /* ONLY BUFFER - NO RESTART STORM */
     if(mb->rx_index < MB_RX_BUF_SIZE)
     {
         mb->rx_buf[mb->rx_index++] = mb->rx_byte;
@@ -46,24 +51,25 @@ void MB_RTU_RxByteHandler(MB_RTU_t *mb)
 /* ================= SEND ================= */
 HAL_StatusTypeDef MB_RTU_Send(MB_RTU_t *mb, uint8_t *buf, uint16_t len)
 {
-    MB_RTU_Clear(mb);
-
     UART_HandleTypeDef *huart = BSP_RS485_GetHandle(mb->port);
-    if(huart == NULL) return HAL_ERROR;
+    if(!huart) return HAL_ERROR;
+
+    MB_RTU_Clear(mb);
 
     BSP_RS485_TX_Mode(mb->port);
     delay_us(5);
 
     HAL_StatusTypeDef ret = HAL_UART_Transmit(huart, buf, len, 100);
 
+    /* wait TX fully done */
     BSP_RS485_WaitTC(mb->port);
 
     delay_us(5);
 
     BSP_RS485_RX_Mode(mb->port);
 
-    /* restart RX 1 lần duy nhất */
-    BSP_RS485_Receive_IT(mb->port, &mb->rx_byte);
+    /* IMPORTANT: restart RX ONLY ONCE */
+    MB_RTU_StartReceive(mb);
 
     return ret;
 }

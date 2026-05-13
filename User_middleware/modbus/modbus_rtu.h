@@ -6,30 +6,27 @@
 
 /* ================= CONFIG ================= */
 #define MB_RX_BUF_SIZE          256
+
+/* FIX: tăng stability cho RS485 + datalogger */
 #define MB_FRAME_TIMEOUT_MS     20
 
 /* ================= STATUS ================= */
 typedef enum
 {
     MB_RTU_OK = 0,
-    MB_RTU_BUSY,
-    MB_RTU_TIMEOUT,
-    MB_RTU_CRC_ERROR,
-    MB_RTU_OVERFLOW,
-    MB_RTU_ILLEGAL_FUNCTION,
-    MB_RTU_ILLEGAL_ADDRESS
+    MB_RTU_CRC_ERROR
 } MB_RTU_STATUS;
 
-/* ================= STRUCT CHUNG (Master) ================= */
+/* ================= STRUCT ================= */
 typedef struct
 {
     RS485_PORT port;
-    uint8_t    slave_id;        // Dùng cho Master (Slave ID của thiết bị remote)
+    uint8_t    slave_id;
 
     uint8_t    rx_buf[MB_RX_BUF_SIZE];
     uint16_t   rx_index;
 
-    uint8_t    rx_byte;         // Byte nhận interrupt
+    uint8_t    rx_byte;
 
     uint32_t   last_rx_tick;
 
@@ -37,9 +34,9 @@ typedef struct
 
     MB_RTU_STATUS status;
 
-} MB_RTU_t;   // Dùng cho Master (RC68)
+} MB_RTU_t;
 
-/* ================= API CHO MASTER ================= */
+/* ================= API ================= */
 void MB_RTU_Init(MB_RTU_t *mb, RS485_PORT port, uint8_t slave_id);
 
 void MB_RTU_StartReceive(MB_RTU_t *mb);

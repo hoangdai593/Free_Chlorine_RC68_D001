@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000c0a8  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000165a4  00000000  00000000  0000c0d8  2**0
+ 12 .debug_info   0001650c  00000000  00000000  0000c0d8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000045b5  00000000  00000000  0002267c  2**0
+ 13 .debug_abbrev 000045b6  00000000  00000000  000225e4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000012e0  00000000  00000000  00026c38  2**3
+ 14 .debug_aranges 000012e0  00000000  00000000  00026ba0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000e66  00000000  00000000  00027f18  2**0
+ 15 .debug_rnglists 00000e65  00000000  00000000  00027e80  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  000259f9  00000000  00000000  00028d7e  2**0
+ 16 .debug_macro  000259f9  00000000  00000000  00028ce5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001bbe7  00000000  00000000  0004e777  2**0
+ 17 .debug_line   0001bbe8  00000000  00000000  0004e6de  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000d1290  00000000  00000000  0006a35e  2**0
+ 18 .debug_str    000d1236  00000000  00000000  0006a2c6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0013b5ee  2**0
+ 19 .comment      00000043  00000000  00000000  0013b4fc  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00004ba0  00000000  00000000  0013b634  2**2
+ 20 .debug_frame  00004ba0  00000000  00000000  0013b540  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000059  00000000  00000000  001401d4  2**0
+ 21 .debug_line_str 00000059  00000000  00000000  001400e0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -13088,7 +13088,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     {
         MB_RTU_RxByteHandler(&mb1);
  8004d76:	480f      	ldr	r0, [pc, #60]	@ (8004db4 <HAL_UART_RxCpltCallback+0x50>)
- 8004d78:	f003 fe44 	bl	8008a04 <MB_RTU_RxByteHandler>
+ 8004d78:	f003 fe4a 	bl	8008a10 <MB_RTU_RxByteHandler>
 
         BSP_RS485_Receive_IT(RS485_PORT3, &mb1.rx_byte);
  8004d7c:	490e      	ldr	r1, [pc, #56]	@ (8004db8 <HAL_UART_RxCpltCallback+0x54>)
@@ -21953,7 +21953,7 @@ static MB_MASTER_STATUS MB_Master_SendReq(MB_RTU_t *mb,
  800873c:	461a      	mov	r2, r3
  800873e:	68b9      	ldr	r1, [r7, #8]
  8008740:	68f8      	ldr	r0, [r7, #12]
- 8008742:	f000 f986 	bl	8008a52 <MB_RTU_Send>
+ 8008742:	f000 f98c 	bl	8008a5e <MB_RTU_Send>
  8008746:	4603      	mov	r3, r0
  8008748:	2b00      	cmp	r3, #0
  800874a:	d001      	beq.n	8008750 <MB_Master_SendReq+0x40>
@@ -22362,209 +22362,214 @@ void MB_RTU_Init(MB_RTU_t *mb, RS485_PORT port, uint8_t slave_id)
  800897c:	70fb      	strb	r3, [r7, #3]
  800897e:	4613      	mov	r3, r2
  8008980:	70bb      	strb	r3, [r7, #2]
-    mb->port = port;
- 8008982:	687b      	ldr	r3, [r7, #4]
- 8008984:	78fa      	ldrb	r2, [r7, #3]
- 8008986:	701a      	strb	r2, [r3, #0]
-    mb->slave_id = slave_id;
- 8008988:	687b      	ldr	r3, [r7, #4]
- 800898a:	78ba      	ldrb	r2, [r7, #2]
- 800898c:	705a      	strb	r2, [r3, #1]
-    MB_RTU_Clear(mb);
- 800898e:	6878      	ldr	r0, [r7, #4]
- 8008990:	f000 f807 	bl	80089a2 <MB_RTU_Clear>
-    MB_RTU_StartReceive(mb);
- 8008994:	6878      	ldr	r0, [r7, #4]
- 8008996:	f000 f824 	bl	80089e2 <MB_RTU_StartReceive>
-}
- 800899a:	bf00      	nop
- 800899c:	3708      	adds	r7, #8
- 800899e:	46bd      	mov	sp, r7
- 80089a0:	bd80      	pop	{r7, pc}
+    memset(mb, 0, sizeof(MB_RTU_t));
+ 8008982:	f44f 7288 	mov.w	r2, #272	@ 0x110
+ 8008986:	2100      	movs	r1, #0
+ 8008988:	6878      	ldr	r0, [r7, #4]
+ 800898a:	f000 fbd1 	bl	8009130 <memset>
 
-080089a2 <MB_RTU_Clear>:
+    mb->port = port;
+ 800898e:	687b      	ldr	r3, [r7, #4]
+ 8008990:	78fa      	ldrb	r2, [r7, #3]
+ 8008992:	701a      	strb	r2, [r3, #0]
+    mb->slave_id = slave_id;
+ 8008994:	687b      	ldr	r3, [r7, #4]
+ 8008996:	78ba      	ldrb	r2, [r7, #2]
+ 8008998:	705a      	strb	r2, [r3, #1]
+
+    MB_RTU_Clear(mb);
+ 800899a:	6878      	ldr	r0, [r7, #4]
+ 800899c:	f000 f807 	bl	80089ae <MB_RTU_Clear>
+    MB_RTU_StartReceive(mb);
+ 80089a0:	6878      	ldr	r0, [r7, #4]
+ 80089a2:	f000 f824 	bl	80089ee <MB_RTU_StartReceive>
+}
+ 80089a6:	bf00      	nop
+ 80089a8:	3708      	adds	r7, #8
+ 80089aa:	46bd      	mov	sp, r7
+ 80089ac:	bd80      	pop	{r7, pc}
+
+080089ae <MB_RTU_Clear>:
 
 /* ================= CLEAR ================= */
 void MB_RTU_Clear(MB_RTU_t *mb)
 {
- 80089a2:	b580      	push	{r7, lr}
- 80089a4:	b082      	sub	sp, #8
- 80089a6:	af00      	add	r7, sp, #0
- 80089a8:	6078      	str	r0, [r7, #4]
+ 80089ae:	b580      	push	{r7, lr}
+ 80089b0:	b082      	sub	sp, #8
+ 80089b2:	af00      	add	r7, sp, #0
+ 80089b4:	6078      	str	r0, [r7, #4]
     mb->rx_index = 0;
- 80089aa:	687b      	ldr	r3, [r7, #4]
- 80089ac:	2200      	movs	r2, #0
- 80089ae:	f8a3 2102 	strh.w	r2, [r3, #258]	@ 0x102
+ 80089b6:	687b      	ldr	r3, [r7, #4]
+ 80089b8:	2200      	movs	r2, #0
+ 80089ba:	f8a3 2102 	strh.w	r2, [r3, #258]	@ 0x102
     mb->frame_ready = 0;
- 80089b2:	687b      	ldr	r3, [r7, #4]
- 80089b4:	2200      	movs	r2, #0
- 80089b6:	f883 210c 	strb.w	r2, [r3, #268]	@ 0x10c
+ 80089be:	687b      	ldr	r3, [r7, #4]
+ 80089c0:	2200      	movs	r2, #0
+ 80089c2:	f883 210c 	strb.w	r2, [r3, #268]	@ 0x10c
     mb->status = MB_RTU_OK;
- 80089ba:	687b      	ldr	r3, [r7, #4]
- 80089bc:	2200      	movs	r2, #0
- 80089be:	f883 210d 	strb.w	r2, [r3, #269]	@ 0x10d
+ 80089c6:	687b      	ldr	r3, [r7, #4]
+ 80089c8:	2200      	movs	r2, #0
+ 80089ca:	f883 210d 	strb.w	r2, [r3, #269]	@ 0x10d
     mb->last_rx_tick = 0;
- 80089c2:	687b      	ldr	r3, [r7, #4]
- 80089c4:	2200      	movs	r2, #0
- 80089c6:	f8c3 2108 	str.w	r2, [r3, #264]	@ 0x108
-    memset(mb->rx_buf, 0, MB_RX_BUF_SIZE);
- 80089ca:	687b      	ldr	r3, [r7, #4]
- 80089cc:	3302      	adds	r3, #2
- 80089ce:	f44f 7280 	mov.w	r2, #256	@ 0x100
- 80089d2:	2100      	movs	r1, #0
- 80089d4:	4618      	mov	r0, r3
- 80089d6:	f000 fbab 	bl	8009130 <memset>
-}
- 80089da:	bf00      	nop
- 80089dc:	3708      	adds	r7, #8
- 80089de:	46bd      	mov	sp, r7
- 80089e0:	bd80      	pop	{r7, pc}
+ 80089ce:	687b      	ldr	r3, [r7, #4]
+ 80089d0:	2200      	movs	r2, #0
+ 80089d2:	f8c3 2108 	str.w	r2, [r3, #264]	@ 0x108
 
-080089e2 <MB_RTU_StartReceive>:
+    memset(mb->rx_buf, 0, MB_RX_BUF_SIZE);
+ 80089d6:	687b      	ldr	r3, [r7, #4]
+ 80089d8:	3302      	adds	r3, #2
+ 80089da:	f44f 7280 	mov.w	r2, #256	@ 0x100
+ 80089de:	2100      	movs	r1, #0
+ 80089e0:	4618      	mov	r0, r3
+ 80089e2:	f000 fba5 	bl	8009130 <memset>
+}
+ 80089e6:	bf00      	nop
+ 80089e8:	3708      	adds	r7, #8
+ 80089ea:	46bd      	mov	sp, r7
+ 80089ec:	bd80      	pop	{r7, pc}
+
+080089ee <MB_RTU_StartReceive>:
 
 /* ================= START RX ================= */
 void MB_RTU_StartReceive(MB_RTU_t *mb)
 {
- 80089e2:	b580      	push	{r7, lr}
- 80089e4:	b082      	sub	sp, #8
- 80089e6:	af00      	add	r7, sp, #0
- 80089e8:	6078      	str	r0, [r7, #4]
+ 80089ee:	b580      	push	{r7, lr}
+ 80089f0:	b082      	sub	sp, #8
+ 80089f2:	af00      	add	r7, sp, #0
+ 80089f4:	6078      	str	r0, [r7, #4]
     BSP_RS485_Receive_IT(mb->port, &mb->rx_byte);
- 80089ea:	687b      	ldr	r3, [r7, #4]
- 80089ec:	781a      	ldrb	r2, [r3, #0]
- 80089ee:	687b      	ldr	r3, [r7, #4]
- 80089f0:	f503 7382 	add.w	r3, r3, #260	@ 0x104
- 80089f4:	4619      	mov	r1, r3
- 80089f6:	4610      	mov	r0, r2
- 80089f8:	f7ff fd1b 	bl	8008432 <BSP_RS485_Receive_IT>
+ 80089f6:	687b      	ldr	r3, [r7, #4]
+ 80089f8:	781a      	ldrb	r2, [r3, #0]
+ 80089fa:	687b      	ldr	r3, [r7, #4]
+ 80089fc:	f503 7382 	add.w	r3, r3, #260	@ 0x104
+ 8008a00:	4619      	mov	r1, r3
+ 8008a02:	4610      	mov	r0, r2
+ 8008a04:	f7ff fd15 	bl	8008432 <BSP_RS485_Receive_IT>
 }
- 80089fc:	bf00      	nop
- 80089fe:	3708      	adds	r7, #8
- 8008a00:	46bd      	mov	sp, r7
- 8008a02:	bd80      	pop	{r7, pc}
+ 8008a08:	bf00      	nop
+ 8008a0a:	3708      	adds	r7, #8
+ 8008a0c:	46bd      	mov	sp, r7
+ 8008a0e:	bd80      	pop	{r7, pc}
 
-08008a04 <MB_RTU_RxByteHandler>:
+08008a10 <MB_RTU_RxByteHandler>:
 
-/* ================= RX BYTE ================= */
+/* ================= RX BYTE HANDLER ================= */
 void MB_RTU_RxByteHandler(MB_RTU_t *mb)
 {
- 8008a04:	b580      	push	{r7, lr}
- 8008a06:	b082      	sub	sp, #8
- 8008a08:	af00      	add	r7, sp, #0
- 8008a0a:	6078      	str	r0, [r7, #4]
+ 8008a10:	b580      	push	{r7, lr}
+ 8008a12:	b082      	sub	sp, #8
+ 8008a14:	af00      	add	r7, sp, #0
+ 8008a16:	6078      	str	r0, [r7, #4]
+    /* ONLY BUFFER - NO RESTART STORM */
     if(mb->rx_index < MB_RX_BUF_SIZE)
- 8008a0c:	687b      	ldr	r3, [r7, #4]
- 8008a0e:	f8b3 3102 	ldrh.w	r3, [r3, #258]	@ 0x102
- 8008a12:	2bff      	cmp	r3, #255	@ 0xff
- 8008a14:	d815      	bhi.n	8008a42 <MB_RTU_RxByteHandler+0x3e>
+ 8008a18:	687b      	ldr	r3, [r7, #4]
+ 8008a1a:	f8b3 3102 	ldrh.w	r3, [r3, #258]	@ 0x102
+ 8008a1e:	2bff      	cmp	r3, #255	@ 0xff
+ 8008a20:	d815      	bhi.n	8008a4e <MB_RTU_RxByteHandler+0x3e>
     {
         mb->rx_buf[mb->rx_index++] = mb->rx_byte;
- 8008a16:	687b      	ldr	r3, [r7, #4]
- 8008a18:	f8b3 3102 	ldrh.w	r3, [r3, #258]	@ 0x102
- 8008a1c:	1c5a      	adds	r2, r3, #1
- 8008a1e:	b291      	uxth	r1, r2
- 8008a20:	687a      	ldr	r2, [r7, #4]
- 8008a22:	f8a2 1102 	strh.w	r1, [r2, #258]	@ 0x102
- 8008a26:	4619      	mov	r1, r3
- 8008a28:	687b      	ldr	r3, [r7, #4]
- 8008a2a:	f893 2104 	ldrb.w	r2, [r3, #260]	@ 0x104
- 8008a2e:	687b      	ldr	r3, [r7, #4]
- 8008a30:	440b      	add	r3, r1
- 8008a32:	709a      	strb	r2, [r3, #2]
-        mb->last_rx_tick = HAL_GetTick();
- 8008a34:	f7f8 fac6 	bl	8000fc4 <HAL_GetTick>
- 8008a38:	4602      	mov	r2, r0
+ 8008a22:	687b      	ldr	r3, [r7, #4]
+ 8008a24:	f8b3 3102 	ldrh.w	r3, [r3, #258]	@ 0x102
+ 8008a28:	1c5a      	adds	r2, r3, #1
+ 8008a2a:	b291      	uxth	r1, r2
+ 8008a2c:	687a      	ldr	r2, [r7, #4]
+ 8008a2e:	f8a2 1102 	strh.w	r1, [r2, #258]	@ 0x102
+ 8008a32:	4619      	mov	r1, r3
+ 8008a34:	687b      	ldr	r3, [r7, #4]
+ 8008a36:	f893 2104 	ldrb.w	r2, [r3, #260]	@ 0x104
  8008a3a:	687b      	ldr	r3, [r7, #4]
- 8008a3c:	f8c3 2108 	str.w	r2, [r3, #264]	@ 0x108
+ 8008a3c:	440b      	add	r3, r1
+ 8008a3e:	709a      	strb	r2, [r3, #2]
+        mb->last_rx_tick = HAL_GetTick();
+ 8008a40:	f7f8 fac0 	bl	8000fc4 <HAL_GetTick>
+ 8008a44:	4602      	mov	r2, r0
+ 8008a46:	687b      	ldr	r3, [r7, #4]
+ 8008a48:	f8c3 2108 	str.w	r2, [r3, #264]	@ 0x108
     }
     else
     {
         mb->rx_index = 0;
     }
 }
- 8008a40:	e003      	b.n	8008a4a <MB_RTU_RxByteHandler+0x46>
+ 8008a4c:	e003      	b.n	8008a56 <MB_RTU_RxByteHandler+0x46>
         mb->rx_index = 0;
- 8008a42:	687b      	ldr	r3, [r7, #4]
- 8008a44:	2200      	movs	r2, #0
- 8008a46:	f8a3 2102 	strh.w	r2, [r3, #258]	@ 0x102
+ 8008a4e:	687b      	ldr	r3, [r7, #4]
+ 8008a50:	2200      	movs	r2, #0
+ 8008a52:	f8a3 2102 	strh.w	r2, [r3, #258]	@ 0x102
 }
- 8008a4a:	bf00      	nop
- 8008a4c:	3708      	adds	r7, #8
- 8008a4e:	46bd      	mov	sp, r7
- 8008a50:	bd80      	pop	{r7, pc}
+ 8008a56:	bf00      	nop
+ 8008a58:	3708      	adds	r7, #8
+ 8008a5a:	46bd      	mov	sp, r7
+ 8008a5c:	bd80      	pop	{r7, pc}
 
-08008a52 <MB_RTU_Send>:
+08008a5e <MB_RTU_Send>:
 
 /* ================= SEND ================= */
 HAL_StatusTypeDef MB_RTU_Send(MB_RTU_t *mb, uint8_t *buf, uint16_t len)
 {
- 8008a52:	b580      	push	{r7, lr}
- 8008a54:	b086      	sub	sp, #24
- 8008a56:	af00      	add	r7, sp, #0
- 8008a58:	60f8      	str	r0, [r7, #12]
- 8008a5a:	60b9      	str	r1, [r7, #8]
- 8008a5c:	4613      	mov	r3, r2
- 8008a5e:	80fb      	strh	r3, [r7, #6]
-    MB_RTU_Clear(mb);
- 8008a60:	68f8      	ldr	r0, [r7, #12]
- 8008a62:	f7ff ff9e 	bl	80089a2 <MB_RTU_Clear>
-
+ 8008a5e:	b580      	push	{r7, lr}
+ 8008a60:	b086      	sub	sp, #24
+ 8008a62:	af00      	add	r7, sp, #0
+ 8008a64:	60f8      	str	r0, [r7, #12]
+ 8008a66:	60b9      	str	r1, [r7, #8]
+ 8008a68:	4613      	mov	r3, r2
+ 8008a6a:	80fb      	strh	r3, [r7, #6]
     UART_HandleTypeDef *huart = BSP_RS485_GetHandle(mb->port);
- 8008a66:	68fb      	ldr	r3, [r7, #12]
- 8008a68:	781b      	ldrb	r3, [r3, #0]
- 8008a6a:	4618      	mov	r0, r3
- 8008a6c:	f7ff fc70 	bl	8008350 <BSP_RS485_GetHandle>
- 8008a70:	6178      	str	r0, [r7, #20]
-    if(huart == NULL) return HAL_ERROR;
- 8008a72:	697b      	ldr	r3, [r7, #20]
- 8008a74:	2b00      	cmp	r3, #0
- 8008a76:	d101      	bne.n	8008a7c <MB_RTU_Send+0x2a>
- 8008a78:	2301      	movs	r3, #1
- 8008a7a:	e026      	b.n	8008aca <MB_RTU_Send+0x78>
+ 8008a6c:	68fb      	ldr	r3, [r7, #12]
+ 8008a6e:	781b      	ldrb	r3, [r3, #0]
+ 8008a70:	4618      	mov	r0, r3
+ 8008a72:	f7ff fc6d 	bl	8008350 <BSP_RS485_GetHandle>
+ 8008a76:	6178      	str	r0, [r7, #20]
+    if(!huart) return HAL_ERROR;
+ 8008a78:	697b      	ldr	r3, [r7, #20]
+ 8008a7a:	2b00      	cmp	r3, #0
+ 8008a7c:	d101      	bne.n	8008a82 <MB_RTU_Send+0x24>
+ 8008a7e:	2301      	movs	r3, #1
+ 8008a80:	e023      	b.n	8008aca <MB_RTU_Send+0x6c>
+
+    MB_RTU_Clear(mb);
+ 8008a82:	68f8      	ldr	r0, [r7, #12]
+ 8008a84:	f7ff ff93 	bl	80089ae <MB_RTU_Clear>
 
     BSP_RS485_TX_Mode(mb->port);
- 8008a7c:	68fb      	ldr	r3, [r7, #12]
- 8008a7e:	781b      	ldrb	r3, [r3, #0]
- 8008a80:	4618      	mov	r0, r3
- 8008a82:	f7ff fc7d 	bl	8008380 <BSP_RS485_TX_Mode>
+ 8008a88:	68fb      	ldr	r3, [r7, #12]
+ 8008a8a:	781b      	ldrb	r3, [r3, #0]
+ 8008a8c:	4618      	mov	r0, r3
+ 8008a8e:	f7ff fc77 	bl	8008380 <BSP_RS485_TX_Mode>
     delay_us(5);
- 8008a86:	2005      	movs	r0, #5
- 8008a88:	f000 facf 	bl	800902a <delay_us>
+ 8008a92:	2005      	movs	r0, #5
+ 8008a94:	f000 fac9 	bl	800902a <delay_us>
 
     HAL_StatusTypeDef ret = HAL_UART_Transmit(huart, buf, len, 100);
- 8008a8c:	88fa      	ldrh	r2, [r7, #6]
- 8008a8e:	2364      	movs	r3, #100	@ 0x64
- 8008a90:	68b9      	ldr	r1, [r7, #8]
- 8008a92:	6978      	ldr	r0, [r7, #20]
- 8008a94:	f7fa fd11 	bl	80034ba <HAL_UART_Transmit>
- 8008a98:	4603      	mov	r3, r0
- 8008a9a:	74fb      	strb	r3, [r7, #19]
+ 8008a98:	88fa      	ldrh	r2, [r7, #6]
+ 8008a9a:	2364      	movs	r3, #100	@ 0x64
+ 8008a9c:	68b9      	ldr	r1, [r7, #8]
+ 8008a9e:	6978      	ldr	r0, [r7, #20]
+ 8008aa0:	f7fa fd0b 	bl	80034ba <HAL_UART_Transmit>
+ 8008aa4:	4603      	mov	r3, r0
+ 8008aa6:	74fb      	strb	r3, [r7, #19]
 
+    /* wait TX fully done */
     BSP_RS485_WaitTC(mb->port);
- 8008a9c:	68fb      	ldr	r3, [r7, #12]
- 8008a9e:	781b      	ldrb	r3, [r3, #0]
- 8008aa0:	4618      	mov	r0, r3
- 8008aa2:	f7ff fd02 	bl	80084aa <BSP_RS485_WaitTC>
+ 8008aa8:	68fb      	ldr	r3, [r7, #12]
+ 8008aaa:	781b      	ldrb	r3, [r3, #0]
+ 8008aac:	4618      	mov	r0, r3
+ 8008aae:	f7ff fcfc 	bl	80084aa <BSP_RS485_WaitTC>
 
     delay_us(5);
- 8008aa6:	2005      	movs	r0, #5
- 8008aa8:	f000 fabf 	bl	800902a <delay_us>
+ 8008ab2:	2005      	movs	r0, #5
+ 8008ab4:	f000 fab9 	bl	800902a <delay_us>
 
     BSP_RS485_RX_Mode(mb->port);
- 8008aac:	68fb      	ldr	r3, [r7, #12]
- 8008aae:	781b      	ldrb	r3, [r3, #0]
- 8008ab0:	4618      	mov	r0, r3
- 8008ab2:	f7ff fc81 	bl	80083b8 <BSP_RS485_RX_Mode>
+ 8008ab8:	68fb      	ldr	r3, [r7, #12]
+ 8008aba:	781b      	ldrb	r3, [r3, #0]
+ 8008abc:	4618      	mov	r0, r3
+ 8008abe:	f7ff fc7b 	bl	80083b8 <BSP_RS485_RX_Mode>
 
-    /* restart RX 1 lần duy nhất */
-    BSP_RS485_Receive_IT(mb->port, &mb->rx_byte);
- 8008ab6:	68fb      	ldr	r3, [r7, #12]
- 8008ab8:	781a      	ldrb	r2, [r3, #0]
- 8008aba:	68fb      	ldr	r3, [r7, #12]
- 8008abc:	f503 7382 	add.w	r3, r3, #260	@ 0x104
- 8008ac0:	4619      	mov	r1, r3
- 8008ac2:	4610      	mov	r0, r2
- 8008ac4:	f7ff fcb5 	bl	8008432 <BSP_RS485_Receive_IT>
+    /* IMPORTANT: restart RX ONLY ONCE */
+    MB_RTU_StartReceive(mb);
+ 8008ac2:	68f8      	ldr	r0, [r7, #12]
+ 8008ac4:	f7ff ff93 	bl	80089ee <MB_RTU_StartReceive>
 
     return ret;
  8008ac8:	7cfb      	ldrb	r3, [r7, #19]
@@ -22630,7 +22635,7 @@ void MB_RTU_Poll(MB_RTU_t *mb)
     {
         mb->status = MB_RTU_CRC_ERROR;
  8008b2a:	687b      	ldr	r3, [r7, #4]
- 8008b2c:	2203      	movs	r2, #3
+ 8008b2c:	2201      	movs	r2, #1
  8008b2e:	f883 210d 	strb.w	r2, [r3, #269]	@ 0x10d
     }
 
