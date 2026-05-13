@@ -35,7 +35,7 @@ void BSP_RS485_Init(void)
 ========================================================= */
 static void rs485_dir_delay(void)
 {
-    delay_us(3);   // critical for MAX485 / SN65 / generic transceiver
+    delay_us(10);   // critical for MAX485 / SN65 / generic transceiver
 }
 
 /* =========================================================
