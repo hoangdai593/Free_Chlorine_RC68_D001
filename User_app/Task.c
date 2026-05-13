@@ -84,18 +84,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         }
     }
 }
-void HAL_UART_IRQHandler_IDLE(UART_HandleTypeDef *huart)
-{
-    if(huart->Instance == USART1)
-    {
-        if(__HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE))
-        {
-            __HAL_UART_CLEAR_IDLEFLAG(huart);
 
-            MB_SLAVE_IdleHandler(&mb_slave);
-        }
-    }
-}
 /* =========================================================
  * QUEUE
  * ========================================================= */
