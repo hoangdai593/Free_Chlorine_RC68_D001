@@ -21,6 +21,7 @@
 #include "modbus_slave.h"
 #include "interface_lcd.h"
 #include "button_hanlde.h"
+#include "app_type.h"
 
 /* TASK */
 sEvent_struct ALLTASK[] =
@@ -65,6 +66,10 @@ uint8_t ui_buzzer_lock = 0;
 
 uint32_t sending_start_tick = 0;
 CMD_RESULT_t pending_result = CMD_RES_NONE;
+
+//check sensor online
+uint32_t sensor_last_tick = 0;
+uint8_t sensor_online = 0;
 
 /* UART RX */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -292,6 +297,9 @@ void process_cmd_queue(void)
     	{
     	    mb1.frame_ready = 0;
 
+    	    sensor_last_tick = HAL_GetTick();
+    	    sensor_online = 1;
+
     	    /* ===== CHECK RESPONSE ===== */
     	    if(check_response(current_cmd) == 0)
     	    {
@@ -360,6 +368,11 @@ void process_cmd_queue(void)
             }
         }
 
+        //quá 5s ko online thì tắt chữ N
+        if(HAL_GetTick() - sensor_last_tick > 5000)
+        {
+            sensor_online = 0;
+        }
         return;
     }
 
@@ -399,7 +412,7 @@ static void read_holding_registers(void)
     float upper_threshold = MB_SLAVE_GetFloat(&mb_slave, 0x000E);
     float lower_threshold = MB_SLAVE_GetFloat(&mb_slave, 0x0010);
 
-    if(!warning_edit)
+    if(interface != WARNING && interface != CONFIRM_SETUP)
     {
         warning_mode_saved = MB_SLAVE_GetU16(&mb_slave, 0x000D) ? 1 : 0;
         warning_mode = warning_mode_saved;
@@ -481,7 +494,7 @@ static void compensate_ph(void)
     if(PH_value > 7.5f)
         k_value = 0.1f;
     else
-        k_value = 0.15f;
+        k_value = 0.1f;
 
     float clo_comp_value =
             clo_raw_value *
@@ -638,6 +651,7 @@ static void handle_interface_display(void)
         case WARNING: warning_display(); break;
         case RANGE: range_display(); break;
         case INFO: info_display(); break;
+        case CONFIRM_SETUP: confirm_setup_display(); break;
     }
 }
 

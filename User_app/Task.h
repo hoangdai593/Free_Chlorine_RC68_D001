@@ -15,46 +15,8 @@
 #include "modbus_slave.h"
 #include "clo_rc68.h"
 #include "interface_lcd.h"
-/* EVENT */
-typedef enum
-{
-    _EVENT_LCD_DISPLAY,
-    _EVENT_BUTTON,
-    _EVENT_SENSOR,
-} EVENT_List;
+#include "app_type.h"
 
-/* CMD */
-typedef enum
-{
-    CMD_NONE = 0,
-
-    CMD_READ_ALL,
-    CMD_READ_SLOPE_INTERCEPT,
-    CMD_READ_GAIN,
-
-	CMD_SET_SENSOR_ID_BAUD,
-	CMD_SET_SLAVE_ID_BAUD,
-    CMD_SET_SLOPE,
-    CMD_SET_CALIB_ZERO,
-    CMD_SET_OFFSET,
-    CMD_SET_RANGE,
-
-} CMD_TYPE_t;
-
-/* CMD RESULT */
-typedef enum
-{
-    CMD_RES_NONE = 0,
-    CMD_RES_SENDING,
-    CMD_RES_DONE,
-    CMD_RES_FAIL
-} CMD_RESULT_t;
-
-/* CMD ITEM */
-typedef struct
-{
-    CMD_TYPE_t type;
-} CMD_QUEUE_t;
 
 /* QUEUE */
 #define CMD_QUEUE_SIZE     20
@@ -114,6 +76,8 @@ extern uint8_t display_update_needed;
 extern LCD_INTERFACE previous_interface;
 extern uint8_t buzzer_done_state;
 
+extern uint32_t sensor_last_tick;
+extern uint8_t sensor_online;
 
 void CMD_Enqueue(CMD_TYPE_t type);
 void process_cmd_queue(void);

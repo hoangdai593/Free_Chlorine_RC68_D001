@@ -11,6 +11,7 @@
 #include "GPIO.h"
 #include "event_driven.h"
 #include "main.h"
+#include "Task.h"
 #include "usart.h"
 #include <stdio.h>
 #include <string.h>
@@ -22,32 +23,19 @@
 #include "modbus_master.h"
 #include "modbus_crc.h"
 #include "clo_rc68.h"
+#include "button_hanlde.h"
+#include "app_type.h"
 
 
-typedef enum {
-	MAIN,
-	LOGIN,
-	SETTING,
-	MODBUS,
-	CALIB,
-	OFFSET,
-	WARNING,
-	RANGE,
-	INFO,
-} LCD_INTERFACE;
 
-typedef enum {
-	MODBUS_CUR,
-	CALIB_CUR,
-	OFFSET_CUR,
-	WARNING_CUR,
-	RANGE_CUR,
-	INFO_CUR,
-} SETTING_CUR;
 
 // UI
 extern LCD_INTERFACE interface;
 extern SETTING_CUR   setting_cursor;
+extern CMD_TYPE_t confirm_cmd;
+extern LCD_INTERFACE confirm_return_interface;
+
+
 extern uint8_t  blink;
 extern uint32_t blink_tick;
 // PASSWORD
@@ -100,6 +88,7 @@ void offset_display(void);
 void warning_display(void);
 void range_display(void);
 void info_display(void);
+void confirm_setup_display(void);
 
 
 #endif /* INTERFACE_LCD_H_ */

@@ -20,10 +20,13 @@
 #include "clo_rc68.h"
 #include "interface_lcd.h"
 #include "button_hanlde.h"
+#include "app_type.h"
 
 // UI
 LCD_INTERFACE interface = MAIN;
 SETTING_CUR   setting_cursor = MODBUS_CUR;
+CMD_TYPE_t confirm_cmd = CMD_NONE;
+LCD_INTERFACE confirm_return_interface = SETTING;
 
 uint8_t  blink = 0;
 uint32_t blink_tick = 0;
@@ -130,7 +133,7 @@ void main_display(void)
     glcd_clear_buffer();
     glcd_draw_line(0,10,128,10,BLACK);
 
-    draw_string_small(5,1,"Clo du");
+    draw_string_small(2,1,"Clo du");
     draw_string_small(85,35,"mg/L");
 
     /* ================= CLO DISPLAY ================= */
@@ -171,18 +174,22 @@ void main_display(void)
     /* ================= TEMP DISPLAY ================= */
     draw_string_small(5,55,"Temp :");
 
-    /* convert float rc68_temp -> xx.x */
-    int temp_int = (int)(rc68_temp * 10 + 0.5f);  // 1 số lẻ
+    /* convert float rc68_temp -> xx.xx */
+    int temp_int = (int)(rc68_temp * 100 + 0.5f);
 
     if(temp_int < 0) temp_int = 0;
-    if(temp_int > 999) temp_int = 999;
+    if(temp_int > 9999) temp_int = 9999;   // nên tăng giới hạn vì xx.xx
 
-    int temp_i = temp_int / 10;
-    int temp_d = temp_int % 10;
+    int temp_i = temp_int / 100;
+    int temp_d = temp_int % 100;
+
+    int d1 = temp_d / 10;
+    int d2 = temp_d % 10;
 
     char temp_str[10];
     idx = 0;
 
+    /* phần nguyên */
     if(temp_i >= 100)
     {
         temp_str[idx++] = (temp_i / 100) + '0';
@@ -199,14 +206,22 @@ void main_display(void)
         temp_str[idx++] = temp_i + '0';
     }
 
+    /* phần thập phân */
     temp_str[idx++] = '.';
-    temp_str[idx++] = temp_d + '0';
-    temp_str[idx++] = '\0';
+    temp_str[idx++] = d1 + '0';
+    temp_str[idx++] = d2 + '0';
 
-    draw_string_small(50,55,temp_str);
+    temp_str[idx] = '\0';
 
+    draw_string_small(50, 55, temp_str);
+
+    glcd_draw_circle(89, 56, 1, BLACK);
     draw_string_small(92,55,"C");
-    glcd_draw_circle(88,55,1,BLACK);
+
+    if(sensor_online)
+    {
+        draw_string_small(120, 55, "N");
+    }
 }
 
 void login_display(void)
@@ -381,6 +396,30 @@ void calib_display(void)
              mv_d);
 
     draw_string_small(5,55,mv_str);
+    /* ================= PH VALUE ================= */
+    char ph_str[20];
+
+    float PH_value = MB_SLAVE_GetFloat(&mb_slave, 0x0006);
+
+    /* chống rác dữ liệu */
+    if(PH_value < 0.0f || PH_value > 14.0f || PH_value != PH_value)
+    {
+        PH_value = 7.5f;
+    }
+
+    /* format x.xx */
+    int ph_int = (int)(PH_value * 100 + 0.5f);
+    int ph_i = ph_int / 100;
+    int ph_d = ph_int % 100;
+
+    snprintf(ph_str,
+             sizeof(ph_str),
+             "pH:%d.%02d",
+             ph_i,
+             ph_d);
+
+    /* vẽ sát trên dòng mV */
+    draw_string_small(5,45,ph_str);
 }
 
 void offset_display(void)
@@ -654,4 +693,18 @@ void info_display(void)
 	draw_string_small(5,0,"Information");
 	draw_string_small(15,25,"Sao Viet");
 	draw_string_small(15,50,"Free Chlorine RC68");
+}
+
+void confirm_setup_display(void)
+{
+    glcd_clear_buffer();
+
+    glcd_draw_line(0,10,128,10,BLACK);
+
+    draw_string_small(5,0,"Confirm");
+
+    if(blink)
+    {
+        draw_string_small(15,30,"Enter to setup");
+    }
 }

@@ -22,10 +22,12 @@ void enter_button_handle(void)
             if(pass_cur == 3)
             {
                 pass_cur = 0;
+
                 if(memcmp(password, password_true, 4) == 0)
                     interface = SETTING;
                 else
                     interface = MAIN;
+
                 memset(password, 0, 4);
             }
             else
@@ -35,38 +37,46 @@ void enter_button_handle(void)
             break;
 
         case SETTING:
-            // Reset cursor cho sub-setting
+
             switch(setting_cursor)
             {
                 case MODBUS_CUR:
                     modbus_cursor = 0;
                     modbus_edit = 0;
                     break;
+
                 case CALIB_CUR:
                     calib_cursor = 1;
                     calib_edit = 0;
-                    calib_zero_confirm = 0;
                     slope_pos = 0;
                     break;
+
                 case OFFSET_CUR:
                     offset_cursor = 0;
                     offset_edit = 0;
                     break;
+
                 case WARNING_CUR:
                     warning_cursor = 0;
                     warning_edit = 0;
                     break;
+
                 case RANGE_CUR:
                     range_edit = 0;
                     break;
-                case INFO_CUR:
-                    // No cursor
+
+                default:
                     break;
             }
+
             interface = (LCD_INTERFACE)(MODBUS + setting_cursor);
             break;
 
+        /* =====================================================
+         * MODBUS
+         * ===================================================== */
         case MODBUS:
+
             if(!modbus_edit)
             {
                 modbus_edit = 1;
@@ -74,24 +84,28 @@ void enter_button_handle(void)
             else
             {
                 modbus_edit = 0;
-                send_cmd(CMD_SET_SENSOR_ID_BAUD);
+
+                confirm_cmd = CMD_SET_SENSOR_ID_BAUD;
+                confirm_return_interface = MODBUS;
+
+                interface = CONFIRM_SETUP;
             }
+
             break;
 
+        /* =====================================================
+         * CALIB
+         * ===================================================== */
         case CALIB:
-            if(calib_cursor == 0)   // Zero
+
+            if(calib_cursor == 0)
             {
-                if(!calib_zero_confirm)
-                {
-                    calib_zero_confirm = 1;
-                }
-                else
-                {
-                    calib_zero_confirm = 0;
-                    send_cmd(CMD_SET_CALIB_ZERO);
-                }
+                confirm_cmd = CMD_SET_CALIB_ZERO;
+                confirm_return_interface = CALIB;
+
+                interface = CONFIRM_SETUP;
             }
-            else                    // Slope
+            else
             {
                 if(!calib_edit)
                 {
@@ -101,17 +115,26 @@ void enter_button_handle(void)
                 else
                 {
                     slope_pos++;
+
                     if(slope_pos >= 3)
                     {
                         calib_edit = 0;
-                        send_cmd(CMD_SET_SLOPE);
+
+                        confirm_cmd = CMD_SET_SLOPE;
+                        confirm_return_interface = CALIB;
+
+                        interface = CONFIRM_SETUP;
                     }
                 }
             }
+
             break;
 
-        /* ================= OFFSET ================= */
+        /* =====================================================
+         * OFFSET
+         * ===================================================== */
         case OFFSET:
+
             if(!offset_edit)
             {
                 offset_edit = 1;
@@ -124,40 +147,37 @@ void enter_button_handle(void)
                 if(offset_pos >= 4)
                 {
                     offset_edit = 0;
-                    send_cmd(CMD_SET_OFFSET);
+
+                    confirm_cmd = CMD_SET_OFFSET;
+                    confirm_return_interface = OFFSET;
+
+                    interface = CONFIRM_SETUP;
                 }
             }
+
             break;
 
-        /* ================= WARNING ================= */
+        /* =====================================================
+         * WARNING
+         * ===================================================== */
         case WARNING:
+
             if(!warning_edit)
             {
                 warning_edit = 1;
-
-                if(warning_cursor == 0)
-                {
-                    warning_pos = 0;
-                }
-                else
-                {
-                    warning_pos = 0;
-                }
+                warning_pos = 0;
             }
             else
             {
-                /* MODE */
                 if(warning_cursor == 0)
                 {
                     warning_edit = 0;
-                    warning_mode_saved = warning_mode;
-                    MB_SLAVE_SetU16(&mb_slave, 0x000D, warning_mode ? 1 : 0);
-                    buzzer_done_state = 0;
-                    cmd_result = CMD_RES_DONE;
-                    cmd_ui_tick = HAL_GetTick();
-                }
 
-                /* UPPER / LOWER */
+                    confirm_cmd = CMD_NONE;
+                    confirm_return_interface = WARNING;
+
+                    interface = CONFIRM_SETUP;
+                }
                 else
                 {
                     warning_pos++;
@@ -165,42 +185,77 @@ void enter_button_handle(void)
                     if(warning_pos >= 3)
                     {
                         warning_edit = 0;
-                        memcpy(upper_digit_saved, upper_digit, 3);
-                        memcpy(lower_digit_saved, lower_digit, 3);
 
-                        float upper_threshold =
-                                upper_digit[0]
-                                + upper_digit[1] * 0.1f
-                                + upper_digit[2] * 0.01f;
+                        confirm_cmd = CMD_NONE;
+                        confirm_return_interface = WARNING;
 
-                        float lower_threshold =
-                                lower_digit[0]
-                                + lower_digit[1] * 0.1f
-                                + lower_digit[2] * 0.01f;
-
-                        MB_SLAVE_SetFloat(&mb_slave, 0x000E, upper_threshold);
-                        MB_SLAVE_SetFloat(&mb_slave, 0x0010, lower_threshold);
-                        MB_SLAVE_SetU16(&mb_slave, 0x000D, warning_mode ? 1 : 0);
-
-                        buzzer_done_state = 0;
-                        cmd_result = CMD_RES_DONE;
-                        cmd_ui_tick = HAL_GetTick();
+                        interface = CONFIRM_SETUP;
                     }
                 }
             }
+
             break;
 
+        /* =====================================================
+         * RANGE
+         * ===================================================== */
         case RANGE:
+
             if(!range_edit)
             {
-                range_edit = 1;   // vào edit
+                range_edit = 1;
             }
             else
             {
-                range_edit = 0;   // xác nhận
-                send_cmd(CMD_SET_RANGE);
-                gain_current = range_index;
+                range_edit = 0;
+
+                confirm_cmd = CMD_SET_RANGE;
+                confirm_return_interface = RANGE;
+
+                interface = CONFIRM_SETUP;
             }
+
+            break;
+
+        /* =====================================================
+         * CONFIRM SCREEN
+         * ===================================================== */
+        case CONFIRM_SETUP:
+
+            interface = confirm_return_interface;
+
+            if(confirm_cmd != CMD_NONE)
+            {
+                send_cmd(confirm_cmd);
+            }
+            else
+            {
+                /* WARNING local save */
+                warning_mode_saved = warning_mode;
+
+                memcpy(upper_digit_saved, upper_digit, 3);
+                memcpy(lower_digit_saved, lower_digit, 3);
+
+                float upper_threshold =
+                        upper_digit[0]
+                        + upper_digit[1] * 0.1f
+                        + upper_digit[2] * 0.01f;
+
+                float lower_threshold =
+                        lower_digit[0]
+                        + lower_digit[1] * 0.1f
+                        + lower_digit[2] * 0.01f;
+
+                MB_SLAVE_SetFloat(&mb_slave, 0x000E, upper_threshold);
+                MB_SLAVE_SetFloat(&mb_slave, 0x0010, lower_threshold);
+                MB_SLAVE_SetU16(&mb_slave, 0x000D,
+                                warning_mode ? 1 : 0);
+
+                buzzer_done_state = 0;
+                cmd_result = CMD_RES_DONE;
+                cmd_ui_tick = HAL_GetTick();
+            }
+
             break;
 
         default:
@@ -458,6 +513,10 @@ void exit_button_handle(void)
         interface = MAIN;
         memset(password,0,4);
         pass_cur = 0;
+    }
+    else if(interface == CONFIRM_SETUP)
+    {
+        interface = confirm_return_interface;
     }
     else if(interface > MODBUS)
     {

@@ -47,9 +47,9 @@ User_app/interface_lcd.o: ../User_app/interface_lcd.c ../Core/Inc/GPIO.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h \
  D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_crc.h \
- ../User_app/clo_rc68.h \
- D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h \
- ../User_app/button_hanlde.h
+ ../User_app/clo_rc68.h ../User_app/button_hanlde.h \
+ ../User_app/app_type.h \
+ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h
 ../Core/Inc/GPIO.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
@@ -103,5 +103,6 @@ D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_master.
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_rtu.h:
 D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_crc.h:
 ../User_app/clo_rc68.h:
-D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h:
 ../User_app/button_hanlde.h:
+../User_app/app_type.h:
+D:/STM32_workspace/Free_Chlorine_RC68_D001/User_middleware/modbus/modbus_slave.h:
